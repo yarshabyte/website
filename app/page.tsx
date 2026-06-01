@@ -10,6 +10,14 @@ export default function Home() {
     <main>
       <HeroSection />
       <AboutSection />
+      <div
+        className="hidden items-center px-[8%] lg:flex"
+        aria-hidden="true"
+      >
+        <span className="size-3.5 rounded-full border border-foreground/90" />
+        <span className="h-px flex-1 bg-foreground/80" />
+        <span className="size-3.5 rounded-full border border-foreground/90" />
+      </div>
       <WorkSection />
       <AttitudeSection />
       <AwardsSection />
