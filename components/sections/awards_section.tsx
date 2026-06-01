@@ -199,9 +199,10 @@ export function AwardsSection() {
       mm.add("(min-width: 1024px)", () => {
         gsap.set(letters, {
           autoAlpha: 1,
-          y: (index) => scroller.clientHeight * (index === 0 ? 0.46 : 0.54),
-          scale: (index) => (index === 0 ? 1.18 : 1.07),
+          y: (index) => scroller.clientHeight * (index === 0 ? 0.36 : 0.42),
+          scale: (index) => (index === 0 ? 1.12 : 1.06),
           force3D: true,
+          transformOrigin: "50% 100%",
           willChange: "transform, opacity",
         });
         gsap.set(books, {
@@ -225,7 +226,7 @@ export function AwardsSection() {
             start: "top top",
             end: () => `+=${Math.max(3000, scroller.clientHeight * 3.35)}`,
             pin: true,
-            scrub: 1.05,
+            scrub: 0.45,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },
@@ -250,8 +251,8 @@ export function AwardsSection() {
               autoAlpha: 1,
               y: 0,
               scale: 1,
-              duration: 1.65,
-              ease: "power3.out",
+              duration: 1.28,
+              ease: "none",
             },
             0,
           );
@@ -263,9 +264,9 @@ export function AwardsSection() {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 1.55,
+            duration: 1.24,
             stagger: 0.045,
-            ease: "power3.out",
+            ease: "none",
           },
           0.12,
         );
