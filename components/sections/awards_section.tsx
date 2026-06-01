@@ -209,7 +209,7 @@ export function AwardsSection() {
           y: (index) => scroller.clientHeight * (0.6 + (index % 3) * 0.2),
           rotation: (index) => awards[index]?.rotate ?? 0,
           x: 0,
-          scale: 0.98,
+          scale: 1.24,
           force3D: true,
           willChange: "transform, opacity",
         });
@@ -223,7 +223,7 @@ export function AwardsSection() {
             trigger: section,
             scroller,
             start: "top top",
-            end: () => `+=${Math.max(4200, scroller.clientHeight * 4.8)}`,
+            end: () => `+=${Math.max(3000, scroller.clientHeight * 3.35)}`,
             pin: true,
             scrub: 1.05,
             anticipatePin: 1,
@@ -277,18 +277,29 @@ export function AwardsSection() {
             books[index],
             {
               autoAlpha: 1,
-              y: () => -scroller.clientHeight * (1.04 + (index % 2) * 0.12),
-              x: award.drift,
-              rotation: award.rotate * -0.55,
-              scale: 1.02,
-              duration: 2.35,
-              ease: "none",
+              y: 0,
+              x: award.drift * 0.34,
+              rotation: award.rotate * 0.35,
+              scale: 1,
+              duration: 1.05,
+              ease: "power2.out",
             },
             at,
           );
-        });
 
-        timeline.to({}, { duration: 1.1 });
+          timeline.to(
+            books[index],
+            {
+              y: () => -scroller.clientHeight * (1.04 + (index % 2) * 0.12),
+              x: award.drift,
+              rotation: award.rotate * -0.55,
+              scale: 1,
+              duration: 1.2,
+              ease: "none",
+            },
+            at + 1.05,
+          );
+        });
 
         return () => {
           gsap.set([...letters, ...books], { clearProps: "willChange" });
