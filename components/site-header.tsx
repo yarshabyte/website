@@ -61,7 +61,6 @@ export function SiteHeader() {
 
   useEffect(() => {
     if (isMenuOpen) {
-      setIsHeaderHidden(false);
       return;
     }
 
@@ -153,6 +152,7 @@ export function SiteHeader() {
   const toggleMenu = () => {
     if (!isMenuOpen) {
       updateMenuOrigin();
+      setIsHeaderHidden(false);
     }
     setIsMenuOpen((current) => !current);
   };
@@ -164,7 +164,7 @@ export function SiteHeader() {
           isHeaderHidden ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"
         }`}
       >
-        <div className="flex h-16 items-center justify-between gap-3 px-6 pt-4 sm:h-[4.5rem] sm:gap-4 sm:px-10 sm:pt-6 lg:px-50">
+        <div className="mx-auto flex h-16 items-center justify-between gap-3 px-6 pt-4 sm:h-[4.5rem] sm:gap-4 sm:px-10 sm:pt-6 lg:w-[var(--site-content-width)] lg:px-0">
           <Link
             href="/"
             className="pointer-events-auto flex min-w-0 items-center gap-2"

@@ -16,6 +16,7 @@
   --hex-opacity: 0;
   --hex-offset-x: 0px;
   --hex-offset-y: 0px;
+  --site-content-width: min(100% - 2rem, 80rem);
 }
 
 @theme inline {
@@ -124,6 +125,10 @@ body::-webkit-scrollbar {
     overflow: hidden;
   }
 
+  :root {
+    --site-content-width: 80vw;
+  }
+
   .site-frame {
     height: calc(100vh - 1.5rem);
     min-height: 0;
@@ -185,7 +190,7 @@ h3 {
 
 @layer utilities {
   .studio-container {
-    width: min(100% - 2rem, 80rem);
+    width: var(--site-content-width);
     margin-inline: auto;
   }
 

@@ -120,7 +120,7 @@ export function HeroSection() {
 
       <motion.a
         href="#contact"
-        className="fixed bottom-4 right-4 z-40 grid size-14 place-items-center rounded-full bg-accent text-foreground shadow-none transition hover:scale-105 sm:bottom-6 sm:right-6 sm:size-12 lg:bottom-8 lg:right-8 lg:size-14"
+        className="fixed bottom-4 right-4 z-40 grid size-14 place-items-center rounded-full bg-accent text-foreground shadow-none transition hover:scale-105 sm:bottom-6 sm:right-6 sm:size-12 lg:bottom-8 lg:right-[calc((100vw-var(--site-content-width))/2)] lg:size-14"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.4 }}

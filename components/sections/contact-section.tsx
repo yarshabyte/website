@@ -11,9 +11,7 @@ const serviceLinks = services.map((service) => ({
     .replace("Branding & Digital Identity", "Brand Identity")
     .replace("Digital Setup", "Launch Setup")
     .toUpperCase(),
-  href: `mailto:yarsabyte@gmail.com?subject=${encodeURIComponent(
-    service.title,
-  )}`,
+  href: "/services",
 }));
 
 function AccentMark() {
@@ -58,7 +56,7 @@ export function ContactSection() {
         <div className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-4">
           <div className="hidden lg:block" aria-hidden="true" />
           <a
-            href="mailto:yarsabyte@gmail.com?subject=Let%27s%20Talk"
+            href="/contact"
             className="group justify-self-center text-center font-helvetica-bold text-[clamp(3.6rem,6.4vw,7.4rem)] uppercase leading-[0.82] tracking-normal transition hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
           >
             Let&apos;s Talk
@@ -96,7 +94,7 @@ export function ContactSection() {
 
           <div className="flex flex-col items-start gap-6 lg:items-end lg:justify-center">
             <FooterWord
-              href="mailto:yarsabyte@gmail.com?subject=Services"
+              href="/services"
               className="text-[clamp(3.6rem,6.2vw,7.4rem)] lg:text-right"
             >
               Services

@@ -18,10 +18,10 @@ const awards = [
     detail: "Focused landing pages with contact paths, trust cues, and fast delivery.",
     meta: "Butwal / 2026",
     left: "20%",
-    top: "54%",
+    top: "62%",
     width: "clamp(9.5rem, 13.5vw, 15.25rem)",
     rotate: -14,
-    drift: -95,
+    drift: -170,
     cover: "#ef3f37",
     spine: "#c92f2d",
     ink: "#fff7ed",
@@ -32,11 +32,11 @@ const awards = [
     title: "Design award",
     detail: "Reusable visual systems for brands that need to look credible online.",
     meta: "Visual systems",
-    left: "47%",
-    top: "59%",
+    left: "38%",
+    top: "44%",
     width: "clamp(10rem, 14vw, 16rem)",
     rotate: 9,
-    drift: 68,
+    drift: 130,
     cover: "#6b4a91",
     spine: "#4d3470",
     ink: "#fff7ed",
@@ -47,11 +47,11 @@ const awards = [
     title: "Innovation award",
     detail: "Launch assets, posters, and motion-led campaigns with a clear handoff.",
     meta: "Launch ready",
-    left: "58%",
-    top: "51%",
+    left: "62%",
+    top: "57%",
     width: "clamp(9.5rem, 13vw, 15rem)",
     rotate: -6,
-    drift: -52,
+    drift: -125,
     cover: "#f47a2a",
     spine: "#c95d1f",
     ink: "#2a1710",
@@ -62,11 +62,11 @@ const awards = [
     title: "Digital setup",
     detail: "Domains, email, analytics, and practical guidance after launch.",
     meta: "Setup / Support",
-    left: "66%",
-    top: "55%",
+    left: "84%",
+    top: "48%",
     width: "clamp(9.5rem, 12.5vw, 14.5rem)",
     rotate: 13,
-    drift: 92,
+    drift: 175,
     cover: "#ffc13b",
     spine: "#d7941f",
     ink: "#2b2114",
@@ -77,11 +77,11 @@ const awards = [
     title: "Brand presence",
     detail: "A clear identity system for websites, social posts, and launch materials.",
     meta: "Identity",
-    left: "38%",
-    top: "68%",
+    left: "28%",
+    top: "74%",
     width: "clamp(9rem, 12.5vw, 14.5rem)",
     rotate: 16,
-    drift: 118,
+    drift: 210,
     cover: "#e16c55",
     spine: "#b64f3f",
     ink: "#fff7ed",
@@ -92,11 +92,11 @@ const awards = [
     title: "Service clarity",
     detail: "Structured pages that explain offers simply and guide customers forward.",
     meta: "Experience",
-    left: "76%",
-    top: "66%",
+    left: "72%",
+    top: "70%",
     width: "clamp(9rem, 13vw, 15rem)",
     rotate: -12,
-    drift: -104,
+    drift: -190,
     cover: "#2f8c78",
     spine: "#246d5d",
     ink: "#fff7ed",
@@ -197,10 +197,12 @@ export function AwardsSection() {
       const mm = gsap.matchMedia();
 
       mm.add("(min-width: 1024px)", () => {
+        const letterStartDepth = [0.14, 0.34, 0.58, 0.86, 0.98, 1.1];
+
         gsap.set(letters, {
-          autoAlpha: 1,
-          y: (index) => scroller.clientHeight * (index === 0 ? 0.36 : 0.42),
-          scale: (index) => (index === 0 ? 1.12 : 1.06),
+          autoAlpha: (index) => (index < 3 ? 1 : 0),
+          y: (index) => scroller.clientHeight * (letterStartDepth[index] ?? 1),
+          scale: (index) => (index < 2 ? 1.05 : 1.08),
           force3D: true,
           transformOrigin: "50% 100%",
           willChange: "transform, opacity",
@@ -224,7 +226,7 @@ export function AwardsSection() {
             trigger: section,
             scroller,
             start: "top top",
-            end: () => `+=${Math.max(3000, scroller.clientHeight * 3.35)}`,
+            end: () => `+=${Math.max(3400, scroller.clientHeight * 3.85)}`,
             pin: true,
             scrub: 0.45,
             anticipatePin: 1,
@@ -244,45 +246,31 @@ export function AwardsSection() {
           0,
         );
 
-        if (letters[0]) {
-          timeline.to(
-            letters[0],
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: 1.28,
-              ease: "none",
-            },
-            0,
-          );
-        }
-
         timeline.to(
-          letters.slice(1),
+          letters,
           {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 1.24,
-            stagger: 0.045,
+            duration: 1.65,
+            stagger: 0.16,
             ease: "none",
           },
-          0.12,
+          0,
         );
 
         awards.forEach((award, index) => {
-          const at = index * 0.12 + 0.05;
+          const at = index * 0.08 + 0.18;
 
           timeline.to(
             books[index],
             {
               autoAlpha: 1,
               y: 0,
-              x: award.drift * 0.34,
-              rotation: award.rotate * 0.35,
+              x: award.drift * 0.44,
+              rotation: award.rotate * 0.48,
               scale: 1,
-              duration: 1.05,
+              duration: 0.72,
               ease: "power2.out",
             },
             at,
@@ -291,14 +279,14 @@ export function AwardsSection() {
           timeline.to(
             books[index],
             {
-              y: () => -scroller.clientHeight * (1.04 + (index % 2) * 0.12),
+              y: () => -scroller.clientHeight * (1.22 + (index % 2) * 0.14),
               x: award.drift,
-              rotation: award.rotate * -0.55,
+              rotation: award.rotate * -0.72,
               scale: 1,
-              duration: 1.2,
+              duration: 0.86,
               ease: "none",
             },
-            at + 1.05,
+            at + 0.72,
           );
         });
 
@@ -320,7 +308,7 @@ export function AwardsSection() {
       id="awards"
       className="relative overflow-hidden bg-background px-5 py-20 text-foreground lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:py-0"
     >
-      <div className="relative mx-auto flex min-h-[calc(100svh-8rem)] w-full max-w-[118rem] flex-col justify-center lg:min-h-[calc(100vh-1.5rem)]">
+      <div className="relative mx-auto flex min-h-[calc(100svh-8rem)] w-full max-w-[118rem] flex-col justify-center lg:min-h-[calc(100vh-1.5rem)] lg:w-[var(--site-content-width)] lg:max-w-none">
         <div
           data-awards-intro
           className="relative z-20 mb-10 flex items-center gap-3 lg:absolute lg:left-0 lg:top-14 lg:mb-0 lg:opacity-0"
