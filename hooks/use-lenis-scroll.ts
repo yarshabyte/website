@@ -36,7 +36,24 @@ export function useLenisScroll() {
       wheelMultiplier: 0.8,
     });
 
-    lenis.on("scroll", ScrollTrigger.update);
+    const onLenisScroll = (event: {
+      scroll: number;
+      velocity: number;
+      direction: number;
+    }) => {
+      ScrollTrigger.update();
+      window.dispatchEvent(
+        new CustomEvent("lenis:scroll", {
+          detail: {
+            scroll: event.scroll,
+            velocity: event.velocity,
+            direction: event.direction,
+          },
+        }),
+      );
+    };
+
+    lenis.on("scroll", onLenisScroll);
 
     ScrollTrigger.scrollerProxy(wrapper, {
       scrollTop(value) {
@@ -68,12 +85,16 @@ export function useLenisScroll() {
 
     ScrollTrigger.refresh();
     wrapper.dataset.lenisReady = "true";
-    window.dispatchEvent(new Event("lenis:ready"));
+    window.dispatchEvent(
+      new CustomEvent("lenis:ready", {
+        detail: { scroll: lenis.scroll },
+      }),
+    );
 
     return () => {
       delete wrapper.dataset.lenisReady;
       gsap.ticker.remove(onTick);
-      lenis.off("scroll", ScrollTrigger.update);
+      lenis.off("scroll", onLenisScroll);
       lenis.destroy();
       ScrollTrigger.scrollerProxy(wrapper, {});
       ScrollTrigger.defaults({ scroller: undefined });
