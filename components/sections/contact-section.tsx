@@ -120,34 +120,10 @@ export function ContactSection() {
           </div>
 
           <div className="grid gap-6 text-sm text-foreground/86 sm:text-base lg:grid-cols-[1fr_auto_1fr] lg:items-center">
-            <a
-              href="mailto:yarsabyte@gmail.com"
-              className="max-w-xs text-sm font-semibold uppercase leading-6 text-foreground/84 transition hover:text-accent sm:text-base"
-            >
-              Butwal, Nepal
-              <br />
-              yarsabyte@gmail.com
-            </a>
-
-            <nav
-              className="flex flex-wrap justify-center gap-x-7 gap-y-3"
-              aria-label="Social links"
-            >
-              {socialLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="transition hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-
             <form
               action="mailto:yarsabyte@gmail.com"
               method="post"
-              className="w-full max-w-xs lg:justify-self-end"
+              className="w-full max-w-xs"
             >
               <label
                 htmlFor="footer-email"
@@ -172,6 +148,30 @@ export function ContactSection() {
                 </button>
               </div>
             </form>
+
+            <nav
+              className="flex flex-wrap justify-center gap-x-7 gap-y-3"
+              aria-label="Social links"
+            >
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="transition hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+
+            <a
+              href="mailto:yarsabyte@gmail.com"
+              className="max-w-xs text-sm font-semibold uppercase leading-6 text-foreground/84 transition hover:text-accent sm:text-base lg:justify-self-end"
+            >
+              Butwal, Nepal
+              <br />
+              yarsabyte@gmail.com
+            </a>
           </div>
 
           <p className="text-center text-sm text-foreground/86">

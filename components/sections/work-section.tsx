@@ -15,16 +15,7 @@ export function WorkSection() {
       className="relative min-h-screen overflow-hidden bg-transparent px-6 py-24 lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:py-16"
     >
       <div className="mx-auto flex min-h-[calc(100vh-9rem)] w-full max-w-[90rem] flex-col lg:min-h-[calc(100vh-5rem)]">
-        <div className="hidden min-h-[36vh] lg:block" aria-hidden="true" />
-
-        <div
-          className="hidden items-center px-[8%] lg:flex"
-          aria-hidden="true"
-        >
-          <span className="size-3.5 rounded-full border border-foreground/90" />
-          <span className="h-px flex-1 bg-foreground/80" />
-          <span className="size-3.5 rounded-full border border-foreground/90" />
-        </div>
+        <div className="hidden min-h-[12vh] lg:block" aria-hidden="true" />
 
         <div className="grid gap-10 pb-10 pt-10 lg:grid-cols-[0.46fr_0.54fr] lg:items-start lg:pb-0 lg:pt-6">
           <motion.div
