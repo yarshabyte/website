@@ -65,10 +65,10 @@ export function SiteHeader() {
   return (
     <>
       <header className="pointer-events-none fixed inset-x-0 top-0 z-[90] lg:left-3 lg:right-3 lg:top-3">
-        <div className="flex h-20 items-center justify-between gap-4 px-50 sm:h-[4.5rem] sm:pt-0">
+        <div className="flex h-20 items-center justify-between gap-4 px-50 pt-6 sm:h-[4.5rem] sm:pt-6">
           <Link
             href="/"
-            className="pointer-events-auto flex min-w-0 items-center gap-3"
+            className="pointer-events-auto flex min-w-0 items-center gap-2"
             aria-label="Yarsa Byte home"
             onClick={() => setIsMenuOpen(false)}
           >
