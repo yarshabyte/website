@@ -34,7 +34,7 @@ function SplitWords({ text }: { text: string }) {
       {text.split(" ").map((word, index) => (
         <motion.span
           key={`${word}-${index}`}
-          className="inline-block transform-gpu"
+          className="inline-block transform-gpu whitespace-normal break-words"
           initial={{ opacity: 0, y: "0.65em", rotateX: -55 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
           transition={{ duration: 0.68, delay: 0.08 + index * 0.045, ease }}
@@ -78,7 +78,7 @@ function StudioOrbital() {
 
   return (
     <motion.div
-      className="relative mx-auto aspect-square w-140"
+      className="relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] lg:w-[480px] xl:w-[540px]"
       initial={{ opacity: 0, scale: 0.86, rotate: -8 }}
       animate={{ opacity: 1, scale: 1, rotate: 0 }}
       transition={{ duration: 0.9, delay: 0.2, ease }}
@@ -100,14 +100,15 @@ function StudioOrbital() {
           alt=""
           width={160}
           height={160}
-          className="h-28 w-28 rounded bg-white object-contain p-2"
+          className="h-20 w-20 rounded bg-white object-contain p-2 sm:h-24 sm:w-24 md:h-28 md:w-28"
           priority
         />
       </div>
       {["Design", "Build", "Motion", "Launch"].map((label, index) => (
         <motion.span
           key={label}
-          className={`absolute grid h-16 w-28 place-items-center rounded-full border border-foreground/10 bg-background/86 text-xs font-black uppercase tracking-[0.16em] text-foreground shadow-[0_16px_50px_rgba(0,0,0,0.22)] ${!isVisible || reduceMotion ? 'animate-none' : ''}`}
+          className={`absolute grid place-items-center rounded-full border border-foreground/10 bg-background/86 font-black uppercase tracking-[0.16em] text-foreground shadow-[0_16px_50px_rgba(0,0,0,0.22)] backdrop-blur-sm ${!isVisible || reduceMotion ? 'animate-none' : ''
+            } h-12 w-20 text-[10px] sm:h-14 sm:w-24 sm:text-[11px] md:h-16 md:w-28 md:text-xs`}
           style={{
             left: index % 2 === 0 ? "0%" : "auto",
             right: index % 2 === 0 ? "auto" : "0%",
@@ -133,38 +134,45 @@ export function StudioPageClient() {
 
   return (
     <main className="overflow-hidden">
-      <section className="relative min-h-dvh overflow-hidden border-b border-foreground/10 pt-28">
-        <div className="service-grid-surface absolute inset-0 opacity-50" aria-hidden="true">
+      <section className="relative min-h-dvh overflow-hidden border-b border-foreground/10">
+        <div className="absolute inset-0 -z-0 opacity-40" aria-hidden="true">
           <motion.div
-            className="left-[-10%] h-14 w-max -rotate-2 border-y border-foreground/10 bg-accent text-background"
-            animate={reduceMotion ? undefined : { x: ["0%", "-20%"] }}
-            transition={reduceMotion ? undefined : { duration: 20, repeat: Infinity, ease: "linear" }}
-            aria-hidden="true"
-          >
-            <div className="flex h-full items-center gap-6 whitespace-nowrap text-xl font-black uppercase">
-              {Array.from({ length: 20 }).map((_, index) => (
-                <span key={index}>Yarsa Byte Studio / Strategy / Motion / Launch</span>
+            className="absolute left-1/2 top-1/2 h-[80vmax] w-[80vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-accent/15 via-transparent to-accent/5 blur-3xl"
+            animate={reduceMotion ? undefined : { scale: [1, 1.2, 1], rotate: [0, 90, 0], }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          />
+          {!reduceMotion && (
+            <div className="absolute inset-0">
+              {[...Array(12)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute h-1 w-1 rounded-full bg-accent/30"
+                  initial={{
+                    x: `${Math.random() * 100}%`,
+                    y: `${Math.random() * 100}%`,
+                    opacity: 0.2,
+                  }}
+                  animate={{
+                    y: [`${Math.random() * 100}%`, `${Math.random() * 100}%`],
+                    opacity: [0.2, 0.6, 0.2],
+                  }}
+                  transition={{
+                    duration: 8 + Math.random() * 10,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
               ))}
             </div>
-          </motion.div>
+          )}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
         </div>
 
         <Container className="relative z-10 grid min-h-[calc(100dvh-7rem)] content-end gap-12 pb-12 lg:grid-cols-[0.62fr_0.38fr] lg:items-end">
           <div>
-            {/*
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, ease }}
-              className="max-w-2xl text-base leading-8 text-foreground/68 sm:text-lg"
-            >
-              A small digital studio mixing useful strategy, expressive motion,
-              and clean development for businesses that need to look trusted fast.
-            </motion.p>
-            */}
-            <h1 className="mt-8 max-w-[14ch] text-[clamp(3.6rem,10.8vw,10.5rem)] font-black uppercase leading-[0.84] text-foreground transform-gpu">
+            <h1 className="mt-8 max-w-[14ch] text-[clamp(2.8rem,9vw,6rem)] font-black uppercase leading-[0.84] text-foreground transform-gpu sm:text-[clamp(3.2rem,10vw,8rem)] lg:text-[clamp(3.6rem,10.8vw,10.5rem)]">
               <SplitWords text="Minds mettle magic" />
-              <HexGlyph className="ml-[0.08em] size-[0.16em] min-h-4 min-w-4 translate-y-[-0.04em]" />
+              <HexGlyph className="ml-[0.08em] inline-block size-[0.14em] min-h-3 min-w-3 translate-y-[-0.04em] sm:size-[0.16em]" />
             </h1>
 
             <div className="mt-9 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
@@ -174,12 +182,12 @@ export function StudioPageClient() {
                   initial={{ opacity: 0, y: 22 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.35 + index * 0.06, ease }}
-                  className="border border-foreground/10 bg-foreground/[0.035] p-4"
+                  className="border border-foreground/10 bg-foreground/[0.035] p-3 transition hover:border-accent/30 hover:bg-foreground/[0.05] sm:p-4"
                 >
-                  <p className="font-display text-3xl uppercase leading-none text-accent">
+                  <p className="font-display text-2xl uppercase leading-none text-accent sm:text-3xl">
                     {stat.value}
                   </p>
-                  <p className="mt-2 text-xs font-bold uppercase leading-5 tracking-[0.14em] text-foreground/58">
+                  <p className="mt-1 text-[11px] font-bold uppercase leading-5 tracking-[0.14em] text-foreground/58 sm:mt-2 sm:text-xs">
                     {stat.label}
                   </p>
                 </motion.div>
@@ -188,7 +196,7 @@ export function StudioPageClient() {
 
             <a
               href="#studio-story"
-              className="mt-10 inline-flex size-14 items-center justify-center rounded-full border border-foreground/12 bg-foreground/[0.05] text-foreground transition hover:bg-foreground hover:text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+              className="mt-10 inline-flex size-12 items-center justify-center rounded-full border border-foreground/12 bg-foreground/[0.05] text-foreground transition hover:bg-foreground hover:text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:size-14"
               aria-label="Jump to studio story"
             >
               <ArrowDown className="size-5" aria-hidden="true" />
@@ -207,12 +215,12 @@ export function StudioPageClient() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-12% 0px" }}
-              className="sticky top-24"
+              className="lg:sticky lg:top-24"
             >
               <p className="text-sm font-black uppercase tracking-[0.2em] text-accent">
                 Creative Studio
               </p>
-              <h2 className="mt-5 text-[clamp(2.8rem,6vw,6.5rem)] font-black uppercase leading-[0.86] text-foreground">
+              <h2 className="mt-5 text-[clamp(2.4rem,6vw,4rem)] font-black uppercase leading-[0.86] text-foreground sm:text-[clamp(2.8rem,6vw,5rem)] lg:text-[clamp(2.8rem,6vw,6.5rem)]">
                 Useful work with a pulse.
               </h2>
             </motion.div>
@@ -225,19 +233,21 @@ export function StudioPageClient() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-10% 0px" }}
                   transition={{ duration: 0.62, delay: index * 0.06, ease }}
-                  className="group relative overflow-hidden border border-foreground/10 bg-foreground/[0.035] p-6 transition hover:border-accent/55 hover:bg-foreground/[0.06] sm:p-8"
+                  className="group relative overflow-hidden border border-foreground/10 bg-foreground/[0.035] p-5 transition hover:border-accent/55 hover:bg-foreground/[0.06] sm:p-6 md:p-8"
                 >
                   <div className="absolute inset-y-0 left-0 w-1 origin-bottom scale-y-0 bg-accent transition duration-500 group-hover:scale-y-100" />
-                  <div className="flex items-start justify-between gap-6">
+                  <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:gap-6">
                     <div>
-                      <p className="font-display text-3xl uppercase leading-none text-foreground">
+                      <p className="font-display text-2xl uppercase leading-none text-foreground sm:text-3xl">
                         {item.title}
                       </p>
-                      <p className="mt-5 max-w-2xl text-base leading-8 text-foreground/64">
+                      <p className="mt-4 max-w-2xl text-sm leading-7 text-foreground/64 sm:mt-5 sm:text-base sm:leading-8">
                         {item.text}
                       </p>
                     </div>
-                    <span className="font-display text-5xl text-foreground/10">0{index + 1}</span>
+                    <span className="font-display text-4xl text-foreground/10 sm:text-5xl">
+                      0{index + 1}
+                    </span>
                   </div>
                 </motion.article>
               ))}
@@ -246,16 +256,16 @@ export function StudioPageClient() {
         </Container>
       </section>
 
-      <section className="relative overflow-hidden border-b border-foreground/10 py-10">
+      <section className="relative overflow-hidden border-b border-foreground/10 py-8 sm:py-10">
         <motion.div
-          className="flex w-max gap-6 whitespace-nowrap text-[clamp(2.5rem,7vw,8rem)] font-black uppercase leading-none text-foreground/14"
+          className="flex w-max gap-6 whitespace-nowrap text-[clamp(1.8rem,6vw,3rem)] font-black uppercase leading-none text-foreground/14 sm:text-[clamp(2.2rem,7vw,5rem)] md:text-[clamp(2.5rem,7vw,8rem)]"
           animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
           transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: "linear" }}
           aria-hidden="true"
         >
           {[...studioCrew, ...studioCrew, ...studioCrew].map((member, index) => (
-            <span key={`${member.initials}-${index}`} className="inline-flex items-center gap-6">
-              <Sparkles className="size-8 text-accent/50" />
+            <span key={`${member.initials}-${index}`} className="inline-flex items-center gap-4 sm:gap-6">
+              <Sparkles className="size-5 text-accent/50 sm:size-7 md:size-8" />
               {member.name}
             </span>
           ))}
@@ -269,37 +279,39 @@ export function StudioPageClient() {
               <p className="text-sm font-black uppercase tracking-[0.2em] text-sky">
                 The team shape
               </p>
-              <h2 className="mt-4 text-[clamp(2.8rem,6vw,6rem)] font-black uppercase leading-[0.88]">
+              <h2 className="mt-4 text-[clamp(2.2rem,6vw,3.5rem)] font-black uppercase leading-[0.88] sm:text-[clamp(2.5rem,6vw,4rem)] md:text-[clamp(2.8rem,6vw,6rem)]">
                 One studio, many hands.
               </h2>
             </div>
-            <PremiumButton href="/contact">Start with us</PremiumButton>
+            <PremiumButton href="/contact" className="self-start sm:self-auto">
+              Start with us
+            </PremiumButton>
           </div>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {studioCrew.map((member, index) => (
               <motion.article
                 key={member.name}
                 initial={{ opacity: 0, y: 30, rotate: -1 }}
                 whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-                whileHover={{ y: -10, rotate: index % 2 === 0 ? -1.2 : 1.2 }}
+                whileHover={{ y: -6, rotate: index % 2 === 0 ? -1 : 1 }}
                 viewport={{ once: true, margin: "-10% 0px" }}
                 transition={{ duration: 0.58, delay: index * 0.05, ease }}
-                className="group min-h-[22rem] overflow-hidden border border-foreground/10 bg-foreground/[0.035] p-5"
+                className="group flex min-h-[20rem] flex-col overflow-hidden border border-foreground/10 bg-foreground/[0.035] p-5 transition hover:border-accent/40 hover:bg-foreground/[0.05] sm:min-h-[22rem]"
               >
                 <div className="grid aspect-square place-items-center overflow-hidden bg-accent text-background">
                   <motion.span
-                    className="font-display text-[clamp(3.5rem,7vw,6.4rem)] leading-none"
+                    className="font-display text-[clamp(3rem,7vw,4.5rem)] leading-none sm:text-[clamp(3.5rem,7vw,6.4rem)]"
                     animate={reduceMotion ? undefined : { scale: [1, 1.06, 1] }}
                     transition={reduceMotion ? undefined : { duration: 3.2, repeat: Infinity, delay: index * 0.2 }}
                   >
                     {member.initials}
                   </motion.span>
                 </div>
-                <h3 className="mt-6 font-display text-3xl uppercase leading-none text-foreground">
+                <h3 className="mt-5 font-display text-2xl uppercase leading-none text-foreground sm:mt-6 sm:text-3xl">
                   {member.name}
                 </h3>
-                <p className="mt-3 text-sm font-semibold uppercase leading-6 tracking-[0.12em] text-foreground/54">
+                <p className="mt-2 text-xs font-semibold uppercase leading-6 tracking-[0.12em] text-foreground/54 sm:mt-3 sm:text-sm">
                   {member.role}
                 </p>
               </motion.article>
@@ -315,7 +327,7 @@ export function StudioPageClient() {
               <p className="text-sm font-black uppercase tracking-[0.2em] text-accent">
                 Manifesto
               </p>
-              <h2 className="mt-5 text-[clamp(2.8rem,6vw,6.2rem)] font-black uppercase leading-[0.86]">
+              <h2 className="mt-5 text-[clamp(2.2rem,6vw,3.5rem)] font-black uppercase leading-[0.86] sm:text-[clamp(2.5rem,6vw,4rem)] md:text-[clamp(2.8rem,6vw,6.2rem)]">
                 Create, learn, launch, repeat.
               </h2>
             </div>
@@ -330,12 +342,12 @@ export function StudioPageClient() {
                   transition={{ duration: 0.56, delay: index * 0.05, ease }}
                   className="grid gap-4 border border-foreground/10 bg-foreground/[0.035] p-5 sm:grid-cols-[7rem_1fr]"
                 >
-                  <div className="font-display text-6xl leading-none text-accent">{item.year}</div>
+                  <div className="font-display text-5xl leading-none text-accent sm:text-6xl">{item.year}</div>
                   <div>
-                    <h3 className="font-display text-3xl uppercase leading-none">
+                    <h3 className="font-display text-2xl uppercase leading-none sm:text-3xl">
                       {item.title}
                     </h3>
-                    <p className="mt-3 max-w-2xl text-base leading-8 text-foreground/64">
+                    <p className="mt-3 max-w-2xl text-sm leading-7 text-foreground/64 sm:text-base sm:leading-8">
                       {item.text}
                     </p>
                   </div>
@@ -353,7 +365,7 @@ export function StudioPageClient() {
               <p className="text-sm font-black uppercase tracking-[0.2em] text-sky">
                 Recent proof
               </p>
-              <h2 className="mt-4 text-[clamp(2.8rem,6vw,6.5rem)] font-black uppercase leading-[0.86]">
+              <h2 className="mt-4 text-[clamp(2.2rem,6vw,3.5rem)] font-black uppercase leading-[0.86] sm:text-[clamp(2.5rem,6vw,4rem)] md:text-[clamp(2.8rem,6vw,6.5rem)]">
                 Latest and greatest.
               </h2>
             </div>
@@ -362,17 +374,17 @@ export function StudioPageClient() {
                 <Link
                   key={project.href}
                   href="/work"
-                  className="group flex min-h-24 items-center justify-between gap-5 border border-foreground/10 bg-foreground/[0.035] p-4 transition hover:border-accent/55 hover:bg-accent hover:text-background"
+                  className="group flex min-h-20 items-center justify-between gap-4 border border-foreground/10 bg-foreground/[0.035] p-4 transition hover:border-accent/55 hover:bg-accent hover:text-background sm:min-h-24 sm:gap-5"
                 >
                   <span>
-                    <span className="block text-xs font-black uppercase tracking-[0.18em] text-current/55">
+                    <span className="block text-[11px] font-black uppercase tracking-[0.18em] text-current/55 sm:text-xs">
                       {project.category}
                     </span>
-                    <span className="mt-2 block font-display text-2xl uppercase leading-none">
+                    <span className="mt-1 block font-display text-xl uppercase leading-none sm:mt-2 sm:text-2xl">
                       {project.title}
                     </span>
                   </span>
-                  <ArrowUpRight className="size-6 transition group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  <ArrowUpRight className="size-5 transition group-hover:translate-x-1 group-hover:-translate-y-1 sm:size-6" />
                 </Link>
               ))}
             </div>
