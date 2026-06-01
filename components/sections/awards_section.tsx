@@ -8,7 +8,7 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const awardLetters = ["A", "W", "A", "R", "D", "S"] as const;
+const awardLetters = ["a", "w", "a", "r", "d", "s"] as const;
 
 const awards = [
   {
@@ -17,11 +17,14 @@ const awards = [
     title: "Website of the week",
     detail: "Focused landing pages with contact paths, trust cues, and fast delivery.",
     meta: "Butwal / 2026",
-    left: "15%",
-    top: "60%",
-    width: "clamp(9rem, 14vw, 15.5rem)",
-    rotate: -11,
-    drift: -130,
+    left: "20%",
+    top: "54%",
+    width: "clamp(9.5rem, 13.5vw, 15.25rem)",
+    rotate: -14,
+    drift: -95,
+    cover: "#ef3f37",
+    spine: "#c92f2d",
+    ink: "#fff7ed",
   },
   {
     letter: "W",
@@ -29,11 +32,14 @@ const awards = [
     title: "Design award",
     detail: "Reusable visual systems for brands that need to look credible online.",
     meta: "Visual systems",
-    left: "38%",
-    top: "56%",
-    width: "clamp(10rem, 15vw, 17rem)",
-    rotate: 8,
-    drift: 80,
+    left: "47%",
+    top: "59%",
+    width: "clamp(10rem, 14vw, 16rem)",
+    rotate: 9,
+    drift: 68,
+    cover: "#6b4a91",
+    spine: "#4d3470",
+    ink: "#fff7ed",
   },
   {
     letter: "A",
@@ -41,11 +47,14 @@ const awards = [
     title: "Innovation award",
     detail: "Launch assets, posters, and motion-led campaigns with a clear handoff.",
     meta: "Launch ready",
-    left: "63%",
-    top: "62%",
-    width: "clamp(9rem, 13vw, 15rem)",
-    rotate: -5,
-    drift: -65,
+    left: "58%",
+    top: "51%",
+    width: "clamp(9.5rem, 13vw, 15rem)",
+    rotate: -6,
+    drift: -52,
+    cover: "#f47a2a",
+    spine: "#c95d1f",
+    ink: "#2a1710",
   },
   {
     letter: "R",
@@ -53,11 +62,14 @@ const awards = [
     title: "Digital setup",
     detail: "Domains, email, analytics, and practical guidance after launch.",
     meta: "Setup / Support",
-    left: "82%",
-    top: "57%",
-    width: "clamp(9rem, 12vw, 14rem)",
-    rotate: 12,
-    drift: 110,
+    left: "66%",
+    top: "55%",
+    width: "clamp(9.5rem, 12.5vw, 14.5rem)",
+    rotate: 13,
+    drift: 92,
+    cover: "#ffc13b",
+    spine: "#d7941f",
+    ink: "#2b2114",
   },
   {
     letter: "D",
@@ -65,11 +77,14 @@ const awards = [
     title: "Brand presence",
     detail: "A clear identity system for websites, social posts, and launch materials.",
     meta: "Identity",
-    left: "28%",
+    left: "38%",
     top: "68%",
-    width: "clamp(9rem, 13vw, 15rem)",
-    rotate: 14,
-    drift: 130,
+    width: "clamp(9rem, 12.5vw, 14.5rem)",
+    rotate: 16,
+    drift: 118,
+    cover: "#e16c55",
+    spine: "#b64f3f",
+    ink: "#fff7ed",
   },
   {
     letter: "S",
@@ -77,11 +92,14 @@ const awards = [
     title: "Service clarity",
     detail: "Structured pages that explain offers simply and guide customers forward.",
     meta: "Experience",
-    left: "70%",
-    top: "69%",
-    width: "clamp(9rem, 13.5vw, 15.5rem)",
-    rotate: -13,
-    drift: -120,
+    left: "76%",
+    top: "66%",
+    width: "clamp(9rem, 13vw, 15rem)",
+    rotate: -12,
+    drift: -104,
+    cover: "#2f8c78",
+    spine: "#246d5d",
+    ink: "#fff7ed",
   },
 ] as const;
 
@@ -101,39 +119,43 @@ function AwardBook({
           "--book-top": award.top,
           "--book-width": award.width,
           "--book-rotate": `${award.rotate}deg`,
+          "--book-bg": award.cover,
+          "--book-spine": award.spine,
+          "--book-ink": award.ink,
         } as CSSProperties
       }
-      className="absolute left-[var(--book-left)] top-[var(--book-top)] hidden aspect-[0.68] w-[var(--book-width)] -translate-x-1/2 overflow-hidden rounded-[0.35rem] border border-foreground/12 bg-[color-mix(in_srgb,var(--background)_72%,var(--accent)_28%)] shadow-[0_28px_80px_rgba(0,0,0,0.24)] will-change-transform lg:block"
+      className="absolute left-[var(--book-left)] top-[var(--book-top)] hidden aspect-[0.68] w-[var(--book-width)] -translate-x-1/2 overflow-hidden rounded-[0.32rem] border border-foreground/10 bg-[var(--book-bg)] text-[var(--book-ink)] shadow-[0_28px_80px_rgba(0,0,0,0.28)] will-change-transform lg:block"
     >
-      <div className="absolute inset-y-0 left-0 w-[13%] bg-foreground/12" />
-      <div className="absolute inset-x-[14%] top-0 h-full border-l border-foreground/12" />
+      <div className="absolute inset-y-0 left-0 w-[13%] bg-[var(--book-spine)]" />
+      <div className="absolute inset-x-[14%] top-0 h-full border-l border-current/18" />
+      <div className="absolute inset-x-[18%] top-[54%] h-[18%] -skew-y-6 rounded-full border border-current/24 opacity-35" />
       <div className="relative z-10 flex h-full flex-col justify-between p-[8%]">
         <div className="flex items-start justify-between gap-4">
-          <span className="font-helvetica-bold text-[clamp(1.3rem,2vw,2rem)] leading-none text-foreground">
+          <span className="font-helvetica-bold text-[clamp(1.3rem,2vw,2rem)] leading-none">
             {award.letter}
           </span>
-          <span className="text-right text-[0.55rem] font-semibold uppercase leading-tight tracking-[0.14em] text-foreground/58">
+          <span className="text-right text-[0.55rem] font-semibold uppercase leading-tight tracking-[0.14em] opacity-60">
             0{index + 1}
           </span>
         </div>
 
         <div>
-          <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-foreground/64">
+          <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] opacity-64">
             {award.label}
           </p>
-          <h3 className="mt-3 max-w-[12rem] text-[clamp(1.35rem,2.1vw,2.3rem)] font-semibold uppercase leading-[0.9] text-foreground">
+          <h3 className="mt-3 max-w-[12rem] text-[clamp(1.35rem,2.1vw,2.3rem)] font-semibold uppercase leading-[0.9]">
             {award.title}
           </h3>
-          <p className="mt-4 max-w-[12rem] text-[0.66rem] font-semibold leading-5 text-foreground/62">
+          <p className="mt-4 max-w-[12rem] text-[0.66rem] font-semibold leading-5 opacity-68">
             {award.detail}
           </p>
         </div>
 
         <div className="flex items-end justify-between gap-4">
-          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-foreground/58">
+          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] opacity-62">
             {award.meta}
           </span>
-          <span className="h-16 w-px bg-foreground/30" aria-hidden="true" />
+          <span className="h-16 w-px bg-current/30" aria-hidden="true" />
         </div>
       </div>
     </article>
@@ -155,7 +177,12 @@ export function AwardsSection() {
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-      const letters = gsap.utils.toArray<HTMLElement>("[data-award-letter]");
+      const letters = gsap.utils
+        .toArray<HTMLElement>("[data-award-letter]")
+        .sort(
+          (left, right) =>
+            Number(left.dataset.awardIndex) - Number(right.dataset.awardIndex),
+        );
       const books = gsap.utils.toArray<HTMLElement>("[data-award-book]");
       const intro = gsap.utils.toArray<HTMLElement>("[data-awards-intro]");
 
@@ -171,18 +198,18 @@ export function AwardsSection() {
 
       mm.add("(min-width: 1024px)", () => {
         gsap.set(letters, {
-          autoAlpha: 0,
-          y: () => scroller.clientHeight * 0.82,
-          scale: 0.86,
+          autoAlpha: 1,
+          y: (index) => scroller.clientHeight * (index === 0 ? 0.46 : 0.54),
+          scale: (index) => (index === 0 ? 1.18 : 1.07),
           force3D: true,
           willChange: "transform, opacity",
         });
         gsap.set(books, {
-          autoAlpha: 0,
-          y: () => scroller.clientHeight * 0.78,
+          autoAlpha: 1,
+          y: (index) => scroller.clientHeight * (0.6 + (index % 3) * 0.2),
           rotation: (index) => awards[index]?.rotate ?? 0,
           x: 0,
-          scale: 0.96,
+          scale: 0.98,
           force3D: true,
           willChange: "transform, opacity",
         });
@@ -216,37 +243,52 @@ export function AwardsSection() {
           0,
         );
 
-        awards.forEach((award, index) => {
-          const at = index * 0.72 + 0.25;
+        if (letters[0]) {
+          timeline.to(
+            letters[0],
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 1.65,
+              ease: "power3.out",
+            },
+            0,
+          );
+        }
 
-          timeline
-            .to(
-              books[index],
-              {
-                autoAlpha: 1,
-                y: () => -scroller.clientHeight * 1.18,
-                x: award.drift,
-                rotation: award.rotate * -0.55,
-                scale: 1.02,
-                duration: 1.16,
-                ease: "none",
-              },
-              at,
-            )
-            .to(
-              letters[index],
-              {
-                autoAlpha: 1,
-                y: 0,
-                scale: 1,
-                duration: 0.48,
-                ease: "power3.out",
-              },
-              at + 0.22,
-            );
+        timeline.to(
+          letters.slice(1),
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 1.55,
+            stagger: 0.045,
+            ease: "power3.out",
+          },
+          0.12,
+        );
+
+        awards.forEach((award, index) => {
+          const at = index * 0.12 + 0.05;
+
+          timeline.to(
+            books[index],
+            {
+              autoAlpha: 1,
+              y: () => -scroller.clientHeight * (1.04 + (index % 2) * 0.12),
+              x: award.drift,
+              rotation: award.rotate * -0.55,
+              scale: 1.02,
+              duration: 2.35,
+              ease: "none",
+            },
+            at,
+          );
         });
 
-        timeline.to({}, { duration: 0.5 });
+        timeline.to({}, { duration: 1.1 });
 
         return () => {
           gsap.set([...letters, ...books], { clearProps: "willChange" });
@@ -274,8 +316,8 @@ export function AwardsSection() {
           <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
             <span className="size-1.5 rounded-full bg-accent" />
           </span>
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground/90">
-            Awards
+          <p className="text-sm font-semibold lowercase tracking-[0.14em] text-foreground/90">
+            awards
           </p>
         </div>
 
@@ -283,19 +325,55 @@ export function AwardsSection() {
           data-awards-intro
           className="relative z-20 max-w-sm text-base font-semibold leading-7 text-foreground/64 lg:absolute lg:bottom-16 lg:left-0 lg:opacity-0"
         >
-          Recognition gathered into a scroll-built word, one award at a time.
+          Awards and Recognition.
         </p>
 
         <div
-          className="pointer-events-none relative z-10 flex min-h-[18rem] items-center justify-center sm:min-h-[24rem] lg:min-h-0"
-          aria-label="Awards"
+          className="pointer-events-none relative flex min-h-[18rem] items-center justify-center sm:min-h-[24rem] lg:min-h-0"
+          aria-label="awards"
         >
-          <h2 className="flex w-full items-end justify-center gap-[0.01em] text-center font-helvetica-bold text-[clamp(4.35rem,14.2vw,18.8rem)] uppercase leading-[0.78] tracking-normal text-foreground">
+          <h2
+            aria-hidden="true"
+            className="relative z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
+          >
             {awardLetters.map((letter, index) => (
               <span
                 key={`${letter}-${index}`}
-                data-award-letter
-                className="inline-block opacity-100 lg:opacity-0"
+                data-award-letter={
+                  index === 0 || index === 1 || index === 4 || index === 5
+                    ? ""
+                    : undefined
+                }
+                data-award-index={
+                  index === 0 || index === 1 || index === 4 || index === 5
+                    ? index
+                    : undefined
+                }
+                className={
+                  index === 0 || index === 1 || index === 4 || index === 5
+                    ? "inline-block origin-bottom opacity-100"
+                    : "invisible inline-block origin-bottom"
+                }
+              >
+                {letter}
+              </span>
+            ))}
+          </h2>
+
+          <h2
+            aria-label="awards"
+            className="absolute inset-0 z-20 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
+          >
+            {awardLetters.map((letter, index) => (
+              <span
+                key={`${letter}-${index}`}
+                data-award-letter={index === 2 || index === 3 ? "" : undefined}
+                data-award-index={index === 2 || index === 3 ? index : undefined}
+                className={
+                  index === 2 || index === 3
+                    ? "inline-block origin-bottom opacity-100"
+                    : "invisible inline-block origin-bottom"
+                }
               >
                 {letter}
               </span>
@@ -303,7 +381,7 @@ export function AwardsSection() {
           </h2>
         </div>
 
-        <div className="relative z-20 mt-12 grid gap-4 sm:grid-cols-2 lg:absolute lg:inset-0 lg:mt-0 lg:block">
+        <div className="relative z-10 mt-12 grid gap-4 sm:grid-cols-2 lg:absolute lg:inset-0 lg:mt-0 lg:block">
           {awards.map((award, index) => (
             <AwardBook key={`${award.title}-${index}`} award={award} index={index} />
           ))}
@@ -313,16 +391,22 @@ export function AwardsSection() {
           {awards.map((award, index) => (
             <article
               key={award.title}
-              className="rounded-lg border border-foreground/12 bg-[color-mix(in_srgb,var(--background)_84%,var(--accent)_16%)] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.14)]"
+              style={
+                {
+                  "--book-bg": award.cover,
+                  "--book-ink": award.ink,
+                } as CSSProperties
+              }
+              className="rounded-lg border border-foreground/12 bg-[var(--book-bg)] p-5 text-[var(--book-ink)] shadow-[0_18px_50px_rgba(0,0,0,0.14)]"
             >
-              <div className="flex items-center justify-between gap-4 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-foreground/60">
+              <div className="flex items-center justify-between gap-4 text-[0.68rem] font-semibold uppercase tracking-[0.16em] opacity-60">
                 <span>{award.label}</span>
                 <span>0{index + 1}</span>
               </div>
-              <h3 className="mt-6 text-2xl font-semibold uppercase leading-[0.95] text-foreground">
+              <h3 className="mt-6 text-2xl font-semibold uppercase leading-[0.95]">
                 {award.title}
               </h3>
-              <p className="mt-4 text-sm leading-6 text-foreground/68">
+              <p className="mt-4 text-sm leading-6 opacity-70">
                 {award.detail}
               </p>
             </article>

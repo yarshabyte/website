@@ -170,11 +170,11 @@ export function AttitudeSection() {
       className="relative overflow-hidden bg-background px-5 py-20 text-foreground lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:py-0"
     >
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden" aria-hidden="true">
-        <h2 className="font-display select-none whitespace-nowrap text-[clamp(5.4rem,17vw,20rem)] uppercase leading-none text-foreground/[0.055]">
+        <h2 className="font-display select-none whitespace-nowrap text-[clamp(5.4rem,17vw,20rem)] leading-none text-foreground/[0.055]">
           attitude
         </h2>
         <h2
-          className="font-display absolute left-1/2 -translate-x-1/2 select-none whitespace-nowrap text-[clamp(5.4rem,17vw,20rem)] uppercase leading-none text-accent"
+          className="font-display absolute left-1/2 -translate-x-1/2 select-none whitespace-nowrap text-[clamp(5.4rem,17vw,20rem)]  leading-none text-accent"
           style={{ clipPath: "inset(0 0 0 calc(100% - var(--attitude-fill)))" }}
         >
           attitude
@@ -189,7 +189,7 @@ export function AttitudeSection() {
           <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
             <span className="size-1.5 rounded-full bg-accent" />
           </span>
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground/90">
+            <p className="text-sm font-semibold  tracking-[0.14em] text-foreground/90">
             Attitude
           </p>
         </div>
@@ -215,7 +215,7 @@ export function AttitudeSection() {
                   <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
                     <span className="size-1.5 rounded-full bg-accent" />
                   </span>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground/88">
+                  <p className="text-xs font-semibold  tracking-[0.16em] text-foreground/88">
                     {card.rule}
                   </p>
                 </div>
