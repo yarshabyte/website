@@ -21,136 +21,46 @@ const mobileBookSlots = [
 
 const awardMotionProfiles = [
   {
-    startDepth: 0.74,
-    mobileStartDepth: 0.5,
     enterDelay: 0,
-    settleY: -28,
-    mobileSettleY: -10,
-    holdY: -46,
-    mobileHoldY: -18,
-    enterX: 0.18,
-    holdX: 0.24,
-    flyX: 0.74,
-    mobileEnterX: 0.06,
-    mobileHoldX: 0.1,
-    mobileFlyX: 0.22,
-    enterRotation: 0.36,
-    holdRotation: 0.22,
-    flyRotation: -0.62,
-    settleScale: 1.02,
-    holdScale: 1.03,
-    flyDepth: 1.18,
-    mobileFlyDepth: 0.9,
+    exitX: 0.76,
+    mobileExitX: 0.24,
+    exitRotation: -0.62,
+    exitScale: 1.02,
   },
   {
-    startDepth: 0.58,
-    mobileStartDepth: 0.44,
     enterDelay: 0.1,
-    settleY: -78,
-    mobileSettleY: -26,
-    holdY: -96,
-    mobileHoldY: -36,
-    enterX: 0.12,
-    holdX: 0.18,
-    flyX: 0.52,
-    mobileEnterX: 0.04,
-    mobileHoldX: 0.08,
-    mobileFlyX: 0.18,
-    enterRotation: 0.3,
-    holdRotation: 0.12,
-    flyRotation: -0.48,
-    settleScale: 0.98,
-    holdScale: 0.99,
-    flyDepth: 1.38,
-    mobileFlyDepth: 1.02,
+    exitX: 0.54,
+    mobileExitX: 0.18,
+    exitRotation: -0.48,
+    exitScale: 0.99,
   },
   {
-    startDepth: 0.66,
-    mobileStartDepth: 0.48,
     enterDelay: 0.18,
-    settleY: -44,
-    mobileSettleY: -16,
-    holdY: -64,
-    mobileHoldY: -26,
-    enterX: 0.14,
-    holdX: 0.2,
-    flyX: 0.58,
-    mobileEnterX: 0.05,
-    mobileHoldX: 0.08,
-    mobileFlyX: 0.2,
-    enterRotation: 0.34,
-    holdRotation: 0.18,
-    flyRotation: -0.54,
-    settleScale: 1,
-    holdScale: 1.01,
-    flyDepth: 1.24,
-    mobileFlyDepth: 0.94,
+    exitX: 0.6,
+    mobileExitX: 0.2,
+    exitRotation: -0.54,
+    exitScale: 1.01,
   },
   {
-    startDepth: 0.52,
-    mobileStartDepth: 0.4,
     enterDelay: 0.26,
-    settleY: -66,
-    mobileSettleY: -22,
-    holdY: -84,
-    mobileHoldY: -32,
-    enterX: 0.1,
-    holdX: 0.16,
-    flyX: 0.46,
-    mobileEnterX: 0.03,
-    mobileHoldX: 0.06,
-    mobileFlyX: 0.14,
-    enterRotation: 0.28,
-    holdRotation: 0.1,
-    flyRotation: -0.42,
-    settleScale: 0.96,
-    holdScale: 0.97,
-    flyDepth: 1.42,
-    mobileFlyDepth: 1.06,
+    exitX: 0.48,
+    mobileExitX: 0.14,
+    exitRotation: -0.42,
+    exitScale: 0.98,
   },
   {
-    startDepth: 0.86,
-    mobileStartDepth: 0.56,
     enterDelay: 0.34,
-    settleY: -26,
-    mobileSettleY: -82,
-    holdY: -40,
-    mobileHoldY: -104,
-    enterX: 0.16,
-    holdX: 0.22,
-    flyX: 0.62,
-    mobileEnterX: 0.04,
-    mobileHoldX: 0.07,
-    mobileFlyX: 0.16,
-    enterRotation: 0.38,
-    holdRotation: 0.24,
-    flyRotation: -0.7,
-    settleScale: 1.01,
-    holdScale: 1.02,
-    flyDepth: 1.12,
-    mobileFlyDepth: 0.86,
+    exitX: 0.64,
+    mobileExitX: 0.16,
+    exitRotation: -0.7,
+    exitScale: 1.02,
   },
   {
-    startDepth: 0.8,
-    mobileStartDepth: 0.54,
     enterDelay: 0.42,
-    settleY: -58,
-    mobileSettleY: -96,
-    holdY: -74,
-    mobileHoldY: -118,
-    enterX: 0.14,
-    holdX: 0.2,
-    flyX: 0.56,
-    mobileEnterX: 0.04,
-    mobileHoldX: 0.07,
-    mobileFlyX: 0.18,
-    enterRotation: 0.32,
-    holdRotation: 0.14,
-    flyRotation: -0.58,
-    settleScale: 0.99,
-    holdScale: 1,
-    flyDepth: 1.3,
-    mobileFlyDepth: 0.98,
+    exitX: 0.58,
+    mobileExitX: 0.18,
+    exitRotation: -0.58,
+    exitScale: 1,
   },
 ] as const;
 
@@ -346,10 +256,14 @@ export function AwardsSection() {
         const scroller = isDesktop ? frameScroller : undefined;
         const viewportHeight = () =>
           isDesktop && scroller ? scroller.clientHeight : window.innerHeight;
+        const bookStartY = () =>
+          viewportHeight() * (isDesktop ? 0.82 : 0.62);
+        const bookExitY = () =>
+          -viewportHeight() * (isDesktop ? 1.26 : 1.02);
         const pinDistance = () =>
           Math.max(
-            viewportHeight() * (isDesktop ? 2.55 : 2.28),
-            isDesktop ? 1900 : 1480,
+            viewportHeight() * (isDesktop ? 2.6 : 2.32),
+            isDesktop ? 1900 : 1500,
           );
         const letterStartDepth = isDesktop
           ? [0.5, 0.56, 0.64, 0.7, 0.78, 0.86]
@@ -373,18 +287,14 @@ export function AwardsSection() {
         });
         gsap.set(books, {
           autoAlpha: 0,
-          y: (index) =>
-            viewportHeight() *
-            (isDesktop
-              ? awardMotionProfiles[index].startDepth
-              : awardMotionProfiles[index].mobileStartDepth),
+          y: bookStartY,
           x: (index) =>
-            awards[index].drift * (isDesktop ? -0.04 : -0.02),
+            awards[index].drift * (isDesktop ? -0.08 : -0.025),
           rotation: (index) =>
-            awards[index].rotate * (isDesktop ? 0.74 : 0.56),
+            awards[index].rotate * (isDesktop ? 0.62 : 0.46),
           scale: (index) =>
-            (isDesktop ? 0.88 : 0.9) +
-            (index % 3) * (isDesktop ? 0.025 : 0.015),
+            (isDesktop ? 0.94 : 0.96) +
+            (index % 3) * (isDesktop ? 0.018 : 0.01),
           force3D: true,
           transformOrigin: "50% 80%",
           willChange: "transform, opacity",
@@ -401,16 +311,15 @@ export function AwardsSection() {
             start: "top top",
             end: () => `+=${pinDistance()}`,
             pin: true,
-            scrub: isDesktop ? 0.8 : 0.55,
+            pinSpacing: true,
+            scrub: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },
         });
 
         timeline.addLabel("intro", 0);
-        timeline.addLabel("cardsIn", 0.86);
-        timeline.addLabel("hold", 2.08);
-        timeline.addLabel("flyOut", 3.88);
+        timeline.addLabel("cardsIn", 0.48);
 
         timeline.to(
           intro,
@@ -452,58 +361,31 @@ export function AwardsSection() {
         books.forEach((book, index) => {
           const award = awards[index];
           const profile = awardMotionProfiles[index];
-          const enterX =
-            award.drift * (isDesktop ? profile.enterX : profile.mobileEnterX);
-          const holdX =
-            award.drift * (isDesktop ? profile.holdX : profile.mobileHoldX);
-          const flyX =
-            award.drift * (isDesktop ? profile.flyX : profile.mobileFlyX);
-          const settleY = isDesktop ? profile.settleY : profile.mobileSettleY;
-          const holdY = isDesktop ? profile.holdY : profile.mobileHoldY;
-          const flyDepth = isDesktop
-            ? profile.flyDepth
-            : profile.mobileFlyDepth;
+          const startOffset = profile.enterDelay * 0.16;
+          const exitX =
+            award.drift * (isDesktop ? profile.exitX : profile.mobileExitX);
 
           timeline.to(
             book,
             {
               autoAlpha: 1,
-              y: settleY,
-              x: enterX,
-              rotation: award.rotate * profile.enterRotation,
-              scale: profile.settleScale,
-              duration: 0.92 + (index % 3) * 0.08,
-              ease: "power3.out",
-            },
-            `cardsIn+=${profile.enterDelay}`,
-          );
-
-          timeline.to(
-            book,
-            {
-              autoAlpha: 1,
-              y: holdY,
-              x: holdX,
-              rotation: award.rotate * profile.holdRotation,
-              scale: profile.holdScale,
-              duration: 1.18 + (index % 2) * 0.16,
-              ease: "sine.inOut",
-            },
-            `hold+=${profile.enterDelay * 0.35}`,
-          );
-
-          timeline.to(
-            book,
-            {
-              autoAlpha: 0.88,
-              y: () => -viewportHeight() * flyDepth,
-              x: flyX,
-              rotation: award.rotate * profile.flyRotation,
-              scale: isDesktop ? profile.holdScale * 0.98 : profile.holdScale,
-              duration: 1.35 + (index % 3) * 0.18,
+              duration: isDesktop ? 0.42 : 0.34,
               ease: "none",
             },
-            `flyOut+=${profile.enterDelay * 0.4}`,
+            `cardsIn+=${startOffset}`,
+          );
+
+          timeline.to(
+            book,
+            {
+              y: bookExitY,
+              x: exitX,
+              rotation: award.rotate * profile.exitRotation,
+              scale: profile.exitScale,
+              duration: isDesktop ? 3.05 : 2.85,
+              ease: "none",
+            },
+            `cardsIn+=${startOffset}`,
           );
         });
 
