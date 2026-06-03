@@ -11,12 +11,147 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const awardLetters = ["a", "w", "a", "r", "d", "s"] as const;
 
 const mobileBookSlots = [
-  { left: "18%", top: "68%", width: "clamp(5.4rem, 28vw, 7.5rem)" },
+  { left: "22%", top: "68%", width: "clamp(5.4rem, 28vw, 7.5rem)" },
   { left: "42%", top: "50%", width: "clamp(5.6rem, 29vw, 7.8rem)" },
-  { left: "70%", top: "62%", width: "clamp(5.4rem, 28vw, 7.5rem)" },
-  { left: "86%", top: "42%", width: "clamp(5.1rem, 27vw, 7.2rem)" },
+  { left: "66%", top: "62%", width: "clamp(5.4rem, 28vw, 7.5rem)" },
+  { left: "78%", top: "42%", width: "clamp(5.1rem, 27vw, 7.2rem)" },
   { left: "30%", top: "80%", width: "clamp(5rem, 26vw, 7rem)" },
   { left: "64%", top: "82%", width: "clamp(5.2rem, 27vw, 7.2rem)" },
+] as const;
+
+const awardMotionProfiles = [
+  {
+    startDepth: 0.74,
+    mobileStartDepth: 0.5,
+    enterDelay: 0,
+    settleY: -28,
+    mobileSettleY: -10,
+    holdY: -46,
+    mobileHoldY: -18,
+    enterX: 0.18,
+    holdX: 0.24,
+    flyX: 0.74,
+    mobileEnterX: 0.06,
+    mobileHoldX: 0.1,
+    mobileFlyX: 0.22,
+    enterRotation: 0.36,
+    holdRotation: 0.22,
+    flyRotation: -0.62,
+    settleScale: 1.02,
+    holdScale: 1.03,
+    flyDepth: 1.18,
+    mobileFlyDepth: 0.9,
+  },
+  {
+    startDepth: 0.58,
+    mobileStartDepth: 0.44,
+    enterDelay: 0.1,
+    settleY: -78,
+    mobileSettleY: -26,
+    holdY: -96,
+    mobileHoldY: -36,
+    enterX: 0.12,
+    holdX: 0.18,
+    flyX: 0.52,
+    mobileEnterX: 0.04,
+    mobileHoldX: 0.08,
+    mobileFlyX: 0.18,
+    enterRotation: 0.3,
+    holdRotation: 0.12,
+    flyRotation: -0.48,
+    settleScale: 0.98,
+    holdScale: 0.99,
+    flyDepth: 1.38,
+    mobileFlyDepth: 1.02,
+  },
+  {
+    startDepth: 0.66,
+    mobileStartDepth: 0.48,
+    enterDelay: 0.18,
+    settleY: -44,
+    mobileSettleY: -16,
+    holdY: -64,
+    mobileHoldY: -26,
+    enterX: 0.14,
+    holdX: 0.2,
+    flyX: 0.58,
+    mobileEnterX: 0.05,
+    mobileHoldX: 0.08,
+    mobileFlyX: 0.2,
+    enterRotation: 0.34,
+    holdRotation: 0.18,
+    flyRotation: -0.54,
+    settleScale: 1,
+    holdScale: 1.01,
+    flyDepth: 1.24,
+    mobileFlyDepth: 0.94,
+  },
+  {
+    startDepth: 0.52,
+    mobileStartDepth: 0.4,
+    enterDelay: 0.26,
+    settleY: -66,
+    mobileSettleY: -22,
+    holdY: -84,
+    mobileHoldY: -32,
+    enterX: 0.1,
+    holdX: 0.16,
+    flyX: 0.46,
+    mobileEnterX: 0.03,
+    mobileHoldX: 0.06,
+    mobileFlyX: 0.14,
+    enterRotation: 0.28,
+    holdRotation: 0.1,
+    flyRotation: -0.42,
+    settleScale: 0.96,
+    holdScale: 0.97,
+    flyDepth: 1.42,
+    mobileFlyDepth: 1.06,
+  },
+  {
+    startDepth: 0.86,
+    mobileStartDepth: 0.56,
+    enterDelay: 0.34,
+    settleY: -26,
+    mobileSettleY: -82,
+    holdY: -40,
+    mobileHoldY: -104,
+    enterX: 0.16,
+    holdX: 0.22,
+    flyX: 0.62,
+    mobileEnterX: 0.04,
+    mobileHoldX: 0.07,
+    mobileFlyX: 0.16,
+    enterRotation: 0.38,
+    holdRotation: 0.24,
+    flyRotation: -0.7,
+    settleScale: 1.01,
+    holdScale: 1.02,
+    flyDepth: 1.12,
+    mobileFlyDepth: 0.86,
+  },
+  {
+    startDepth: 0.8,
+    mobileStartDepth: 0.54,
+    enterDelay: 0.42,
+    settleY: -58,
+    mobileSettleY: -96,
+    holdY: -74,
+    mobileHoldY: -118,
+    enterX: 0.14,
+    holdX: 0.2,
+    flyX: 0.56,
+    mobileEnterX: 0.04,
+    mobileHoldX: 0.07,
+    mobileFlyX: 0.18,
+    enterRotation: 0.32,
+    holdRotation: 0.14,
+    flyRotation: -0.58,
+    settleScale: 0.99,
+    holdScale: 1,
+    flyDepth: 1.3,
+    mobileFlyDepth: 0.98,
+  },
 ] as const;
 
 const awards = [
@@ -196,17 +331,16 @@ export function AwardsSection() {
             Number(left.dataset.awardIndex) - Number(right.dataset.awardIndex),
         );
       const books = gsap.utils.toArray<HTMLElement>("[data-award-book]");
+      const awardWords = gsap.utils.toArray<HTMLElement>("[data-award-word]");
       const intro = gsap.utils.toArray<HTMLElement>("[data-awards-intro]");
 
       if (reduceMotion) {
-        gsap.set([...letters, ...books, ...intro], {
+        gsap.set([...awardWords, ...letters, ...books, ...intro], {
           autoAlpha: 1,
           clearProps: "transform",
         });
         return;
       }
-
-      const mm = gsap.matchMedia();
 
       const createAwardsTimeline = (isDesktop: boolean) => {
         const scroller = isDesktop ? frameScroller : undefined;
@@ -214,17 +348,25 @@ export function AwardsSection() {
           isDesktop && scroller ? scroller.clientHeight : window.innerHeight;
         const pinDistance = () =>
           Math.max(
-            viewportHeight() * (isDesktop ? 2.15 : 1.8),
-            isDesktop ? 1600 : 980,
+            viewportHeight() * (isDesktop ? 2.55 : 2.28),
+            isDesktop ? 1900 : 1480,
           );
         const letterStartDepth = isDesktop
-          ? [0.32, 0.42, 0.54, 0.66, 0.78, 0.9]
-          : [0.5, 0.58, 0.66, 0.74, 0.82, 0.9];
+          ? [0.5, 0.56, 0.64, 0.7, 0.78, 0.86]
+          : [0.56, 0.62, 0.7, 0.78, 0.86, 0.94];
 
+        gsap.set(awardWords, {
+          autoAlpha: isDesktop ? 0.54 : 0.42,
+          y: () => viewportHeight() * (isDesktop ? 0.1 : 0.08),
+          scale: isDesktop ? 1.1 : 1.08,
+          force3D: true,
+          transformOrigin: "50% 70%",
+          willChange: "transform, opacity",
+        });
         gsap.set(letters, {
           autoAlpha: 1,
           y: (index) => viewportHeight() * (letterStartDepth[index] ?? 1),
-          scale: isDesktop ? 1.04 : 1.08,
+          scale: isDesktop ? 1.16 : 1.12,
           force3D: true,
           transformOrigin: "50% 100%",
           willChange: "transform, opacity",
@@ -234,11 +376,15 @@ export function AwardsSection() {
           y: (index) =>
             viewportHeight() *
             (isDesktop
-              ? 0.36 + (index % 3) * 0.08
-              : 0.34 + (index % 2) * 0.08),
-          x: 0,
-          rotation: (index) => awards[index]?.rotate ?? 0,
-          scale: isDesktop ? 1.1 : 1.06,
+              ? awardMotionProfiles[index].startDepth
+              : awardMotionProfiles[index].mobileStartDepth),
+          x: (index) =>
+            awards[index].drift * (isDesktop ? -0.04 : -0.02),
+          rotation: (index) =>
+            awards[index].rotate * (isDesktop ? 0.74 : 0.56),
+          scale: (index) =>
+            (isDesktop ? 0.88 : 0.9) +
+            (index % 3) * (isDesktop ? 0.025 : 0.015),
           force3D: true,
           transformOrigin: "50% 80%",
           willChange: "transform, opacity",
@@ -255,22 +401,39 @@ export function AwardsSection() {
             start: "top top",
             end: () => `+=${pinDistance()}`,
             pin: true,
-            scrub: 0.12,
+            scrub: isDesktop ? 0.8 : 0.55,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },
         });
+
+        timeline.addLabel("intro", 0);
+        timeline.addLabel("cardsIn", 0.86);
+        timeline.addLabel("hold", 2.08);
+        timeline.addLabel("flyOut", 3.88);
 
         timeline.to(
           intro,
           {
             autoAlpha: 1,
             y: 0,
-            duration: 0.35,
-            stagger: 0.08,
+            duration: 0.5,
+            stagger: 0.06,
             ease: "power2.out",
           },
-          0,
+          "intro+=0.08",
+        );
+
+        timeline.to(
+          awardWords,
+          {
+            autoAlpha: isDesktop ? 0.48 : 0.36,
+            y: () => -viewportHeight() * (isDesktop ? 0.035 : 0.025),
+            scale: 1,
+            duration: 2.8,
+            ease: "none",
+          },
+          "intro",
         );
 
         timeline.to(
@@ -279,66 +442,107 @@ export function AwardsSection() {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 0.5,
-            stagger: 0.035,
-            ease: "power3.out",
+            duration: 1.2,
+            stagger: 0.055,
+            ease: "power2.out",
           },
-          0,
+          "intro",
         );
 
-        timeline.to(
-          books,
-          {
-            autoAlpha: 1,
-            y: 0,
-            x: (index) => awards[index].drift * (isDesktop ? 0.28 : 0.16),
-            rotation: (index) => awards[index].rotate * 0.42,
-            scale: 1,
-            duration: 0.32,
-            stagger: 0.025,
-            ease: "power3.out",
-          },
-          0.18,
-        );
+        books.forEach((book, index) => {
+          const award = awards[index];
+          const profile = awardMotionProfiles[index];
+          const enterX =
+            award.drift * (isDesktop ? profile.enterX : profile.mobileEnterX);
+          const holdX =
+            award.drift * (isDesktop ? profile.holdX : profile.mobileHoldX);
+          const flyX =
+            award.drift * (isDesktop ? profile.flyX : profile.mobileFlyX);
+          const settleY = isDesktop ? profile.settleY : profile.mobileSettleY;
+          const holdY = isDesktop ? profile.holdY : profile.mobileHoldY;
+          const flyDepth = isDesktop
+            ? profile.flyDepth
+            : profile.mobileFlyDepth;
 
-        timeline.to(
-          books,
-          {
-            y: (index) =>
-              -viewportHeight() *
-              (isDesktop
-                ? 1.02 + (index % 2) * 0.08
-                : 0.88 + (index % 2) * 0.07),
-            x: (index) => awards[index].drift * (isDesktop ? 0.72 : 0.34),
-            rotation: (index) => awards[index].rotate * -0.55,
-            autoAlpha: 0.92,
-            duration: 0.54,
-            stagger: 0.018,
-            ease: "none",
-          },
-          0.56,
-        );
+          timeline.to(
+            book,
+            {
+              autoAlpha: 1,
+              y: settleY,
+              x: enterX,
+              rotation: award.rotate * profile.enterRotation,
+              scale: profile.settleScale,
+              duration: 0.92 + (index % 3) * 0.08,
+              ease: "power3.out",
+            },
+            `cardsIn+=${profile.enterDelay}`,
+          );
+
+          timeline.to(
+            book,
+            {
+              autoAlpha: 1,
+              y: holdY,
+              x: holdX,
+              rotation: award.rotate * profile.holdRotation,
+              scale: profile.holdScale,
+              duration: 1.18 + (index % 2) * 0.16,
+              ease: "sine.inOut",
+            },
+            `hold+=${profile.enterDelay * 0.35}`,
+          );
+
+          timeline.to(
+            book,
+            {
+              autoAlpha: 0.88,
+              y: () => -viewportHeight() * flyDepth,
+              x: flyX,
+              rotation: award.rotate * profile.flyRotation,
+              scale: isDesktop ? profile.holdScale * 0.98 : profile.holdScale,
+              duration: 1.35 + (index % 3) * 0.18,
+              ease: "none",
+            },
+            `flyOut+=${profile.enterDelay * 0.4}`,
+          );
+        });
 
         return () => {
-          gsap.set([...letters, ...books], { clearProps: "willChange" });
+          gsap.set([...awardWords, ...letters, ...books], {
+            clearProps: "willChange",
+          });
           timeline.scrollTrigger?.kill();
           timeline.kill();
         };
       };
 
-      mm.add("(min-width: 1024px)", () => {
-        if (!frameScroller) {
-          return;
-        }
+      const mm = gsap.matchMedia();
 
-        return createAwardsTimeline(true);
-      });
+      mm.add(
+        {
+          isDesktop: "(min-width: 1024px)",
+          isMobile: "(max-width: 1023px)",
+        },
+        (context) => {
+          const isDesktop = Boolean(context.conditions?.isDesktop);
 
-      mm.add("(max-width: 1023px)", () => {
-        return createAwardsTimeline(false);
-      });
+          if (isDesktop && !frameScroller) {
+            return;
+          }
 
-      return () => mm.revert();
+          return createAwardsTimeline(isDesktop);
+        },
+      );
+
+      const refresh = () => ScrollTrigger.refresh();
+      window.addEventListener("load", refresh, { once: true });
+      const refreshFrame = requestAnimationFrame(refresh);
+
+      return () => {
+        cancelAnimationFrame(refreshFrame);
+        window.removeEventListener("load", refresh);
+        mm.revert();
+      };
     },
     { scope: sectionRef },
   );
@@ -374,6 +578,7 @@ export function AwardsSection() {
           aria-label="awards"
         >
           <h2
+            data-award-word
             aria-hidden="true"
             className="relative z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
           >
@@ -402,8 +607,9 @@ export function AwardsSection() {
           </h2>
 
           <h2
+            data-award-word
             aria-label="awards"
-            className="absolute inset-0 z-20 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
+            className="absolute inset-0 z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
           >
             {awardLetters.map((letter, index) => (
               <span
