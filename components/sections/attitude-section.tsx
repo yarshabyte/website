@@ -46,7 +46,7 @@ export function AttitudeSection() {
 
       mm.add("(min-width: 1024px)", () => {
         const introOffset = () => Math.min(scroller.clientWidth * 0.38, 520);
-        const scrollAmount = () =>
+        const horizontalTravel = () =>
           Math.max(
             0,
             track.scrollWidth +
@@ -54,8 +54,11 @@ export function AttitudeSection() {
               Math.min(scroller.clientWidth, section.clientWidth) +
               96,
           );
-        const driftAmount = () =>
-          Math.min(scrollAmount(), scroller.clientWidth * 0.48);
+        const pinDistance = () =>
+          Math.max(
+            horizontalTravel() + scroller.clientHeight * 0.28,
+            scroller.clientHeight * 1.45,
+          );
 
         gsap.set(revealItems, {
           autoAlpha: 0,
@@ -72,9 +75,11 @@ export function AttitudeSection() {
           scrollTrigger: {
             trigger: section,
             scroller,
-            start: "top 78%",
-            end: "bottom top",
+            start: "top top",
+            end: () => `+=${pinDistance()}`,
+            pin: true,
             scrub: 0.18,
+            anticipatePin: 1,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
               const fill = Math.sin(self.progress * Math.PI) * 100;
@@ -105,7 +110,7 @@ export function AttitudeSection() {
           .to(
             track,
             {
-              x: () => -driftAmount(),
+              x: () => introOffset() - horizontalTravel(),
               ease: "none",
               duration: 1,
             },
