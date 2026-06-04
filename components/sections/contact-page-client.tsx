@@ -49,7 +49,7 @@ function OptionButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "group relative min-h-14 overflow-hidden border px-4 text-left text-sm font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
+        "group relative min-h-14 overflow-hidden border px-4 text-left text-xs font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
         active
           ? "border-accent bg-accent text-background"
           : "border-foreground/10 bg-foreground/[0.04] text-foreground/74 hover:border-accent/60 hover:text-foreground",
@@ -57,7 +57,17 @@ function OptionButton({
     >
       <span className="relative z-10 flex items-center justify-between gap-4">
         {children}
-        {active ? <Check className="size-4" aria-hidden="true" /> : null}
+        <AnimatePresence>
+          {active && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+            >
+              <Check className="size-4" aria-hidden="true" />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </span>
     </button>
   );
@@ -80,6 +90,15 @@ export function ContactPageClient() {
     [],
   );
 
+  const handleOptionSelect = (field: keyof FormState, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setTimeout(() => {
+      if (step < 4) {
+        setStep((current) => current + 1);
+      }
+    }, 350);
+  };
+
   const steps = [
     {
       eyebrow: "01 / Intent",
@@ -90,7 +109,7 @@ export function ContactPageClient() {
             <OptionButton
               key={intent}
               active={form.intent === intent}
-              onClick={() => setForm((current) => ({ ...current, intent }))}
+              onClick={() => handleOptionSelect("intent", intent)}
             >
               {intent}
             </OptionButton>
@@ -107,7 +126,7 @@ export function ContactPageClient() {
             <OptionButton
               key={projectType}
               active={form.projectType === projectType}
-              onClick={() => setForm((current) => ({ ...current, projectType }))}
+              onClick={() => handleOptionSelect("projectType", projectType)}
             >
               {projectType}
             </OptionButton>
@@ -124,7 +143,7 @@ export function ContactPageClient() {
             <OptionButton
               key={budget}
               active={form.budget === budget}
-              onClick={() => setForm((current) => ({ ...current, budget }))}
+              onClick={() => handleOptionSelect("budget", budget)}
             >
               {budget}
             </OptionButton>
@@ -141,7 +160,7 @@ export function ContactPageClient() {
             <OptionButton
               key={source}
               active={form.source === source}
-              onClick={() => setForm((current) => ({ ...current, source }))}
+              onClick={() => handleOptionSelect("source", source)}
             >
               {source}
             </OptionButton>
@@ -160,7 +179,8 @@ export function ContactPageClient() {
             </span>
             <input
               value={form.name}
-              onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+              autoFocus
+              onChange={(e) => setForm((curr) => ({ ...curr, name: e.target.value }))}
               className="min-h-14 border border-foreground/10 bg-foreground/[0.04] px-4 text-base text-foreground outline-none transition placeholder:text-foreground/34 focus:border-accent"
               placeholder="Name"
               required
@@ -172,7 +192,7 @@ export function ContactPageClient() {
             </span>
             <input
               value={form.email}
-              onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+              onChange={(e) => setForm((curr) => ({ ...curr, email: e.target.value }))}
               className="min-h-14 border border-foreground/10 bg-foreground/[0.04] px-4 text-base text-foreground outline-none transition placeholder:text-foreground/34 focus:border-accent"
               placeholder="hello@example.com"
               type="email"
@@ -185,7 +205,7 @@ export function ContactPageClient() {
             </span>
             <textarea
               value={form.message}
-              onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
+              onChange={(e) => setForm((curr) => ({ ...curr, message: e.target.value }))}
               className="min-h-32 resize-none border border-foreground/10 bg-foreground/[0.04] px-4 py-3 text-base leading-7 text-foreground outline-none transition placeholder:text-foreground/34 focus:border-accent"
               placeholder="Tell us what you want to launch."
             />
@@ -223,8 +243,8 @@ export function ContactPageClient() {
         </div>
       </motion.div>
 
-      <Container className="relative z-10 grid min-h-[calc(100dvh-7rem)] gap-10 pb-12 lg:grid-cols-[0.43fr_0.57fr] lg:items-end">
-        <section className="self-end">
+      <Container className="relative z-10 grid min-h-[calc(100dvh-7rem)] gap-10 pb-12 pt-12 lg:grid-cols-[0.43fr_0.57fr] lg:items-start">
+        <section className="self-start mt-12 lg:mt-24">
           <motion.p
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -267,7 +287,7 @@ export function ContactPageClient() {
           </div>
         </section>
 
-        <section className="self-end">
+        <section className="self-start mt-12 lg:mt-24 w-full">
           <AnimatePresence mode="wait">
             {sent ? (
               <motion.div
@@ -276,7 +296,7 @@ export function ContactPageClient() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.58, ease }}
-                className="border border-accent/45 bg-accent p-6 text-background sm:p-8"
+                className="border border-accent/45 bg-accent p-6 text-background sm:p-8 w-full"
               >
                 <div className="grid size-16 place-items-center rounded-full bg-background text-accent">
                   <Check className="size-8" />
@@ -307,7 +327,7 @@ export function ContactPageClient() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.62, delay: 0.08, ease }}
-                className="border border-foreground/10 bg-background/78 p-5 shadow-[0_28px_100px_rgba(0,0,0,0.22)] backdrop-blur sm:p-8"
+                className="w-full border border-foreground/10 bg-background/78 p-5 shadow-[0_28px_100px_rgba(0,0,0,0.22)] backdrop-blur sm:p-8"
               >
                 <div className="flex items-center justify-between gap-5">
                   <div>
@@ -331,20 +351,23 @@ export function ContactPageClient() {
                   />
                 </div>
 
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={step}
-                    initial={{ opacity: 0, x: 28, filter: "blur(8px)" }}
-                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, x: -22, filter: "blur(8px)" }}
-                    transition={{ duration: 0.38, ease }}
-                    className="mt-8"
-                  >
-                    {currentStep.content}
-                  </motion.div>
-                </AnimatePresence>
+{/* change the height below in pixels if you need to for the form */}
+                <div className="min-h-[200px]">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={step}
+                      initial={{ opacity: 0, x: 28, filter: "blur(8px)" }}
+                      animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, x: -22, filter: "blur(8px)" }}
+                      transition={{ duration: 0.38, ease }}
+                      className="mt-8"
+                    >
+                      {currentStep.content}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
 
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+                <div className="mt-8 flex w-full items-center justify-between gap-3 border-t border-foreground/10 pt-6">
                   <button
                     type="button"
                     onClick={() => setStep((current) => Math.max(0, current - 1))}
