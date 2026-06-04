@@ -11,6 +11,9 @@ import { PremiumButton } from "@/components/ui/premium-button";
 
 type Service = (typeof services)[number];
 
+// We use a beautiful, buttery-smooth ease curve instead of bouncy springs
+const smoothEase = [0.22, 1, 0.36, 1] as const;
+
 function ServiceTitle({ title }: { title: string }) {
   const words = title.split(" ");
 
@@ -23,7 +26,7 @@ function ServiceTitle({ title }: { title: string }) {
           className="inline-block"
           initial={{ opacity: 0, y: 36, rotateX: -40 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 0.55, delay: index * 0.045, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.55, delay: index * 0.045, ease: smoothEase }}
         >
           {word}
         </motion.span>
@@ -58,15 +61,17 @@ function ServiceCard({
         scale: isActive && !isExpanded ? 1.02 : 1,
       }}
       viewport={{ once: true, margin: "-10% 0px" }}
+      // Replaced bouncy springs with strict, smooth durations
       transition={{
-        layout: { type: "spring", bounce: 0, duration: 0.6 },
-        scale: { type: "spring", bounce: 0.1, duration: 0.4 },
-        opacity: { duration: 0.5 },
-        y: { duration: 0.5 }
+        layout: { duration: 0.5, ease: smoothEase },
+        scale: { duration: 0.4, ease: smoothEase },
+        opacity: { duration: 0.4 },
+        y: { duration: 0.4 }
       }}
       onClick={onSelect}
       className={cn(
-        "group relative flex w-full flex-col overflow-hidden rounded-[1.5rem] border p-px text-left cursor-pointer transition-colors duration-500",
+        // Added 'service-card' class so our auto-scroll script can find it easily
+        "service-card group relative flex w-full flex-col overflow-hidden rounded-[1.5rem] border p-px text-left cursor-pointer transition-colors duration-500",
         isActive && !isExpanded 
           ? "border-accent/70 shadow-[0_22px_80px_color-mix(in_srgb,var(--accent)_16%,transparent)] z-10" 
           : "border-foreground/10 hover:border-sky/45",
@@ -111,7 +116,7 @@ function ServiceCard({
               initial={{ height: 0, opacity: 0, filter: "blur(4px)" }}
               animate={{ height: "auto", opacity: 1, filter: "blur(0px)" }}
               exit={{ height: 0, opacity: 0, filter: "blur(4px)" }}
-              transition={{ type: "spring", bounce: 0, duration: 0.6 }}
+              transition={{ duration: 0.5, ease: smoothEase }}
               className="overflow-hidden"
             >
               <div className="pt-8 border-t border-foreground/10 mt-8">
@@ -160,6 +165,21 @@ function ServiceCard({
             onClick={(e) => {
               e.stopPropagation(); 
               onToggleExpand();
+
+              // Auto-Centering Logic:
+              // If the card is currently closed (meaning we just clicked to open it)
+              if (!isExpanded) {
+                const card = e.currentTarget.closest(".service-card");
+                
+                // We wait a tiny 150ms so the card starts its height expansion, 
+                // allowing the browser to calculate exactly where the "center" should be.
+                setTimeout(() => {
+                  card?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center", // This centers the card perfectly in the viewport
+                  });
+                }, 150); 
+              }
             }}
             aria-label={isExpanded ? "Collapse details" : "Expand details"}
             className={cn(
@@ -171,7 +191,7 @@ function ServiceCard({
           >
             <motion.div 
               animate={{ rotate: isExpanded ? -90 : isActive ? -45 : 0 }} 
-              transition={{ type: "spring", bounce: 0, duration: 0.6 }}
+              transition={{ duration: 0.4, ease: smoothEase }}
             >
               <ArrowRight className="size-5" aria-hidden="true" />
             </motion.div>
@@ -182,7 +202,6 @@ function ServiceCard({
   );
 }
 
-// THIS IS THE MISSING EXPORT THAT WAS CAUSING YOUR ERROR!
 export function ServicesPageClient() {
   const reduceMotion = useReducedMotion();
   const categories = useMemo(
@@ -241,7 +260,7 @@ export function ServicesPageClient() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.55, ease: smoothEase }}
             className="max-w-2xl text-base leading-8 text-foreground/68 sm:text-lg text-balance"
           >
             A motion-led service system for websites, portfolios, posters, reels,
@@ -252,7 +271,7 @@ export function ServicesPageClient() {
           <motion.h1
             initial={{ opacity: 0, y: 52 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.78, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.78, ease: smoothEase }}
             className="mt-8 max-w-full text-[clamp(3.4rem,13vw,12rem)] font-black uppercase leading-[0.82] text-foreground"
           >
             Services
@@ -264,7 +283,7 @@ export function ServicesPageClient() {
                 key={highlight}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.25 + index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.45, delay: 0.25 + index * 0.05, ease: smoothEase }}
                 className="rounded-full border border-foreground/10 bg-foreground/[0.04] px-4 py-2 text-sm text-foreground/68"
               >
                 {highlight}
@@ -343,12 +362,9 @@ export function ServicesPageClient() {
         </Container>
       </section>
 
-      {/* FOOTER MARQUEE (GPU Optimized for Mobile Performance) */}
       <section className="relative overflow-hidden py-20 lg:py-24">
         <motion.div 
           className="flex w-max gap-6 whitespace-nowrap will-change-transform"
-          // We animate x to -50% to perfectly slide one full set of services 
-          // before seamlessly looping back to the start.
           animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
           transition={
             reduceMotion
