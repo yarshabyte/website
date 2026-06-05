@@ -11,7 +11,6 @@ import { PremiumButton } from "@/components/ui/premium-button";
 
 type Service = (typeof services)[number];
 
-// We use a beautiful, buttery-smooth ease curve instead of bouncy springs
 const smoothEase = [0.22, 1, 0.36, 1] as const;
 
 function ServiceTitle({ title }: { title: string }) {
@@ -61,7 +60,6 @@ function ServiceCard({
         scale: isActive && !isExpanded ? 1.02 : 1,
       }}
       viewport={{ once: true, margin: "-10% 0px" }}
-      // Replaced bouncy springs with strict, smooth durations
       transition={{
         layout: { duration: 0.5, ease: smoothEase },
         scale: { duration: 0.4, ease: smoothEase },
@@ -70,7 +68,6 @@ function ServiceCard({
       }}
       onClick={onSelect}
       className={cn(
-        // Added 'service-card' class so our auto-scroll script can find it easily
         "service-card group relative flex w-full flex-col overflow-hidden rounded-[1.5rem] border p-px text-left cursor-pointer transition-colors duration-500",
         isActive && !isExpanded 
           ? "border-accent/70 shadow-[0_22px_80px_color-mix(in_srgb,var(--accent)_16%,transparent)] z-10" 
@@ -166,17 +163,12 @@ function ServiceCard({
               e.stopPropagation(); 
               onToggleExpand();
 
-              // Auto-Centering Logic:
-              // If the card is currently closed (meaning we just clicked to open it)
               if (!isExpanded) {
                 const card = e.currentTarget.closest(".service-card");
-                
-                // We wait a tiny 150ms so the card starts its height expansion, 
-                // allowing the browser to calculate exactly where the "center" should be.
                 setTimeout(() => {
                   card?.scrollIntoView({
                     behavior: "smooth",
-                    block: "center", // This centers the card perfectly in the viewport
+                    block: "center",
                   });
                 }, 150); 
               }
@@ -202,6 +194,7 @@ function ServiceCard({
   );
 }
 
+// THIS IS THE CRITICAL LINE: The explicit named export that page.tsx is looking for
 export function ServicesPageClient() {
   const reduceMotion = useReducedMotion();
   const categories = useMemo(
@@ -255,7 +248,7 @@ export function ServicesPageClient() {
             ))}
           </div>
         </motion.div>
-{/* forced the exact pixel value */}
+
        <Container className="relative z-10 flex min-h-[calc(100dvh-7rem)] flex-col justify-end pb-20 lg:pb-40 mt-[60px] ">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -336,7 +329,6 @@ export function ServicesPageClient() {
             </div>
           </div>
 
-          {/* Added motion.div, layout, and grid-flow-dense */}
           <motion.div 
             layout 
             className="mt-12 grid gap-6 grid-flow-dense md:grid-cols-2 lg:grid-cols-3 items-start"
