@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { AboutSection } from "@/components/sections/about-section";
 import { AttitudeSection } from "@/components/sections/attitude-section";
 import { ContactSection } from "@/components/sections/contact-section";
