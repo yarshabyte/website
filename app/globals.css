@@ -1,6 +1,8 @@
 @import "tailwindcss";
-@source "../components";
-@source ".";
+@source "../components/**/*.{ts,tsx}";
+@source "../app/**/*.{ts,tsx}";
+@source "../data/**/*.{ts,tsx}";
+@source "../hooks/**/*.{ts,tsx}";
 
 
 :root {
