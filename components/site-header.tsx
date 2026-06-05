@@ -173,7 +173,7 @@ export function SiteHeader() {
           >
             <Image
               src="/logo-icon.png"
-              alt=""
+              alt="Yarsa Byte logo"
               width={64}
               height={64}
               className="size-9 shrink-0 rounded bg-white object-contain p-1 sm:size-9"
