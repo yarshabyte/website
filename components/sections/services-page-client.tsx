@@ -261,7 +261,7 @@ export function ServicesPageClient() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: smoothEase }}
-            className="max-w-2xl text-base leading-8 text-foreground/68 sm:text-lg text-balance"
+            className="max-w-2xl text-base leading-8 text-foreground/68 sm:text-lg text-balance lg:pt-8"
           >
             A motion-led service system for websites, portfolios, posters, reels,
             branding, and launch setup. Select a card, expand for deliverables, then
