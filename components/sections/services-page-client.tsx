@@ -256,7 +256,7 @@ export function ServicesPageClient() {
           </div>
         </motion.div>
 {/* forced the exact pixel value */}
-       <Container className="relative z-10 flex min-h-[calc(100dvh-7rem)] flex-col justify-end pb-20 lg:pb-24 mt-[60px] lg:mt-0">
+       <Container className="relative z-10 flex min-h-[calc(100dvh-7rem)] flex-col justify-end pb-20 lg:pb-40 mt-[60px] ">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -336,7 +336,12 @@ export function ServicesPageClient() {
             </div>
           </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-start">
+          {/* Added motion.div, layout, and grid-flow-dense */}
+          <motion.div 
+            layout 
+            className="mt-12 grid gap-6 grid-flow-dense md:grid-cols-2 lg:grid-cols-3 items-start"
+          >
+            
             {filteredServices.map((service, index) => (
               <ServiceCard
                 key={service.slug}
@@ -358,7 +363,7 @@ export function ServicesPageClient() {
                 }}
               />
             ))}
-          </div>
+          </motion.div>
         </Container>
       </section>
 
