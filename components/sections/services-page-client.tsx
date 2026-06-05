@@ -255,7 +255,7 @@ export function ServicesPageClient() {
             ))}
           </div>
         </motion.div>
-
+{/* forced the exact pixel value */}
        <Container className="relative z-10 flex min-h-[calc(100dvh-7rem)] flex-col justify-end pb-20 lg:pb-24 mt-[60px] lg:mt-0">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
