@@ -11,10 +11,10 @@ export const metadata: Metadata = {
   description:
     "YarsaByte helps Nepali businesses create websites, portfolios, and digital presences with web design, branding, and development services.",
   keywords: ["web design Nepal", "website development Kathmandu", "digital agency Nepal"],
-  alternates: { canonical: "https://yarsabyte.com/" },
+  alternates: { canonical: "https://yarsabyte.vercel.app/" },
   openGraph: {
-    url: "https://yarsabyte.com/",
-    images: ["https://yarsabyte.com/og-image.png"],
+    url: "https://yarsabyte.vercel.app/",
+    images: ["https://yarsabyte.vercel.app/og-image.png"],
   },
 };
 
@@ -23,7 +23,7 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.com/" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
     ],
   };
 

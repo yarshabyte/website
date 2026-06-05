@@ -53,7 +53,7 @@ export interface FAQSchema {
  * Generate Organization Schema for YarsaByte
  */
 export function getOrganizationSchema(
-  baseUrl: string = "https://yarsabyte.com"
+  baseUrl: string = "https://yarsabyte.vercel.app"
 ): OrganizationSchema {
   return {
     "@context": "https://schema.org",
@@ -85,7 +85,7 @@ export function getOrganizationSchema(
  * Generate LocalBusiness Schema (better for local SEO in Nepal)
  */
 export function getLocalBusinessSchema(
-  baseUrl: string = "https://yarsabyte.com"
+  baseUrl: string = "https://yarsabyte.vercel.app"
 ) {
   return {
     "@context": "https://schema.org",
@@ -95,7 +95,7 @@ export function getLocalBusinessSchema(
       "Web design, development, branding, and digital marketing agency in Nepal",
     url: baseUrl,
     telephone: "+977-1234567890", // Update with actual phone
-    email: "contact@yarsabyte.com", // Update with actual email
+    email: "contact@yarsabyte.vercel.app", // Update with actual email
     address: {
       "@type": "PostalAddress",
       addressCountry: "NP",
@@ -116,7 +116,7 @@ export function getLocalBusinessSchema(
 export function getServiceSchema(
   name: string,
   description: string,
-  baseUrl: string = "https://yarsabyte.com"
+  baseUrl: string = "https://yarsabyte.vercel.app"
 ) {
   return {
     "@context": "https://schema.org",
@@ -141,7 +141,7 @@ export function getServiceSchema(
  */
 export function getBreadcrumbSchema(
   items: Array<{ name: string; url: string }>,
-  baseUrl: string = "https://yarsabyte.com"
+  baseUrl: string = "https://yarsabyte.vercel.app"
 ) {
   return {
     "@context": "https://schema.org",

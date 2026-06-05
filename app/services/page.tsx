@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     "website development",
     "branding services",
   ],
-  alternates: { canonical: "https://yarsabyte.com/services" },
+  alternates: { canonical: "https://yarsabyte.vercel.app/services" },
   openGraph: {
     title: "Services | YarsaByte",
     description: "Professional web and digital services for Nepali businesses.",
-    url: "https://yarsabyte.com/services",
-    images: ["https://yarsabyte.com/og-services.png"],
+    url: "https://yarsabyte.vercel.app/services",
+    images: ["https://yarsabyte.vercel.app/og-services.png"],
   },
 };
 
@@ -25,8 +25,8 @@ export default function ServicesPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.com/" },
-      { "@type": "ListItem", position: 2, name: "Services", item: "https://yarsabyte.com/services" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
+      { "@type": "ListItem", position: 2, name: "Services", item: "https://yarsabyte.vercel.app/services" },
     ],
   };
 

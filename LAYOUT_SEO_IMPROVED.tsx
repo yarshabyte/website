@@ -23,7 +23,7 @@ const archivoBlack = Archivo_Black({
   adjustFontFallback: false,
 });
 
-const baseUrl = "https://yarsabyte.com";
+const baseUrl = "https://yarsabyte.vercel.app";
 
 export const metadata: Metadata = {
   // Basic Meta Tags

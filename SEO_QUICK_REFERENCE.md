@@ -11,7 +11,7 @@
 
 ### Update These Values in lib/seo-schema.ts
 - [ ] Phone: `"+977-1234567890"`
-- [ ] Email: `"contact@yarsabyte.com"`
+- [ ] Email: `"contact@yarsabyte.vercel.app"`
 - [ ] Address: `"Kathmandu, Nepal"`
 - [ ] Social URLs: Facebook, Instagram, LinkedIn
 
@@ -245,7 +245,7 @@ Professional Web Design & Development Services in Nepal
 ## URGENT REMINDERS
 
 ⚠️ **MUST DO FIRST:**
-- [ ] Update domain name in schema (yarsabyte.com)
+- [ ] Update domain name in schema (yarsabyte.vercel.app)
 - [ ] Add actual phone number
 - [ ] Add actual email address
 - [ ] Create OG images (or use placeholder)

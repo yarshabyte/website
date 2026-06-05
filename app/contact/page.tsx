@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   description:
     "Start a project with Yarsa Byte for websites, portfolios, posters, reels, branding, and digital launch support.",
   keywords: ["contact yarsabyte", "hire web designer nepal", "start project"],
-  alternates: { canonical: "https://yarsabyte.com/contact" },
+  alternates: { canonical: "https://yarsabyte.vercel.app/contact" },
   openGraph: {
     title: "Contact | YarsaByte",
     description: "Start a project with YarsaByte for web and digital services.",
-    url: "https://yarsabyte.com/contact",
-    images: ["https://yarsabyte.com/og-contact.png"],
+    url: "https://yarsabyte.vercel.app/contact",
+    images: ["https://yarsabyte.vercel.app/og-contact.png"],
   },
 };
 
@@ -21,8 +21,8 @@ export default function ContactPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.com/" },
-      { "@type": "ListItem", position: 2, name: "Contact", item: "https://yarsabyte.com/contact" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
+      { "@type": "ListItem", position: 2, name: "Contact", item: "https://yarsabyte.vercel.app/contact" },
     ],
   };
 

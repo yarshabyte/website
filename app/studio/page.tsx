@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   description:
     "Meet the Yarsa Byte studio, a motion-led digital team for websites, portfolios, campaigns, and launch-ready online presence.",
   keywords: ["digital studio", "motion design", "web design team"],
-  alternates: { canonical: "https://yarsabyte.com/studio" },
+  alternates: { canonical: "https://yarsabyte.vercel.app/studio" },
   openGraph: {
     title: "Studio | YarsaByte",
     description: "Meet the Yarsa Byte studio and our creative approach.",
-    url: "https://yarsabyte.com/studio",
-    images: ["https://yarsabyte.com/og-studio.png"],
+    url: "https://yarsabyte.vercel.app/studio",
+    images: ["https://yarsabyte.vercel.app/og-studio.png"],
   },
 };
 
@@ -21,8 +21,8 @@ export default function StudioPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.com/" },
-      { "@type": "ListItem", position: 2, name: "Studio", item: "https://yarsabyte.com/studio" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
+      { "@type": "ListItem", position: 2, name: "Studio", item: "https://yarsabyte.vercel.app/studio" },
     ],
   };
 

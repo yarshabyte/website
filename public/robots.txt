@@ -6,7 +6,7 @@ Disallow: /api/
 Disallow: /.next/
 
 # Sitemap location (update to your live domain if it changes)
-Sitemap: https://yarsabyte.com/sitemap.xml
+Sitemap: https://yarsabyte.vercel.app/sitemap.xml
 
 # Crawl friendly rate
 Crawl-delay: 1

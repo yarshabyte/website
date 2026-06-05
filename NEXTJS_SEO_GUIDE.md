@@ -79,7 +79,7 @@ const archivoBlack = Archivo_Black({
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://yarsabyte.com';
+  const baseUrl = 'https://yarsabyte.vercel.app';
   
   const staticRoutes = [
     { url: '/', changeFreq: 'monthly', priority: 1.0 },
@@ -107,7 +107,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 import { MetadataRoute } from 'next';
 
 export async function GET() {
-  const baseUrl = 'https://yarsabyte.com';
+  const baseUrl = 'https://yarsabyte.vercel.app';
   
   const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
@@ -254,9 +254,9 @@ export default {
 /work?sort=date&page=1 (use proper pagination)
 
 // For pagination, use proper canonicals:
-<link rel="canonical" href="https://yarsabyte.com/work" />
-<link rel="next" href="https://yarsabyte.com/work?page=2" />
-<link rel="prev" href="https://yarsabyte.com/work?page=1" />
+<link rel="canonical" href="https://yarsabyte.vercel.app/work" />
+<link rel="next" href="https://yarsabyte.vercel.app/work?page=2" />
+<link rel="prev" href="https://yarsabyte.vercel.app/work?page=1" />
 ```
 
 ---
@@ -391,8 +391,8 @@ Disallow: /private/
 Allow: /
 
 # Specify sitemap
-Sitemap: https://yarsabyte.com/sitemap.xml
-Sitemap: https://yarsabyte.com/app/sitemap.ts
+Sitemap: https://yarsabyte.vercel.app/sitemap.xml
+Sitemap: https://yarsabyte.vercel.app/app/sitemap.ts
 ```
 
 ---
@@ -439,6 +439,6 @@ Sitemap: https://yarsabyte.com/app/sitemap.ts
 ```bash
 # Command line audit
 npm install -g lighthouse
-lighthouse https://yarsabyte.com --view
+lighthouse https://yarsabyte.vercel.app --view
 ```
 

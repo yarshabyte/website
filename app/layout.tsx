@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   title: "YarsaByte | Your Digital Presence Partner in Nepal",
   description:
     "YarsaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
-  metadataBase: new URL("https://yarsabyte.com"),
-  alternates: { canonical: "https://yarsabyte.com" },
+  metadataBase: new URL("https://yarsabyte.vercel.app"),
+  alternates: { canonical: "https://yarsabyte.vercel.app" },
   openGraph: {
     title: "YarsaByte | Your Digital Presence Partner in Nepal",
     description:
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     siteName: "YarsaByte",
     locale: "en_US",
     type: "website",
-    url: "https://yarsabyte.com",
+    url: "https://yarsabyte.vercel.app",
     images: [
       {
-        url: "https://yarsabyte.com/og-image.png",
+        url: "https://yarsabyte.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "YarsaByte — Web design & development in Nepal",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: "YarsaByte | Your Digital Presence Partner in Nepal",
     description:
       "YarsaByte helps Nepali businesses create websites, portfolios, branding, and digital setups for a professional online presence.",
-    images: ["https://yarsabyte.com/og-image.png"],
+    images: ["https://yarsabyte.vercel.app/og-image.png"],
     creator: "@yarsabyte",
     site: "@yarsabyte",
   },
@@ -68,8 +68,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "YarsaByte",
-              url: "https://yarsabyte.com",
-              logo: "https://yarsabyte.com/logo.png",
+              url: "https://yarsabyte.vercel.app",
+              logo: "https://yarsabyte.vercel.app/logo.png",
               sameAs: [
                 "https://www.facebook.com/yarsabyte",
                 "https://www.instagram.com/yarsabyte",
@@ -87,7 +87,7 @@ export default function RootLayout({
               name: "YarsaByte",
               description:
                 "Web design, development, branding, and digital services in Nepal",
-              url: "https://yarsabyte.com",
+              url: "https://yarsabyte.vercel.app",
               telephone: "+977-1234567890",
               address: {
                 "@type": "PostalAddress",

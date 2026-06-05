@@ -24,11 +24,11 @@ export const metadata: Metadata = {
     title: "YarsaByte | Your Digital Presence Partner",
     description:
       "Professional web design, development, branding, and digital services for Nepali businesses.",
-    url: "https://yarsabyte.com/",
+    url: "https://yarsabyte.vercel.app/",
     type: "website",
     images: [
       {
-        url: "https://yarsabyte.com/og-image.png",
+        url: "https://yarsabyte.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "YarsaByte Portfolio",
@@ -91,11 +91,11 @@ export const metadata: Metadata = {
     title: "Our Work | YarsaByte Portfolio",
     description:
       "Explore our recent web design and development projects.",
-    url: "https://yarsabyte.com/work",
+    url: "https://yarsabyte.vercel.app/work",
     type: "website",
     images: [
       {
-        url: "https://yarsabyte.com/og-work.png",
+        url: "https://yarsabyte.vercel.app/og-work.png",
         width: 1200,
         height: 630,
         alt: "YarsaByte Work & Portfolio",
@@ -103,7 +103,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://yarsabyte.com/work",
+    canonical: "https://yarsabyte.vercel.app/work",
   },
 };
 
@@ -148,11 +148,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Services | YarsaByte",
     description: "Professional web and digital services for Nepali businesses.",
-    url: "https://yarsabyte.com/services",
+    url: "https://yarsabyte.vercel.app/services",
     type: "website",
     images: [
       {
-        url: "https://yarsabyte.com/og-services.png",
+        url: "https://yarsabyte.vercel.app/og-services.png",
         width: 1200,
         height: 630,
         alt: "YarsaByte Services",
@@ -160,7 +160,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://yarsabyte.com/services",
+    canonical: "https://yarsabyte.vercel.app/services",
   },
 };
 
@@ -218,11 +218,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Contact | YarsaByte",
     description: "Contact YarsaByte to start your digital project.",
-    url: "https://yarsabyte.com/contact",
+    url: "https://yarsabyte.vercel.app/contact",
     type: "website",
     images: [
       {
-        url: "https://yarsabyte.com/og-contact.png",
+        url: "https://yarsabyte.vercel.app/og-contact.png",
         width: 1200,
         height: 630,
         alt: "Contact YarsaByte",
@@ -230,7 +230,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://yarsabyte.com/contact",
+    canonical: "https://yarsabyte.vercel.app/contact",
   },
 };
 
@@ -267,11 +267,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Studio | YarsaByte",
     description: "Meet the YarsaByte team and learn about our expertise.",
-    url: "https://yarsabyte.com/studio",
+    url: "https://yarsabyte.vercel.app/studio",
     type: "website",
     images: [
       {
-        url: "https://yarsabyte.com/og-studio.png",
+        url: "https://yarsabyte.vercel.app/og-studio.png",
         width: 1200,
         height: 630,
         alt: "YarsaByte Studio",
@@ -279,7 +279,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://yarsabyte.com/studio",
+    canonical: "https://yarsabyte.vercel.app/studio",
   },
 };
 

@@ -220,7 +220,7 @@ Purpose: Progress tracking
 - [ ] Submit sitemap to GSC
 
 ### Don't Forget
-- [ ] Update **domain name** in schema (currently `yarsabyte.com`)
+- [ ] Update **domain name** in schema (currently `yarsabyte.vercel.app`)
 - [ ] Add your actual **phone number** and **email**
 - [ ] Create **OG images** for social sharing
 - [ ] Verify all **social media links**

@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   description:
     "Explore Yarsa Byte work across websites, portfolios, digital launch systems, and campaign-ready creative.",
   keywords: ["web design portfolio", "website projects", "case studies"],
-  alternates: { canonical: "https://yarsabyte.com/work" },
+  alternates: { canonical: "https://yarsabyte.vercel.app/work" },
   openGraph: {
     title: "Work | YarsaByte Portfolio",
     description:
       "Explore YarsaByte work across websites, portfolios, and digital projects.",
-    url: "https://yarsabyte.com/work",
-    images: ["https://yarsabyte.com/og-work.png"],
+    url: "https://yarsabyte.vercel.app/work",
+    images: ["https://yarsabyte.vercel.app/og-work.png"],
   },
 };
 
@@ -22,8 +22,8 @@ export default function WorkPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.com/" },
-      { "@type": "ListItem", position: 2, name: "Work", item: "https://yarsabyte.com/work" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
+      { "@type": "ListItem", position: 2, name: "Work", item: "https://yarsabyte.vercel.app/work" },
     ],
   };
 
