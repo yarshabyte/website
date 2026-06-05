@@ -236,7 +236,7 @@ export function ServicesPageClient() {
   };
 
   return (
-    <main className="overflow-hidden">
+    <main className="overflow-x-hidden">
       <section className="relative min-h-dvh overflow-hidden border-b border-foreground/10 pt-28">
         <div className="service-grid-surface absolute inset-0 opacity-35" aria-hidden="true" />
         <motion.div
