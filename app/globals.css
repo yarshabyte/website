@@ -407,9 +407,3 @@ h3 {
 
 
 
-@media (min-width: 1024px) {
-  .hero-container-override {
-    padding-bottom: 10rem !important; 
-    background-color: red !important; 
-  }
-}
