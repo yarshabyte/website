@@ -21,7 +21,11 @@
   --hex-opacity: 0;
   --hex-offset-x: 0px;
   --hex-offset-y: 0px;
-  --site-content-width: min(100% - 2rem, 80rem);
+  --site-gutter: 1rem;
+  --site-content-width: min(
+    calc(100% - (var(--site-gutter) * 2)),
+    80rem
+  );
 }
 
 @theme inline {
@@ -131,7 +135,7 @@ body::-webkit-scrollbar {
   }
 
   :root {
-    --site-content-width: 80vw;
+    --site-gutter: 4rem;
   }
 
   .site-frame {

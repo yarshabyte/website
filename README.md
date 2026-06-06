@@ -5,7 +5,7 @@ A modern personal portfolio and demo site built with Next.js (app router), React
 ## Highlights
 - Next.js 16 (app directory) + React 19 + TypeScript
 - 3D scenes with three.js and @react-three/fiber
-- Interactive Spline content via @splinetool/react-spline
+- Interactive WebGL content via React Three Fiber and Three.js
 - Smooth scrolling and timelines with lenis and gsap
 - Tailwind CSS for utility-first styling
 
@@ -13,7 +13,7 @@ A modern personal portfolio and demo site built with Next.js (app router), React
 - next: 16.2.6
 - react / react-dom: 19.2.4
 - typescript, tailwindcss, postcss
-- three, @react-three/fiber, @react-three/drei
+- three, @react-three/fiber
 - gsap, framer-motion, lenis
 
 ## Requirements
@@ -59,8 +59,7 @@ This section lists top-level folders and important files to help contributors lo
 - components/ — Reusable UI and animation components
   - components/ui/ — Small primitives (Button, Icon, Link)
   - components/layout/ — Header, Footer, Navigation
-  - components/three/ — react-three/fiber scene components and helpers
-  - components/spline/ — Spline embed wrappers
+  - components/three/ — React Three Fiber hero scene and shaders
 
 - hooks/ — Custom React hooks
   - hooks/use-lenis-scroll.ts — smooth scroll integration

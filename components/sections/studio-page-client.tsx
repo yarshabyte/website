@@ -28,6 +28,13 @@ const rise: Variants = {
   },
 };
 
+const studioParticles = Array.from({ length: 12 }, (_, index) => ({
+  x: `${(index * 37 + 11) % 100}%`,
+  startY: `${(index * 53 + 7) % 100}%`,
+  endY: `${(index * 29 + 61) % 100}%`,
+  duration: 8 + (index % 6) * 1.7,
+}));
+
 function SplitWords({ text }: { text: string }) {
   return (
     <>
@@ -143,21 +150,22 @@ export function StudioPageClient() {
           />
           {!reduceMotion && (
             <div className="absolute inset-0">
-              {[...Array(12)].map((_, i) => (
+              {studioParticles.map((particle, index) => (
                 <motion.div
-                  key={i}
+                  key={`${particle.x}-${particle.startY}`}
                   className="absolute h-1 w-1 rounded-full bg-accent/30"
                   initial={{
-                    x: `${Math.random() * 100}%`,
-                    y: `${Math.random() * 100}%`,
+                    x: particle.x,
+                    y: particle.startY,
                     opacity: 0.2,
                   }}
                   animate={{
-                    y: [`${Math.random() * 100}%`, `${Math.random() * 100}%`],
+                    y: [particle.startY, particle.endY],
                     opacity: [0.2, 0.6, 0.2],
                   }}
                   transition={{
-                    duration: 8 + Math.random() * 10,
+                    duration: particle.duration,
+                    delay: index * 0.12,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}

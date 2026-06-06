@@ -36,14 +36,12 @@ function ServiceTitle({ title }: { title: string }) {
 
 function ServiceCard({
   service,
-  index,
   isActive,
   isExpanded,
   onSelect,
   onToggleExpand,
 }: {
   service: Service;
-  index: number;
   isActive: boolean;
   isExpanded: boolean;
   onSelect: () => void;
@@ -334,11 +332,10 @@ export function ServicesPageClient() {
             className="mt-12 grid gap-6 grid-flow-dense md:grid-cols-2 lg:grid-cols-3 items-start"
           >
             
-            {filteredServices.map((service, index) => (
+            {filteredServices.map((service) => (
               <ServiceCard
                 key={service.slug}
                 service={service}
-                index={index}
                 isActive={activeSlug === service.slug}
                 isExpanded={expandedSlug === service.slug}
                 onSelect={() => {

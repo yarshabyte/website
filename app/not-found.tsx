@@ -19,7 +19,8 @@ export default function NotFound() {
           Page Not Found
         </h2>
         <p className="mb-8 text-foreground/60">
-          Sorry, the page you're looking for doesn't exist. It might have been moved or deleted.
+          Sorry, the page you&apos;re looking for doesn&apos;t exist. It might
+          have been moved or deleted.
         </p>
 
         <div className="flex flex-wrap justify-center gap-4">

@@ -1,9 +1,8 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 
-import { CanvasLoader } from "@/components/three/CanvasLoader";
 import { InteractiveBlob } from "@/components/three/InteractiveBlob";
 import { suppressThreeClockWarning } from "@/lib/suppress-three-clock-warning";
 
@@ -23,13 +22,9 @@ export function HeroCanvas() {
       dpr={[1, 1.15]}
       frameloop="always"
     >
-      <Suspense fallback={null}>
-        <ambientLight intensity={0.14} color="#FDFBF7" />
-        <directionalLight position={[2, 3, 5]} intensity={0.22} color="#7BA05B" />
-        <InteractiveBlob />
-      </Suspense>
+      <ambientLight intensity={0.14} color="#FDFBF7" />
+      <directionalLight position={[2, 3, 5]} intensity={0.22} color="#7BA05B" />
+      <InteractiveBlob />
     </Canvas>
   );
 }
-
-export { CanvasLoader };
