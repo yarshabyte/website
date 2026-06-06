@@ -327,7 +327,7 @@ export function ContactPageClient() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.62, delay: 0.08, ease }}
-                className="w-full border border-foreground/10 bg-background/78 p-5 shadow-[0_28px_100px_rgba(0,0,0,0.22)] backdrop-blur sm:p-8"
+                className="grid min-h-[43rem] w-full grid-rows-[auto_auto_1fr_auto] border border-foreground/10 bg-background/78 p-5 shadow-[0_28px_100px_rgba(0,0,0,0.22)] backdrop-blur sm:min-h-[46rem] sm:p-8"
               >
                 <div className="flex items-center justify-between gap-5">
                   <div>
@@ -351,8 +351,7 @@ export function ContactPageClient() {
                   />
                 </div>
 
-{/* change the height below in pixels if you need to for the form */}
-                <div className="min-h-[200px]">
+                <div className="min-h-0">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={step}
@@ -367,7 +366,7 @@ export function ContactPageClient() {
                   </AnimatePresence>
                 </div>
 
-                <div className="mt-8 flex w-full items-center justify-between gap-3 border-t border-foreground/10 pt-6">
+                <div className="mt-8 flex w-full items-center justify-between gap-3 self-end border-t border-foreground/10 pt-6">
                   <button
                     type="button"
                     onClick={() => setStep((current) => Math.max(0, current - 1))}

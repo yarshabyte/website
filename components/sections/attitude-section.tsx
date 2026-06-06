@@ -56,8 +56,8 @@ export function AttitudeSection() {
           );
         const pinDistance = () =>
           Math.max(
-            horizontalTravel() + scroller.clientHeight * 0.28,
-            scroller.clientHeight * 1.45,
+            horizontalTravel() + scroller.clientHeight * 0.16,
+            scroller.clientHeight * 1.15,
           );
 
         gsap.set(revealItems, {
@@ -78,7 +78,7 @@ export function AttitudeSection() {
             start: "top top",
             end: () => `+=${pinDistance()}`,
             pin: true,
-            scrub: 0.18,
+            scrub: 0.12,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onUpdate: (self) => {

@@ -15,6 +15,8 @@ export function SiteHeader() {
   const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const lastScrollY = useRef(0);
+  const directionStartY = useRef(0);
+  const lastDirection = useRef<"up" | "down" | null>(null);
   const isTicking = useRef(false);
   const scrollElementRef = useRef<Window | HTMLElement | null>(null);
 
@@ -86,15 +88,24 @@ export function SiteHeader() {
 
     const handleScrollPosition = (currentY: number) => {
       const delta = currentY - lastScrollY.current;
-      const scrollingDown = delta > 8;
-      const scrollingUp = delta < -8;
+      const direction = delta > 0 ? "down" : delta < 0 ? "up" : null;
 
-      if (currentY < 12) {
+      if (currentY < 24) {
         setIsHeaderHidden(false);
-      } else if (scrollingDown) {
-        setIsHeaderHidden(true);
-      } else if (scrollingUp) {
-        setIsHeaderHidden(false);
+        directionStartY.current = currentY;
+      } else if (direction) {
+        if (direction !== lastDirection.current) {
+          lastDirection.current = direction;
+          directionStartY.current = currentY;
+        }
+
+        const directionDistance = Math.abs(currentY - directionStartY.current);
+
+        if (direction === "down" && directionDistance > 32) {
+          setIsHeaderHidden(true);
+        } else if (direction === "up" && directionDistance > 20) {
+          setIsHeaderHidden(false);
+        }
       }
 
       lastScrollY.current = currentY;
@@ -135,6 +146,8 @@ export function SiteHeader() {
       scrollElementRef.current?.removeEventListener("scroll", onScroll);
       scrollElementRef.current = element;
       lastScrollY.current = readScrollTop(element);
+      directionStartY.current = lastScrollY.current;
+      lastDirection.current = null;
       element.addEventListener("scroll", onScroll, { passive: true });
     };
 

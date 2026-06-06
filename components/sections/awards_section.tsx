@@ -262,8 +262,8 @@ export function AwardsSection() {
           -viewportHeight() * (isDesktop ? 1.26 : 1.02);
         const pinDistance = () =>
           Math.max(
-            viewportHeight() * (isDesktop ? 2.6 : 2.32),
-            isDesktop ? 1900 : 1500,
+            viewportHeight() * (isDesktop ? 1.9 : 1.85),
+            isDesktop ? 1450 : 1200,
           );
         const letterStartDepth = isDesktop
           ? [0.5, 0.56, 0.64, 0.7, 0.78, 0.86]
