@@ -1,15 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowDown,
-  ArrowRight,
-  Check,
-  Layers3,
-  Sparkles,
-  X,
-} from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowDown, ArrowRight, Check, Layers3, Sparkles } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { serviceHighlights, services } from "@/data/services";
 import { cn } from "@/lib/utils";
@@ -42,53 +35,114 @@ function ServiceTitle({ title }: { title: string }) {
 
 function ServiceCard({
   service,
+  isExpanded,
   reduceMotion,
-  onOpen,
+  onToggle,
 }: {
   service: Service;
+  isExpanded: boolean;
   reduceMotion: boolean;
-  onOpen: () => void;
+  onToggle: () => void;
 }) {
   const Icon = service.icon;
 
   return (
     <motion.div
+      layout
+      data-service-slug={service.slug}
       initial={reduceMotion ? false : { opacity: 0, y: 24 }}
       whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-      whileHover={reduceMotion ? undefined : { y: -8, scale: 1.015 }}
+      whileHover={
+        reduceMotion || isExpanded ? undefined : { y: -8, scale: 1.015 }
+      }
       viewport={{ once: true, margin: "-10% 0px" }}
       transition={{
+        layout: { duration: reduceMotion ? 0 : 0.4, ease: smoothEase },
         scale: { duration: 0.22, ease: smoothEase },
         opacity: { duration: 0.35 },
         y: { duration: 0.35 },
       }}
-      onClick={onOpen}
-      className="service-card group relative flex h-full min-h-[31rem] w-full transform-gpu cursor-pointer flex-col overflow-hidden rounded-[1.5rem] border border-foreground/10 p-px text-left shadow-[0_14px_38px_rgba(0,0,0,0.08)] transition-[border-color,box-shadow] duration-300 hover:border-accent/60 hover:shadow-[0_24px_58px_color-mix(in_srgb,var(--accent)_15%,transparent)]"
+      onClick={onToggle}
+      className={cn(
+        "service-card group relative flex h-full w-full transform-gpu cursor-pointer flex-col overflow-hidden rounded-[1.5rem] border p-px text-left transition-[border-color,box-shadow] duration-300",
+        isExpanded
+          ? "col-span-full min-h-[min(42rem,calc(100dvh-2rem))] border-accent/65 shadow-[0_24px_64px_color-mix(in_srgb,var(--accent)_18%,transparent)]"
+          : "min-h-[31rem] border-foreground/10 shadow-[0_14px_38px_rgba(0,0,0,0.08)] hover:border-accent/60 hover:shadow-[0_24px_58px_color-mix(in_srgb,var(--accent)_15%,transparent)]",
+      )}
     >
       <span
         className="absolute inset-0 bg-gradient-to-br from-accent/8 via-transparent to-sky/12 opacity-80 transition-colors duration-300 group-hover:from-accent/20 group-hover:to-sky/20"
       />
       <span className="absolute -right-10 top-8 h-24 w-40 rotate-[-22deg] border-y border-foreground/10 bg-foreground/[0.04] transition-[right] duration-300 group-hover:right-0" />
 
-      <div className="relative flex h-full w-full flex-col rounded-[calc(1.5rem-1px)] bg-background/95 p-5 sm:p-6 sm:pb-8">
-        <div className="flex items-start justify-between gap-[var(--space-grid)]">
-          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-foreground text-background transition duration-300 group-hover:rotate-6 group-hover:scale-105">
-            <Icon className="size-5" aria-hidden="true" />
+      <div
+        className={cn(
+          "relative grid h-full w-full rounded-[calc(1.5rem-1px)] bg-background/95 p-5 sm:p-6",
+          isExpanded
+            ? "grid-rows-[auto_1fr_auto] gap-5 overflow-y-auto sm:p-7 lg:grid-cols-[0.42fr_0.58fr] lg:grid-rows-[1fr_auto] lg:gap-x-10"
+            : "grid-rows-[auto_auto_1fr_auto] sm:pb-8",
+        )}
+      >
+        <div className={cn(isExpanded && "lg:col-start-1 lg:row-start-1")}>
+          <div className="flex items-start justify-between gap-[var(--space-grid)]">
+            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-foreground text-background transition duration-300 group-hover:rotate-6 group-hover:scale-105">
+              <Icon className="size-5" aria-hidden="true" />
+            </span>
+            <span className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-bold uppercase text-foreground/52">
+              {service.category}
+            </span>
+          </div>
+
+          <span className="mt-8 block text-balance text-2xl font-black uppercase leading-[1.1] text-foreground sm:mt-10">
+            <ServiceTitle title={service.title} />
           </span>
-          <span className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-bold uppercase text-foreground/52">
-            {service.category}
+
+          <span className="mt-4 block break-words text-sm leading-7 text-foreground/62">
+            {service.description}
           </span>
         </div>
 
-        <span className="mt-8 block text-2xl font-black uppercase leading-[1.1] text-foreground text-balance sm:mt-10">
-          <ServiceTitle title={service.title} />
-        </span>
-        
-        <span className="mt-4 block break-words text-sm leading-7 text-foreground/62">
-          {service.description}
-        </span>
+        {isExpanded && (
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.32, ease: smoothEase }}
+            className="min-h-0 lg:col-start-2 lg:row-start-1"
+          >
+            <p className="text-base font-medium leading-7 text-foreground/76 sm:text-lg sm:leading-8">
+              {service.outcome}
+            </p>
 
-        <div className="mt-auto flex items-end justify-between gap-4 pt-8">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {service.deliverables.map((item) => (
+                <div
+                  key={item}
+                  className="flex min-h-14 items-center gap-3 rounded-2xl border border-foreground/8 bg-foreground/[0.035] px-4 py-3 text-sm font-semibold text-foreground/72"
+                >
+                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent/15 text-accent">
+                    <Check className="size-3.5" aria-hidden="true" />
+                  </span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5">
+              <PremiumButton href="/#contact" className="w-full sm:w-auto">
+                Start this service
+              </PremiumButton>
+            </div>
+          </motion.div>
+        )}
+
+        <div
+          className={cn(
+            "flex items-end justify-between gap-4",
+            isExpanded
+              ? "border-t border-foreground/10 pt-5 lg:col-span-2 lg:row-start-2"
+              : "mt-auto pt-8",
+          )}
+        >
           <span>
             <span className="block text-xs font-bold uppercase text-sky">
               {service.timeline}
@@ -99,15 +153,21 @@ function ServiceCard({
           </span>
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpen();
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggle();
             }}
-            aria-label={`Open ${service.title} details`}
-            className="z-20 grid size-12 shrink-0 place-items-center rounded-full bg-foreground/[0.08] text-foreground shadow-sm transition duration-300 group-hover:bg-accent group-hover:text-background"
+            aria-expanded={isExpanded}
+            aria-label={`${isExpanded ? "Collapse" : "Expand"} ${service.title} details`}
+            className={cn(
+              "z-20 grid size-12 shrink-0 place-items-center rounded-full shadow-sm transition duration-300",
+              isExpanded
+                ? "bg-accent text-background"
+                : "bg-foreground/[0.08] text-foreground group-hover:bg-accent group-hover:text-background",
+            )}
           >
             <motion.div
-              whileHover={reduceMotion ? undefined : { rotate: -45 }}
+              animate={{ rotate: isExpanded ? -90 : 0 }}
               transition={{ duration: reduceMotion ? 0 : 0.3, ease: smoothEase }}
             >
               <ArrowRight className="size-5" aria-hidden="true" />
@@ -142,36 +202,49 @@ export function ServicesPageClient() {
     setSelectedSlug(null);
   };
 
-  const selectedService =
-    services.find((service) => service.slug === selectedSlug) ?? null;
-
   useEffect(() => {
-    if (!selectedService) {
+    if (!selectedSlug) {
       return;
     }
 
     const frame = document.querySelector<HTMLElement>(".site-frame");
-    const previousOverflow = frame?.style.overflowY ?? "";
+    const card = document.querySelector<HTMLElement>(
+      `[data-service-slug="${selectedSlug}"]`,
+    );
 
-    if (frame) {
-      frame.style.overflowY = "hidden";
+    if (!card) {
+      return;
     }
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setSelectedSlug(null);
+    const centerExpandedCard = () => {
+      const cardRect = card.getBoundingClientRect();
+      const frameRect = frame?.getBoundingClientRect();
+      const viewportTop = frameRect?.top ?? 0;
+      const viewportHeight = frame?.clientHeight ?? window.innerHeight;
+      const targetOffset = Math.max(12, (viewportHeight - cardRect.height) / 2);
+      const delta = cardRect.top - viewportTop - targetOffset;
+
+      if (Math.abs(delta) < 8) {
+        return;
       }
-    };
 
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
       if (frame) {
-        frame.style.overflowY = previousOverflow;
+        frame.scrollTo({
+          top: frame.scrollTop + delta,
+          behavior: reduceMotion ? "auto" : "smooth",
+        });
+      } else {
+        window.scrollTo({
+          top: window.scrollY + delta,
+          behavior: reduceMotion ? "auto" : "smooth",
+        });
       }
-      window.removeEventListener("keydown", onKeyDown);
     };
-  }, [selectedService]);
+
+    const animationTimer = window.setTimeout(centerExpandedCard, 420);
+
+    return () => window.clearTimeout(animationTimer);
+  }, [reduceMotion, selectedSlug]);
 
   const scrollToExplorer = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -283,95 +356,24 @@ export function ServicesPageClient() {
           </div>
 
           <div
-            className="mt-[var(--space-stack)] grid auto-rows-fr items-stretch gap-[var(--space-grid)] md:grid-cols-2 lg:grid-cols-3"
+            className="mt-[var(--space-stack)] grid items-stretch gap-[var(--space-grid)] md:grid-cols-2 lg:grid-cols-3"
           >
             {filteredServices.map((service) => (
               <ServiceCard
                 key={service.slug}
                 service={service}
+                isExpanded={selectedSlug === service.slug}
                 reduceMotion={Boolean(reduceMotion)}
-                onOpen={() => setSelectedSlug(service.slug)}
+                onToggle={() =>
+                  setSelectedSlug((current) =>
+                    current === service.slug ? null : service.slug,
+                  )
+                }
               />
             ))}
           </div>
         </Container>
       </section>
-
-      <AnimatePresence>
-        {selectedService && (
-          <motion.div
-            className="fixed inset-0 z-[120] grid place-items-center bg-foreground/55 p-3 backdrop-blur-sm sm:p-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.2 }}
-            onClick={() => setSelectedSlug(null)}
-          >
-            <motion.section
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="service-dialog-title"
-              initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={reduceMotion ? undefined : { opacity: 0, y: 16, scale: 0.97 }}
-              transition={{ duration: reduceMotion ? 0 : 0.28, ease: smoothEase }}
-              onClick={(event) => event.stopPropagation()}
-              className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[1.5rem] border border-accent/45 bg-background shadow-[0_30px_100px_rgba(0,0,0,0.34)] sm:max-h-[calc(100dvh-3rem)]"
-            >
-              <div className="flex items-start justify-between gap-5 border-b border-foreground/10 p-5 sm:p-7">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-accent">
-                    {selectedService.category} / {selectedService.timeline}
-                  </p>
-                  <h2
-                    id="service-dialog-title"
-                    className="mt-3 max-w-2xl text-[clamp(2rem,5vw,4.5rem)] font-black uppercase leading-[0.9] text-foreground"
-                  >
-                    {selectedService.title}
-                  </h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedSlug(null)}
-                  aria-label="Close service details"
-                  className="grid size-11 shrink-0 place-items-center rounded-full border border-foreground/12 text-foreground transition hover:bg-foreground hover:text-background"
-                >
-                  <X className="size-5" aria-hidden="true" />
-                </button>
-              </div>
-
-              <div className="min-h-0 overflow-y-auto p-5 sm:p-7">
-                <p className="max-w-3xl text-base font-medium leading-7 text-foreground/76 sm:text-lg sm:leading-8">
-                  {selectedService.outcome}
-                </p>
-
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  {selectedService.deliverables.map((item) => (
-                    <div
-                      key={item}
-                      className="flex min-h-14 items-center gap-3 rounded-2xl border border-foreground/8 bg-foreground/[0.035] px-4 py-3 text-sm font-semibold text-foreground/72"
-                    >
-                      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent/15 text-accent">
-                        <Check className="size-3.5" aria-hidden="true" />
-                      </span>
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-7 flex flex-col gap-4 border-t border-foreground/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                  <span className="text-sm font-bold uppercase tracking-[0.12em] text-foreground/52">
-                    {selectedService.stat}
-                  </span>
-                  <PremiumButton href="/#contact" className="w-full sm:w-auto">
-                    Start this service
-                  </PremiumButton>
-                </div>
-              </div>
-            </motion.section>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <section className="section-spacing-tight relative overflow-hidden">
         <motion.div 
