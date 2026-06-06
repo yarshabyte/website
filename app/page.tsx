@@ -34,7 +34,7 @@ export default function Home() {
         <HeroSection />
         <AboutSection />
         <div
-          className="hidden items-center px-[8%] lg:flex"
+          className="studio-container hidden items-center lg:flex"
           aria-hidden="true"
         >
           <span className="size-3.5 rounded-full border border-foreground/90" />

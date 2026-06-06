@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ArrowDown, ArrowRight, Check, Layers3, Sparkles } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { serviceHighlights, services } from "@/data/services";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,6 @@ function ServiceTitle({ title }: { title: string }) {
     <span className="inline-flex max-w-full flex-wrap gap-x-3 gap-y-1 break-words">
       {words.map((word, index) => (
         <motion.span
-          layout
           key={`${word}-${index}`}
           className="inline-block"
           initial={{ opacity: 0, y: 36, rotateX: -40 }}
@@ -38,12 +37,14 @@ function ServiceCard({
   service,
   isActive,
   isExpanded,
+  reduceMotion,
   onSelect,
   onToggleExpand,
 }: {
   service: Service;
   isActive: boolean;
   isExpanded: boolean;
+  reduceMotion: boolean;
   onSelect: () => void;
   onToggleExpand: () => void;
 }) {
@@ -51,102 +52,106 @@ function ServiceCard({
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      animate={{ 
-        scale: isActive && !isExpanded ? 1.02 : 1,
-      }}
+      layout="position"
+      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      animate={{ scale: isActive && !isExpanded ? 1.01 : 1 }}
       viewport={{ once: true, margin: "-10% 0px" }}
       transition={{
-        layout: { duration: 0.5, ease: smoothEase },
-        scale: { duration: 0.4, ease: smoothEase },
-        opacity: { duration: 0.4 },
-        y: { duration: 0.4 }
+        layout: { duration: 0.34, ease: smoothEase },
+        scale: { duration: 0.25, ease: smoothEase },
+        opacity: { duration: 0.35 },
+        y: { duration: 0.35 },
       }}
       onClick={onSelect}
       className={cn(
-        "service-card group relative flex w-full flex-col overflow-hidden rounded-[1.5rem] border p-px text-left cursor-pointer transition-colors duration-500",
-        isActive && !isExpanded 
-          ? "border-accent/70 shadow-[0_22px_80px_color-mix(in_srgb,var(--accent)_16%,transparent)] z-10" 
+        "service-card group relative flex w-full transform-gpu cursor-pointer flex-col overflow-hidden rounded-[1.5rem] border p-px text-left transition-colors duration-300",
+        isActive && !isExpanded
+          ? "z-10 border-accent/70 shadow-[0_16px_48px_color-mix(in_srgb,var(--accent)_13%,transparent)]"
           : "border-foreground/10 hover:border-sky/45",
-        isExpanded 
-          ? "md:col-span-2 lg:col-span-2 border-accent shadow-[0_24px_90px_color-mix(in_srgb,#000_22%,transparent)] z-20" 
-          : "col-span-1"
+        isExpanded
+          ? "z-20 border-accent shadow-[0_18px_54px_color-mix(in_srgb,#000_16%,transparent)]"
+          : "col-span-1",
       )}
     >
-      <motion.span
-        layout
+      <span
         className={cn(
-          "absolute inset-0 opacity-80 transition-colors duration-500",
+          "absolute inset-0 opacity-80 transition-colors duration-300",
           isActive || isExpanded
             ? "bg-gradient-to-br from-accent/22 via-blue/18 to-sky/18"
-            : "bg-foreground/[0.03]"
+            : "bg-foreground/[0.03]",
         )}
       />
-      <span className="absolute -right-10 top-8 h-24 w-40 rotate-[-22deg] border-y border-foreground/10 bg-foreground/[0.04] transition duration-500 group-hover:right-0" />
+      <span className="absolute -right-10 top-8 h-24 w-40 rotate-[-22deg] border-y border-foreground/10 bg-foreground/[0.04] transition-[right] duration-300 group-hover:right-0" />
 
-      <motion.span layout className="relative flex h-full w-full flex-col rounded-[calc(1.5rem-1px)] bg-background/92 p-5 sm:p-6 sm:pb-8 backdrop-blur-sm">
+      <div className="relative flex h-full w-full flex-col rounded-[calc(1.5rem-1px)] bg-background/95 p-5 sm:p-6 sm:pb-8">
         
-        <motion.span layout="position" className="flex items-start justify-between gap-5">
+        <div className="flex items-start justify-between gap-[var(--space-grid)]">
           <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-foreground text-background transition duration-300 group-hover:rotate-6 group-hover:scale-105">
             <Icon className="size-5" aria-hidden="true" />
           </span>
           <span className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-bold uppercase text-foreground/52">
             {service.category}
           </span>
-        </motion.span>
+        </div>
 
-        <motion.span layout="position" className="mt-10 block text-2xl font-black uppercase leading-[1.1] text-foreground text-balance">
+        <span className="mt-8 block text-2xl font-black uppercase leading-[1.1] text-foreground text-balance sm:mt-10">
           <ServiceTitle title={service.title} />
-        </motion.span>
+        </span>
         
-        <motion.span layout="position" className="mt-4 block text-sm leading-7 text-foreground/62 break-words">
+        <span className="mt-4 block break-words text-sm leading-7 text-foreground/62">
           {service.description}
-        </motion.span>
+        </span>
 
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0, filter: "blur(4px)" }}
-              animate={{ height: "auto", opacity: 1, filter: "blur(0px)" }}
-              exit={{ height: 0, opacity: 0, filter: "blur(4px)" }}
-              transition={{ duration: 0.5, ease: smoothEase }}
-              className="overflow-hidden"
-            >
-              <div className="pt-8 border-t border-foreground/10 mt-8">
-                <p className="text-base leading-8 text-foreground/80 break-words font-medium">
-                  {service.outcome}
-                </p>
+        <motion.div
+          initial={false}
+          animate={{
+            gridTemplateRows: isExpanded ? "1fr" : "0fr",
+            opacity: isExpanded ? 1 : 0,
+          }}
+          transition={{ duration: reduceMotion ? 0 : 0.34, ease: smoothEase }}
+          className="grid"
+          aria-hidden={!isExpanded}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="mt-8 border-t border-foreground/10 pt-8">
+              <p className="break-words text-base font-medium leading-8 text-foreground/80">
+                {service.outcome}
+              </p>
 
-                <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                  {service.deliverables.map((item, i) => (
-                    <motion.div
-                      key={item}
-                      initial={{ opacity: 0, x: 8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: i * 0.03 + 0.1 }}
-                      className="flex items-center gap-3 rounded-2xl border border-foreground/8 bg-foreground/[0.03] px-4 py-3 text-sm text-foreground/72"
-                    >
-                      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-sky/16 text-sky">
-                        <Check className="size-3.5" aria-hidden="true" />
-                      </span>
-                      <span className="break-words">{item}</span>
-                    </motion.div>
-                  ))}
-                </div>
-
-                <div className="mt-8">
-                  <PremiumButton href="/#contact" className="w-full sm:w-auto">
-                    Start this service
-                  </PremiumButton>
-                </div>
+              <div className="mt-8 grid gap-[var(--space-grid)]">
+                {service.deliverables.map((item, i) => (
+                  <motion.div
+                    key={item}
+                    initial={false}
+                    animate={{
+                      opacity: isExpanded ? 1 : 0,
+                      x: isExpanded ? 0 : 6,
+                    }}
+                    transition={{
+                      duration: reduceMotion ? 0 : 0.24,
+                      delay: reduceMotion ? 0 : i * 0.025,
+                    }}
+                    className="flex items-center gap-3 rounded-2xl border border-foreground/8 bg-foreground/[0.03] px-4 py-3 text-sm text-foreground/72"
+                  >
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-sky/16 text-sky">
+                      <Check className="size-3.5" aria-hidden="true" />
+                    </span>
+                    <span className="break-words">{item}</span>
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        <motion.span layout="position" className="mt-auto flex items-end justify-between gap-4 pt-8">
+              <div className="mt-8">
+                <PremiumButton href="/#contact" className="w-full sm:w-auto">
+                  Start this service
+                </PremiumButton>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="mt-auto flex items-end justify-between gap-4 pt-8">
           <span>
             <span className="block text-xs font-bold uppercase text-sky">
               {service.timeline}
@@ -158,18 +163,8 @@ function ServiceCard({
           <button
             type="button"
             onClick={(e) => {
-              e.stopPropagation(); 
+              e.stopPropagation();
               onToggleExpand();
-
-              if (!isExpanded) {
-                const card = e.currentTarget.closest(".service-card");
-                setTimeout(() => {
-                  card?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                  });
-                }, 150); 
-              }
             }}
             aria-label={isExpanded ? "Collapse details" : "Expand details"}
             className={cn(
@@ -179,20 +174,19 @@ function ServiceCard({
                 : "bg-foreground/[0.08] text-foreground hover:bg-sky hover:text-background",
             )}
           >
-            <motion.div 
-              animate={{ rotate: isExpanded ? -90 : isActive ? -45 : 0 }} 
-              transition={{ duration: 0.4, ease: smoothEase }}
+            <motion.div
+              animate={{ rotate: isExpanded ? -90 : isActive ? -45 : 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.3, ease: smoothEase }}
             >
               <ArrowRight className="size-5" aria-hidden="true" />
             </motion.div>
           </button>
-        </motion.span>
-      </motion.span>
+        </div>
+      </div>
     </motion.div>
   );
 }
 
-// THIS IS THE CRITICAL LINE: The explicit named export that page.tsx is looking for
 export function ServicesPageClient() {
   const reduceMotion = useReducedMotion();
   const categories = useMemo(
@@ -228,7 +222,7 @@ export function ServicesPageClient() {
 
   return (
     <main className="overflow-x-hidden">
-      <section className="relative min-h-dvh overflow-hidden border-b border-foreground/10 pt-28">
+      <section className="page-hero-spacing relative min-h-dvh overflow-hidden border-b border-foreground/10">
         <div className="service-grid-surface absolute inset-0 opacity-35" aria-hidden="true" />
         <motion.div
           className="absolute left-0 top-24 h-16 w-[140%] -rotate-3 border-y border-foreground/10 bg-accent text-background"
@@ -247,7 +241,7 @@ export function ServicesPageClient() {
           </div>
         </motion.div>
 
-       <Container className="relative z-10 flex min-h-[calc(100dvh-7rem)] flex-col justify-end pb-20 lg:pb-40 mt-[60px] ">
+       <Container className="relative z-10 flex min-h-[calc(100dvh-var(--header-height))] flex-col justify-end pb-[var(--space-section)]">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -295,7 +289,7 @@ export function ServicesPageClient() {
 
       <section
         id="service-explorer"
-        className="relative scroll-mt-24 border-b border-foreground/10 py-20 lg:py-24"
+        className="section-spacing relative scroll-mt-24 border-b border-foreground/10"
       >
         <Container>
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
@@ -327,9 +321,8 @@ export function ServicesPageClient() {
             </div>
           </div>
 
-          <motion.div 
-            layout 
-            className="mt-12 grid gap-6 grid-flow-dense md:grid-cols-2 lg:grid-cols-3 items-start"
+          <div
+            className="mt-[var(--space-stack)] grid grid-flow-dense items-start gap-[var(--space-grid)] md:grid-cols-2 lg:grid-cols-3"
           >
             
             {filteredServices.map((service) => (
@@ -338,6 +331,7 @@ export function ServicesPageClient() {
                 service={service}
                 isActive={activeSlug === service.slug}
                 isExpanded={expandedSlug === service.slug}
+                reduceMotion={Boolean(reduceMotion)}
                 onSelect={() => {
                   if (expandedSlug === service.slug) return;
                   setActiveSlug(activeSlug === service.slug ? null : service.slug);
@@ -352,11 +346,11 @@ export function ServicesPageClient() {
                 }}
               />
             ))}
-          </motion.div>
+          </div>
         </Container>
       </section>
 
-      <section className="relative overflow-hidden py-20 lg:py-24">
+      <section className="section-spacing-tight relative overflow-hidden">
         <motion.div 
           className="flex w-max gap-6 whitespace-nowrap will-change-transform"
           animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}

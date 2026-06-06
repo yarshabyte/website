@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export function ScrollHexBackground() {
   const reduceMotion = useReducedMotion();
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname !== "/") {
+      return;
+    }
+
     const frame = document.querySelector<HTMLElement>(".site-frame");
 
     if (!frame || reduceMotion) {
@@ -98,7 +104,9 @@ export function ScrollHexBackground() {
       frame.style.removeProperty("--hex-offset-y");
       frame.style.removeProperty("--hex-offset-x");
     };
-  }, [reduceMotion]);
+  }, [pathname, reduceMotion]);
 
-  return <div className="scroll-hex-background" aria-hidden="true" />;
+  return pathname === "/" ? (
+    <div className="scroll-hex-background" aria-hidden="true" />
+  ) : null;
 }

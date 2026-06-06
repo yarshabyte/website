@@ -26,7 +26,7 @@ const mobileHeroDisplay =
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[100svh] overflow-hidden bg-transparent pt-20 sm:min-h-screen sm:pt-[4.5rem]">
+    <section className="relative min-h-[100svh] overflow-hidden bg-transparent pt-[var(--header-height)] sm:min-h-screen">
       <HeroCanvasShell />
 
       <div className="studio-container relative z-10 flex min-h-[calc(100svh-5rem)] flex-col pb-20 sm:min-h-[calc(100vh-4.5rem)] sm:pb-24">

@@ -12,12 +12,12 @@ export function WorkSection() {
   return (
     <section
       id="work"
-      className="relative min-h-screen overflow-hidden bg-transparent px-6 py-24 lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:py-16"
+      className="fluid-section relative min-h-screen overflow-hidden bg-transparent lg:min-h-[calc(100vh-1.5rem)]"
     >
       <div className="mx-auto flex min-h-[calc(100vh-9rem)] w-full max-w-[90rem] flex-col lg:min-h-[calc(100vh-5rem)]">
         <div className="hidden min-h-[12vh] lg:block" aria-hidden="true" />
 
-        <div className="grid gap-10 pb-10 pt-10 lg:grid-cols-[0.46fr_0.54fr] lg:items-start lg:pb-0 lg:pt-6">
+        <div className="grid gap-[var(--space-stack)] pb-10 pt-10 lg:grid-cols-[0.46fr_0.54fr] lg:items-start lg:pb-0 lg:pt-6">
           <motion.div
             initial={{ opacity: 0, y: 34 }}
             whileInView={{ opacity: 1, y: 0 }}

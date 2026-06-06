@@ -3,6 +3,7 @@
 import Lenis from "lenis";
 import gsap from "gsap";
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -11,9 +12,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function useLenisScroll() {
   const reduceMotion = useReducedMotion();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (
+      pathname !== "/" ||
       reduceMotion ||
       window.matchMedia("(pointer: coarse)").matches ||
       window.matchMedia("(max-width: 767px)").matches
@@ -100,5 +103,5 @@ export function useLenisScroll() {
       ScrollTrigger.defaults({ scroller: undefined });
       ScrollTrigger.refresh();
     };
-  }, [reduceMotion]);
+  }, [pathname, reduceMotion]);
 }

@@ -134,7 +134,7 @@ export function AttitudeSection() {
       ref={sectionRef}
       id="attitude"
       style={sectionStyle}
-      className="relative overflow-hidden bg-background px-5 py-20 text-foreground lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:py-0"
+      className="fluid-section relative overflow-hidden bg-background text-foreground lg:min-h-[calc(100vh-1.5rem)] lg:py-0"
     >
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden" aria-hidden="true">
         <h2 className="font-display select-none whitespace-nowrap text-[clamp(5.4rem,17vw,20rem)] leading-none text-foreground/[0.055]">

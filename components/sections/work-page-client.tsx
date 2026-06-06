@@ -39,7 +39,7 @@ export function WorkPageClient() {
 
   return (
     <main className="overflow-hidden">
-      <section className="relative min-h-dvh overflow-hidden pt-28">
+      <section className="page-hero-spacing relative min-h-dvh overflow-hidden">
         <div className="service-grid-surface absolute inset-0 opacity-20" aria-hidden="true" />
         <motion.div
           className="absolute inset-y-0 right-0 w-[45vw] bg-accent/10 blur-3xl"

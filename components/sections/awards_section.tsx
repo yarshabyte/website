@@ -433,7 +433,7 @@ export function AwardsSection() {
     <section
       ref={sectionRef}
       id="awards"
-      className="relative min-h-dvh overflow-hidden bg-background px-5 py-14 text-foreground sm:py-20 lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:py-0"
+      className="fluid-section relative min-h-dvh overflow-hidden bg-background text-foreground lg:min-h-[calc(100vh-1.5rem)] lg:py-0"
     >
       <div className="relative mx-auto flex min-h-[calc(100dvh-7rem)] w-full max-w-[118rem] flex-col justify-center lg:min-h-[calc(100vh-1.5rem)] lg:w-[var(--site-content-width)] lg:max-w-none">
         <div

@@ -6,9 +6,9 @@ export function AboutSection() {
   return (
     <section
       id="about"
-      className="relative min-h-screen overflow-hidden bg-transparent px-6 py-24 lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:py-16"
+      className="fluid-section relative min-h-screen overflow-hidden bg-transparent lg:min-h-[calc(100vh-1.5rem)]"
     >
-      <div className="grid min-h-[calc(100vh-12rem)] gap-12 lg:min-h-[calc(100vh-6rem)] lg:grid-cols-[6rem_16rem_1fr_2rem] lg:gap-8">
+      <div className="grid min-h-[calc(100vh-12rem)] gap-[var(--space-stack)] lg:min-h-[calc(100vh-6rem)] lg:grid-cols-[6rem_16rem_1fr_2rem]">
         <div className="hidden lg:block" aria-hidden="true" />
         <div className="flex items-start gap-3 pt-1">
           <span className="mt-1.5 grid size-4 place-items-center rounded-full border border-foreground/20">

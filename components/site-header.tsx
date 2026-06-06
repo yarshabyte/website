@@ -164,10 +164,10 @@ export function SiteHeader() {
           isHeaderHidden ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"
         }`}
       >
-        <div className="mx-auto flex h-16 items-center justify-between gap-3 px-6 pt-4 sm:h-[4.5rem] sm:gap-4 sm:px-10 sm:pt-6 lg:w-[var(--site-content-width)] lg:px-0">
+        <div className="studio-container flex h-[var(--header-height)] items-center justify-between gap-[var(--space-grid)]">
           <Link
             href="/"
-            className="pointer-events-auto flex min-w-0 items-center gap-2"
+            className="pointer-events-auto flex min-w-0 items-center gap-2.5 sm:gap-3"
             aria-label="Yarsa Byte home"
             onClick={() => setIsMenuOpen(false)}
           >
@@ -176,10 +176,10 @@ export function SiteHeader() {
               alt="Yarsa Byte logo"
               width={64}
               height={64}
-              className="size-9 shrink-0 rounded bg-white object-contain p-1 sm:size-9"
+              className="size-10 shrink-0 rounded-md bg-white object-contain p-1 sm:size-11"
               priority
             />
-            <span className="truncate text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-foreground sm:text-xs sm:tracking-[0.22em]">
+            <span className="truncate text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-foreground sm:text-[0.8rem]">
               Yarsa Byte
             </span>
           </Link>
@@ -191,7 +191,7 @@ export function SiteHeader() {
             aria-controls="site-menu"
             aria-expanded={isMenuOpen}
             onClick={toggleMenu}
-            className="pointer-events-auto grid size-11 shrink-0 place-items-center text-foreground transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:size-14"
+            className="pointer-events-auto grid size-12 shrink-0 place-items-center text-foreground transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:size-15"
           >
             <MenuIcon open={isMenuOpen} stroke={isMenuOpen ? "#252524" : "currentColor"} />
           </button>

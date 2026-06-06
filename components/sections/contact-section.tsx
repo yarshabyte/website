@@ -50,9 +50,9 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="min-h-[98svh] bg-background px-5 py-8 text-foreground sm:px-8 lg:px-20 lg:py-10"
+      className="fluid-section-tight min-h-[98svh] bg-background text-foreground"
     >
-      <div className="relative mx-auto flex min-h-[calc(90svh-5rem)] max-w-[118rem] flex-col">
+      <div className="relative mx-auto flex min-h-[calc(90svh-5rem)] max-w-[80rem] flex-col">
         <div className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-4">
           <div className="hidden lg:block" aria-hidden="true" />
           <a

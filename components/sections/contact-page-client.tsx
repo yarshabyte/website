@@ -228,7 +228,7 @@ export function ContactPageClient() {
   };
 
   return (
-    <main className="relative min-h-dvh overflow-hidden pt-28">
+    <main className="page-hero-spacing relative min-h-dvh overflow-hidden">
       <div className="service-grid-surface absolute inset-0 opacity-20" aria-hidden="true" />
       <motion.div
         className="absolute left-[-20%] top-32 h-16 w-[150%] -rotate-3 border-y border-foreground/10 bg-accent text-background"
