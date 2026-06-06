@@ -64,10 +64,10 @@ function ServiceCard({
       }}
       onClick={onToggle}
       className={cn(
-        "service-card group relative flex h-full w-full transform-gpu cursor-pointer flex-col overflow-hidden rounded-[1.5rem] border p-px text-left transition-[border-color,box-shadow] duration-300",
+        "service-card group relative flex h-full w-full transform-gpu cursor-pointer flex-col overflow-hidden rounded-[1.15rem] border p-px text-left transition-[border-color,box-shadow] duration-300",
         isExpanded
-          ? "col-span-full min-h-[min(42rem,calc(100dvh-2rem))] border-accent/65 shadow-[0_24px_64px_color-mix(in_srgb,var(--accent)_18%,transparent)]"
-          : "min-h-[31rem] border-foreground/10 shadow-[0_14px_38px_rgba(0,0,0,0.08)] hover:border-accent/60 hover:shadow-[0_24px_58px_color-mix(in_srgb,var(--accent)_15%,transparent)]",
+          ? "col-span-full min-h-[min(34rem,calc(100dvh-3rem))] max-w-[46rem] justify-self-center border-accent/65 shadow-[0_20px_52px_color-mix(in_srgb,var(--accent)_16%,transparent)]"
+          : "min-h-[25rem] border-foreground/10 shadow-[0_12px_30px_rgba(0,0,0,0.07)] hover:border-accent/60 hover:shadow-[0_20px_44px_color-mix(in_srgb,var(--accent)_13%,transparent)] sm:aspect-square sm:min-h-0",
       )}
     >
       <span
@@ -77,27 +77,27 @@ function ServiceCard({
 
       <div
         className={cn(
-          "relative grid h-full w-full rounded-[calc(1.5rem-1px)] bg-background/95 p-5 sm:p-6",
+          "relative grid h-full w-full rounded-[calc(1.15rem-1px)] bg-background/95 p-5",
           isExpanded
-            ? "grid-rows-[auto_1fr_auto] gap-5 overflow-y-auto sm:p-7 lg:grid-cols-[0.42fr_0.58fr] lg:grid-rows-[1fr_auto] lg:gap-x-10"
-            : "grid-rows-[auto_auto_1fr_auto] sm:pb-8",
+            ? "grid-rows-[auto_1fr_auto] gap-4 overflow-y-auto sm:p-6 lg:grid-cols-[0.44fr_0.56fr] lg:grid-rows-[1fr_auto] lg:gap-x-7"
+            : "grid-rows-[auto_auto_1fr_auto] sm:p-5 lg:p-6",
         )}
       >
         <div className={cn(isExpanded && "lg:col-start-1 lg:row-start-1")}>
           <div className="flex items-start justify-between gap-[var(--space-grid)]">
-            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-foreground text-background transition duration-300 group-hover:rotate-6 group-hover:scale-105">
-              <Icon className="size-5" aria-hidden="true" />
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-foreground text-background transition duration-300 group-hover:rotate-6 group-hover:scale-105">
+              <Icon className="size-4.5" aria-hidden="true" />
             </span>
             <span className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-bold uppercase text-foreground/52">
               {service.category}
             </span>
           </div>
 
-          <span className="mt-8 block text-balance text-2xl font-black uppercase leading-[1.1] text-foreground sm:mt-10">
+          <span className="mt-7 block text-balance text-[1.35rem] font-black uppercase leading-[1.08] text-foreground sm:mt-8 lg:text-[1.45rem]">
             <ServiceTitle title={service.title} />
           </span>
 
-          <span className="mt-4 block break-words text-sm leading-7 text-foreground/62">
+          <span className="mt-3 block break-words text-sm leading-6 text-foreground/62">
             {service.description}
           </span>
         </div>
@@ -113,11 +113,11 @@ function ServiceCard({
               {service.outcome}
             </p>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
               {service.deliverables.map((item) => (
                 <div
                   key={item}
-                  className="flex min-h-14 items-center gap-3 rounded-2xl border border-foreground/8 bg-foreground/[0.035] px-4 py-3 text-sm font-semibold text-foreground/72"
+                  className="flex min-h-12 items-center gap-3 rounded-xl border border-foreground/8 bg-foreground/[0.035] px-3.5 py-2.5 text-sm font-semibold text-foreground/72"
                 >
                   <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent/15 text-accent">
                     <Check className="size-3.5" aria-hidden="true" />
@@ -127,7 +127,7 @@ function ServiceCard({
               ))}
             </div>
 
-            <div className="mt-5">
+            <div className="mt-4">
               <PremiumButton href="/#contact" className="w-full sm:w-auto">
                 Start this service
               </PremiumButton>
@@ -140,7 +140,7 @@ function ServiceCard({
             "flex items-end justify-between gap-4",
             isExpanded
               ? "border-t border-foreground/10 pt-5 lg:col-span-2 lg:row-start-2"
-              : "mt-auto pt-8",
+              : "mt-auto pt-6",
           )}
         >
           <span>
@@ -160,7 +160,7 @@ function ServiceCard({
             aria-expanded={isExpanded}
             aria-label={`${isExpanded ? "Collapse" : "Expand"} ${service.title} details`}
             className={cn(
-              "z-20 grid size-12 shrink-0 place-items-center rounded-full shadow-sm transition duration-300",
+              "z-20 grid size-11 shrink-0 place-items-center rounded-full shadow-sm transition duration-300",
               isExpanded
                 ? "bg-accent text-background"
                 : "bg-foreground/[0.08] text-foreground group-hover:bg-accent group-hover:text-background",
