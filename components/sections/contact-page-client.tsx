@@ -243,7 +243,7 @@ export function ContactPageClient() {
         </div>
       </motion.div>
 
-      <Container className="relative z-10 grid min-h-[calc(100dvh-7rem)] gap-10 pb-12 pt-12 lg:grid-cols-[0.43fr_0.57fr] lg:items-start">
+      <Container className="relative z-10 grid min-h-[calc(100dvh-7rem)] gap-10 pb-12 pt-16 lg:grid-cols-[0.43fr_0.57fr] lg:items-start">
         <section className="self-start mt-12 lg:mt-24">
           <motion.p
             initial={{ opacity: 0, y: 18 }}

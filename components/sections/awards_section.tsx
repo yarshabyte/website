@@ -181,7 +181,7 @@ function AwardBook({
           "--book-ink": award.ink,
         } as CSSProperties
       }
-      className="absolute left-[var(--book-mobile-left)] top-[var(--book-mobile-top)] aspect-[0.68] w-[var(--book-mobile-width)] -translate-x-1/2 overflow-hidden rounded-[0.32rem] border border-foreground/10 bg-[var(--book-bg)] text-[var(--book-ink)] shadow-[0_18px_42px_rgba(0,0,0,0.22)] will-change-transform transform-gpu [backface-visibility:hidden] [contain:layout_paint] lg:left-[var(--book-left)] lg:top-[var(--book-top)] lg:w-[var(--book-width)] lg:shadow-[0_24px_64px_rgba(0,0,0,0.24)]"
+      className="absolute left-[var(--book-mobile-left)] top-[var(--book-mobile-top)] aspect-[0.68] w-[var(--book-mobile-width)] -translate-x-1/2 overflow-hidden rounded-[0.32rem] border border-foreground/10 bg-[var(--book-bg)] text-[var(--book-ink)] shadow-[0_8px_24px_rgba(0,0,0,0.12)] will-change-transform transform-gpu [backface-visibility:hidden] [contain:layout_paint] lg:left-[var(--book-left)] lg:top-[var(--book-top)] lg:w-[var(--book-width)] lg:shadow-[0_24px_64px_rgba(0,0,0,0.24)]"
     >
       <div className="absolute inset-y-0 left-0 w-[13%] bg-[var(--book-spine)]" />
       <div className="absolute inset-x-[14%] top-0 h-full border-l border-current/18" />
@@ -234,6 +234,7 @@ export function AwardsSection() {
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
+      
       const letters = gsap.utils
         .toArray<HTMLElement>("[data-award-letter]")
         .sort(
@@ -254,37 +255,39 @@ export function AwardsSection() {
 
       const createAwardsTimeline = (isDesktop: boolean) => {
         const scroller = isDesktop ? frameScroller : undefined;
-        const viewportHeight = () =>
-          isDesktop && scroller ? scroller.clientHeight : window.innerHeight;
-        const bookStartY = () =>
-          viewportHeight() * (isDesktop ? 0.82 : 0.62);
-        const bookExitY = () =>
-          -viewportHeight() * (isDesktop ? 1.26 : 1.02);
-        const pinDistance = () =>
-          Math.max(
-            viewportHeight() * (isDesktop ? 1.9 : 1.85),
-            isDesktop ? 1450 : 1200,
-          );
+        
+        // Cache this immediately to prevent recalculation when mobile browser bars show/hide
+        const vh = isDesktop && scroller ? scroller.clientHeight : window.innerHeight;
+        
+        const bookStartY = vh * (isDesktop ? 0.82 : 0.62);
+        const bookExitY = -vh * (isDesktop ? 1.26 : 1.02);
+        const pinDistance = Math.max(
+          vh * (isDesktop ? 1.9 : 1.85),
+          isDesktop ? 1450 : 1200,
+        );
+        
         const letterStartDepth = isDesktop
           ? [0.5, 0.56, 0.64, 0.7, 0.78, 0.86]
           : [0.56, 0.62, 0.7, 0.78, 0.86, 0.94];
 
         gsap.set(awardWords, {
           autoAlpha: isDesktop ? 0.54 : 0.42,
-          y: () => viewportHeight() * (isDesktop ? 0.1 : 0.08),
+          y: vh * (isDesktop ? 0.1 : 0.08),
           scale: isDesktop ? 1.1 : 1.08,
           force3D: true,
           transformOrigin: "50% 70%",
           willChange: "transform, opacity",
         });
+        
         gsap.set(letters, {
           autoAlpha: 1,
-          y: (index) => viewportHeight() * (letterStartDepth[index] ?? 1),
+          y: (index) => vh * (letterStartDepth[index] ?? 1),
           scale: isDesktop ? 1.16 : 1.12,
           force3D: true,
           transformOrigin: "50% 100%",
           willChange: "transform, opacity",
         });
+        
         gsap.set(books, {
           autoAlpha: 0,
           y: bookStartY,
@@ -299,17 +302,21 @@ export function AwardsSection() {
           transformOrigin: "50% 80%",
           willChange: "transform, opacity",
         });
+        
         gsap.set(intro, {
           autoAlpha: 0,
           y: 28,
         });
+
+        // Tell ScrollTrigger to ignore mobile UI resizes to stop jitter
+        ScrollTrigger.config({ ignoreMobileResize: true });
 
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: section,
             ...(scroller ? { scroller } : {}),
             start: "top top",
-            end: () => `+=${pinDistance()}`,
+            end: `+=${pinDistance}`,
             pin: true,
             pinSpacing: true,
             scrub: true,
@@ -337,7 +344,7 @@ export function AwardsSection() {
           awardWords,
           {
             autoAlpha: isDesktop ? 0.48 : 0.36,
-            y: () => -viewportHeight() * (isDesktop ? 0.035 : 0.025),
+            y: -vh * (isDesktop ? 0.035 : 0.025),
             scale: 1,
             duration: 2.8,
             ease: "none",
@@ -459,55 +466,57 @@ export function AwardsSection() {
           className="pointer-events-none relative flex min-h-[18rem] items-center justify-center sm:min-h-[24rem] lg:min-h-0"
           aria-label="awards"
         >
-          <h2
-            data-award-word
-            aria-hidden="true"
-            className="relative z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
-          >
-            {awardLetters.map((letter, index) => (
-              <span
-                key={`${letter}-${index}`}
-                data-award-letter={
-                  index === 0 || index === 1 || index === 4 || index === 5
-                    ? ""
-                    : undefined
-                }
-                data-award-index={
-                  index === 0 || index === 1 || index === 4 || index === 5
-                    ? index
-                    : undefined
-                }
-                className={
-                  index === 0 || index === 1 || index === 4 || index === 5
-                    ? "inline-block origin-bottom opacity-100"
-                    : "invisible inline-block origin-bottom"
-                }
-              >
-                {letter}
-              </span>
-            ))}
-          </h2>
+          <div className="relative flex w-full items-end justify-center">
+            <h2
+              data-award-word
+              aria-hidden="true"
+              className="relative z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
+            >
+              {awardLetters.map((letter, index) => (
+                <span
+                  key={`${letter}-${index}`}
+                  data-award-letter={
+                    index === 0 || index === 1 || index === 4 || index === 5
+                      ? ""
+                      : undefined
+                  }
+                  data-award-index={
+                    index === 0 || index === 1 || index === 4 || index === 5
+                      ? index
+                      : undefined
+                  }
+                  className={
+                    index === 0 || index === 1 || index === 4 || index === 5
+                      ? "inline-block origin-bottom opacity-100"
+                      : "invisible inline-block origin-bottom"
+                  }
+                >
+                  {letter}
+                </span>
+              ))}
+            </h2>
 
-          <h2
-            data-award-word
-            aria-label="awards"
-            className="absolute inset-0 z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
-          >
-            {awardLetters.map((letter, index) => (
-              <span
-                key={`${letter}-${index}`}
-                data-award-letter={index === 2 || index === 3 ? "" : undefined}
-                data-award-index={index === 2 || index === 3 ? index : undefined}
-                className={
-                  index === 2 || index === 3
-                    ? "inline-block origin-bottom opacity-100"
-                    : "invisible inline-block origin-bottom"
-                }
-              >
-                {letter}
-              </span>
-            ))}
-          </h2>
+            <h2
+              data-award-word
+              aria-label="awards"
+              className="absolute left-0 top-0 z-0 flex h-full w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
+            >
+              {awardLetters.map((letter, index) => (
+                <span
+                  key={`${letter}-${index}`}
+                  data-award-letter={index === 2 || index === 3 ? "" : undefined}
+                  data-award-index={index === 2 || index === 3 ? index : undefined}
+                  className={
+                    index === 2 || index === 3
+                      ? "inline-block origin-bottom opacity-100"
+                      : "invisible inline-block origin-bottom"
+                  }
+                >
+                  {letter}
+                </span>
+              ))}
+            </h2>
+          </div>
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-10">
