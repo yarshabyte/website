@@ -128,7 +128,11 @@ function ServiceCard({
             </div>
 
             <div className="mt-4">
-              <PremiumButton href="/#contact" className="w-full sm:w-auto">
+              <PremiumButton
+                href={`/contact?service=${encodeURIComponent(service.slug)}`}
+                className="w-full sm:w-auto"
+                onClick={(event) => event.stopPropagation()}
+              >
                 Start this service
               </PremiumButton>
             </div>

@@ -25,15 +25,46 @@ type FormState = {
   message: string;
 };
 
-const initialForm: FormState = {
-  intent: contactIntents[0],
-  projectType: "Full Website",
-  budget: budgetRanges[1],
-  source: referralSources[0],
-  name: "",
-  email: "",
-  message: "",
-};
+type Service = (typeof services)[number];
+
+function getProjectType(title: string) {
+  return title
+    .replace("Website Design & Development", "Full Website")
+    .replace("Poster & Graphic Design", "Poster Design")
+    .replace("Branding & Digital Identity", "Brand Identity");
+}
+
+function getServiceIntent(service: Service) {
+  if (service.slug === "portfolio") return "Build my portfolio";
+  if (service.slug === "graphics" || service.slug === "video")
+    return "Design campaign assets";
+  if (service.slug === "setup") return "Need launch support";
+  return "Start a project";
+}
+
+function createInitialForm(service?: Service): FormState {
+  if (service) {
+    return {
+      intent: getServiceIntent(service),
+      projectType: getProjectType(service.title),
+      budget: "",
+      source: "",
+      name: "",
+      email: "",
+      message: `I'd like to start a ${service.title} project. ${service.outcome} Key deliverables: ${service.deliverables.join(", ")}.`,
+    };
+  }
+
+  return {
+    intent: contactIntents[0],
+    projectType: "Full Website",
+    budget: budgetRanges[1],
+    source: referralSources[0],
+    name: "",
+    email: "",
+    message: "",
+  };
+}
 
 function OptionButton({
   active,
@@ -73,20 +104,26 @@ function OptionButton({
   );
 }
 
-export function ContactPageClient() {
-  const [step, setStep] = useState(0);
+type ContactPageClientProps = {
+  prefilledServiceSlug?: string;
+};
+
+export function ContactPageClient({
+  prefilledServiceSlug,
+}: ContactPageClientProps) {
+  const prefilledService = useMemo(
+    () => services.find((service) => service.slug === prefilledServiceSlug),
+    [prefilledServiceSlug],
+  );
+  const [step, setStep] = useState(prefilledService ? 2 : 0);
   const [sent, setSent] = useState(false);
-  const [form, setForm] = useState<FormState>(initialForm);
+  const [form, setForm] = useState<FormState>(() =>
+    createInitialForm(prefilledService),
+  );
   const reduceMotion = useReducedMotion();
 
   const projectTypes = useMemo(
-    () =>
-      services.map((service) =>
-        service.title
-          .replace("Website Design & Development", "Full Website")
-          .replace("Poster & Graphic Design", "Poster Design")
-          .replace("Branding & Digital Identity", "Brand Identity"),
-      ),
+    () => services.map((service) => getProjectType(service.title)),
     [],
   );
 
@@ -312,8 +349,8 @@ export function ContactPageClient() {
                   type="button"
                   onClick={() => {
                     setSent(false);
-                    setStep(0);
-                    setForm(initialForm);
+                    setStep(prefilledService ? 2 : 0);
+                    setForm(createInitialForm(prefilledService));
                   }}
                   className="mt-8 inline-flex min-h-12 items-center gap-2 border border-background/20 px-5 text-sm font-black uppercase tracking-[0.14em] transition hover:bg-background hover:text-accent"
                 >
