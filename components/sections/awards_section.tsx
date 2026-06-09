@@ -280,14 +280,14 @@ export function AwardsSection() {
         const vh = isDesktop && scroller ? scroller.clientHeight : window.innerHeight;
 
         const pinDistance = Math.max(
-          vh * (isDesktop ? 2.25 : 2.05),
-          isDesktop ? 1600 : 1200,
+          vh * (isDesktop ? 2.45 : 2.15),
+          isDesktop ? 1800 : 1300,
         );
 
         gsap.set(letters, {
           autoAlpha: 0,
-          y: vh * (isDesktop ? 0.45 : 0.32),
-          scale: isDesktop ? 0.9 : 0.94,
+          y: vh * (isDesktop ? 0.46 : 0.32),
+          scale: isDesktop ? 0.92 : 0.95,
           force3D: true,
           transformOrigin: "50% 100%",
           willChange: "transform, opacity",
@@ -295,17 +295,20 @@ export function AwardsSection() {
 
         gsap.set(books, {
           autoAlpha: 0,
-          y: vh * (isDesktop ? 0.72 : 0.6),
+          y: vh * (isDesktop ? 0.78 : 0.64),
           x: (index) => {
             const profile = awardMotionProfiles[index];
             return (
               awards[index].drift *
               profile.startX *
-              (isDesktop ? 0.75 : 0.3)
+              (isDesktop ? 0.85 : 0.34)
             );
           },
-          rotation: (index) => awards[index].rotate * 0.65,
-          scale: 0.92,
+          rotation: (index) =>
+            awards[index].rotate * (isDesktop ? 0.72 : 0.54),
+          scale: (index) =>
+            (isDesktop ? 0.94 : 0.96) +
+            (index % 3) * (isDesktop ? 0.018 : 0.01),
           force3D: true,
           transformOrigin: "50% 80%",
           willChange: "transform, opacity",
@@ -333,13 +336,16 @@ export function AwardsSection() {
           },
         });
 
+        // Spread normalized hook points across the master sequence so only two books overlap.
+        const sequenceSpan = 2.4;
+
         timeline.to(
           intro,
           {
             autoAlpha: 1,
             y: 0,
-            duration: 0.18,
-            stagger: 0.03,
+            duration: 0.16,
+            stagger: 0.025,
             ease: "power2.out",
           },
           0,
@@ -351,75 +357,60 @@ export function AwardsSection() {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 0.36,
-            stagger: 0.045,
+            duration: 0.52,
+            stagger: 0.31,
             ease: "power3.out",
           },
-          0.1,
+          sequenceSpan * 0.08,
         );
 
-        timeline.to(
-          books,
-          {
-            autoAlpha: 1,
-            y: vh * (isDesktop ? 0.08 : 0.06),
-            x: (index) => {
-              const profile = awardMotionProfiles[index];
-              return (
-                awards[index].drift *
-                profile.startX *
-                (isDesktop ? 0.25 : 0.12)
-              );
-            },
-            rotation: (index) => awards[index].rotate,
-            scale: 1,
-            duration: 0.32,
-            stagger: {
-              each: 0.035,
-              from: "center",
-            },
-            ease: "power2.out",
-          },
-          0.3,
-        );
+        const bookTiming = [0.18, 0.3, 0.42, 0.54, 0.66, 0.78, 0.86] as const;
 
-        timeline.to(
-          books,
-          {
-            y: -vh * (isDesktop ? 1.15 : 0.95),
-            x: (index) => {
-              const profile = awardMotionProfiles[index];
-              return (
-                awards[index].drift *
-                profile.exitX *
-                (isDesktop ? 0.85 : 0.32)
-              );
+        books.forEach((book, index) => {
+          const award = awards[index];
+          const profile = awardMotionProfiles[index];
+          const start = (bookTiming[index] ?? 0.86) * sequenceSpan;
+          const exitX =
+            award.drift * profile.exitX * (isDesktop ? 1 : 0.34);
+
+          timeline.to(
+            book,
+            {
+              autoAlpha: 1,
+              y: vh * (isDesktop ? 0.08 : 0.06),
+              x: exitX * 0.12,
+              rotation: award.rotate,
+              scale: 1,
+              duration: 0.22,
+              ease: "power2.out",
             },
-            rotation: (index) => {
-              const profile = awardMotionProfiles[index];
-              return awards[index].rotate * profile.exitRotation;
+            start,
+          );
+
+          timeline.to(
+            book,
+            {
+              y: -vh * (isDesktop ? 1.18 : 1.02),
+              x: exitX,
+              rotation: award.rotate * profile.exitRotation,
+              scale: profile.exitScale,
+              autoAlpha: 0,
+              duration: 0.36,
+              ease: "none",
             },
-            scale: (index) => awardMotionProfiles[index].exitScale,
-            autoAlpha: 0,
-            duration: 0.58,
-            stagger: {
-              each: 0.025,
-              from: "center",
-            },
-            ease: "none",
-          },
-          0.48,
-        );
+            start + 0.2,
+          );
+        });
 
         timeline.to(
           letters,
           {
-            y: -vh * (isDesktop ? 0.08 : 0.04),
-            autoAlpha: 0.82,
-            duration: 0.22,
+            autoAlpha: 0.86,
+            y: -vh * (isDesktop ? 0.04 : 0.02),
+            duration: 0.18,
             ease: "power2.inOut",
           },
-          0.78,
+          sequenceSpan * 0.94,
         );
 
         return () => {
