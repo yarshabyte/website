@@ -17,50 +17,51 @@ const mobileBookSlots = [
   { left: "78%", top: "42%", width: "clamp(5.1rem, 27vw, 7.2rem)" },
   { left: "30%", top: "80%", width: "clamp(5rem, 26vw, 7rem)" },
   { left: "64%", top: "82%", width: "clamp(5.2rem, 27vw, 7.2rem)" },
+  { left: "48%", top: "58%", width: "clamp(5.5rem, 28vw, 7.6rem)" },
 ] as const;
 
 const awardMotionProfiles = [
   {
-    enterDelay: 0,
-    exitX: 0.76,
-    mobileExitX: 0.24,
-    exitRotation: -0.62,
+    startX: -0.34,
+    exitX: 0.64,
+    exitRotation: -0.58,
     exitScale: 1.02,
   },
   {
-    enterDelay: 0.1,
-    exitX: 0.54,
-    mobileExitX: 0.18,
-    exitRotation: -0.48,
+    startX: 0.28,
+    exitX: -0.52,
+    exitRotation: -0.46,
     exitScale: 0.99,
   },
   {
-    enterDelay: 0.18,
-    exitX: 0.6,
-    mobileExitX: 0.2,
-    exitRotation: -0.54,
+    startX: -0.26,
+    exitX: 0.58,
+    exitRotation: -0.52,
     exitScale: 1.01,
   },
   {
-    enterDelay: 0.26,
-    exitX: 0.48,
-    mobileExitX: 0.14,
-    exitRotation: -0.42,
+    startX: 0.32,
+    exitX: -0.48,
+    exitRotation: -0.4,
     exitScale: 0.98,
   },
   {
-    enterDelay: 0.34,
-    exitX: 0.64,
-    mobileExitX: 0.16,
-    exitRotation: -0.7,
+    startX: -0.3,
+    exitX: 0.62,
+    exitRotation: -0.66,
     exitScale: 1.02,
   },
   {
-    enterDelay: 0.42,
-    exitX: 0.58,
-    mobileExitX: 0.18,
-    exitRotation: -0.58,
+    startX: 0.24,
+    exitX: -0.56,
+    exitRotation: -0.54,
     exitScale: 1,
+  },
+  {
+    startX: -0.22,
+    exitX: 0.46,
+    exitRotation: -0.5,
+    exitScale: 1.01,
   },
 ] as const;
 
@@ -155,6 +156,21 @@ const awards = [
     spine: "#246d5d",
     ink: "#fff7ed",
   },
+  {
+    letter: "Y",
+    label: "Recognition",
+    title: "Creative direction",
+    detail: "A consistent visual direction that connects campaigns, pages, and launch assets.",
+    meta: "Direction",
+    left: "50%",
+    top: "42%",
+    width: "clamp(9.75rem, 13.25vw, 15.25rem)",
+    rotate: 7,
+    drift: 145,
+    cover: "#3977a8",
+    spine: "#28587f",
+    ink: "#f7f3e8",
+  },
 ] as const;
 
 function AwardBook({
@@ -181,7 +197,7 @@ function AwardBook({
           "--book-ink": award.ink,
         } as CSSProperties
       }
-      className="absolute left-[var(--book-mobile-left)] top-[var(--book-mobile-top)] aspect-[0.68] w-[var(--book-mobile-width)] -translate-x-1/2 overflow-hidden rounded-[0.32rem] border border-foreground/10 bg-[var(--book-bg)] text-[var(--book-ink)] shadow-[0_8px_24px_rgba(0,0,0,0.12)] will-change-transform transform-gpu [backface-visibility:hidden] [contain:layout_paint] lg:left-[var(--book-left)] lg:top-[var(--book-top)] lg:w-[var(--book-width)] lg:shadow-[0_24px_64px_rgba(0,0,0,0.24)]"
+      className="absolute left-[var(--book-mobile-left)] top-[var(--book-mobile-top)] aspect-[0.68] w-[var(--book-mobile-width)] -translate-x-1/2 overflow-hidden rounded-[0.32rem] border border-foreground/10 bg-[var(--book-bg)] text-[var(--book-ink)] opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.12)] will-change-transform transform-gpu [backface-visibility:hidden] [contain:layout_paint] motion-reduce:opacity-100 lg:left-[var(--book-left)] lg:top-[var(--book-top)] lg:w-[var(--book-width)] lg:shadow-[0_24px_64px_rgba(0,0,0,0.24)]"
     >
       <div className="absolute inset-y-0 left-0 w-[13%] bg-[var(--book-spine)]" />
       <div className="absolute inset-x-[14%] top-0 h-full border-l border-current/18" />
@@ -234,19 +250,23 @@ export function AwardsSection() {
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-      
-      const letters = gsap.utils
-        .toArray<HTMLElement>("[data-award-letter]")
-        .sort(
-          (left, right) =>
-            Number(left.dataset.awardIndex) - Number(right.dataset.awardIndex),
-        );
-      const books = gsap.utils.toArray<HTMLElement>("[data-award-book]");
-      const awardWords = gsap.utils.toArray<HTMLElement>("[data-award-word]");
-      const intro = gsap.utils.toArray<HTMLElement>("[data-awards-intro]");
+
+      const letters = Array.from(
+        section.querySelectorAll<HTMLElement>("[data-award-letter]"),
+      );
+      const books = Array.from(
+        section.querySelectorAll<HTMLElement>("[data-award-book]"),
+      );
+      const intro = Array.from(
+        section.querySelectorAll<HTMLElement>("[data-awards-intro]"),
+      );
+
+      if (letters.length !== awardLetters.length) {
+        return;
+      }
 
       if (reduceMotion) {
-        gsap.set([...awardWords, ...letters, ...books, ...intro], {
+        gsap.set([...letters, ...books, ...intro], {
           autoAlpha: 1,
           clearProps: "transform",
         });
@@ -255,54 +275,42 @@ export function AwardsSection() {
 
       const createAwardsTimeline = (isDesktop: boolean) => {
         const scroller = isDesktop ? frameScroller : undefined;
-        
+
         // Cache this immediately to prevent recalculation when mobile browser bars show/hide
         const vh = isDesktop && scroller ? scroller.clientHeight : window.innerHeight;
-        
-        const bookStartY = vh * (isDesktop ? 0.82 : 0.62);
-        const bookExitY = -vh * (isDesktop ? 1.26 : 1.02);
-        const pinDistance = Math.max(
-          vh * (isDesktop ? 1.9 : 1.85),
-          isDesktop ? 1450 : 1200,
-        );
-        
-        const letterStartDepth = isDesktop
-          ? [0.5, 0.56, 0.64, 0.7, 0.78, 0.86]
-          : [0.56, 0.62, 0.7, 0.78, 0.86, 0.94];
 
-        gsap.set(awardWords, {
-          autoAlpha: isDesktop ? 0.54 : 0.42,
-          y: vh * (isDesktop ? 0.1 : 0.08),
-          scale: isDesktop ? 1.1 : 1.08,
-          force3D: true,
-          transformOrigin: "50% 70%",
-          willChange: "transform, opacity",
-        });
-        
+        const pinDistance = Math.max(
+          vh * (isDesktop ? 2.25 : 2.05),
+          isDesktop ? 1600 : 1200,
+        );
+
         gsap.set(letters, {
-          autoAlpha: 1,
-          y: (index) => vh * (letterStartDepth[index] ?? 1),
-          scale: isDesktop ? 1.16 : 1.12,
+          autoAlpha: 0,
+          y: vh * (isDesktop ? 0.45 : 0.32),
+          scale: isDesktop ? 0.9 : 0.94,
           force3D: true,
           transformOrigin: "50% 100%",
           willChange: "transform, opacity",
         });
-        
+
         gsap.set(books, {
           autoAlpha: 0,
-          y: bookStartY,
-          x: (index) =>
-            awards[index].drift * (isDesktop ? -0.08 : -0.025),
-          rotation: (index) =>
-            awards[index].rotate * (isDesktop ? 0.62 : 0.46),
-          scale: (index) =>
-            (isDesktop ? 0.94 : 0.96) +
-            (index % 3) * (isDesktop ? 0.018 : 0.01),
+          y: vh * (isDesktop ? 0.72 : 0.6),
+          x: (index) => {
+            const profile = awardMotionProfiles[index];
+            return (
+              awards[index].drift *
+              profile.startX *
+              (isDesktop ? 0.75 : 0.3)
+            );
+          },
+          rotation: (index) => awards[index].rotate * 0.65,
+          scale: 0.92,
           force3D: true,
           transformOrigin: "50% 80%",
           willChange: "transform, opacity",
         });
-        
+
         gsap.set(intro, {
           autoAlpha: 0,
           y: 28,
@@ -319,37 +327,22 @@ export function AwardsSection() {
             end: `+=${pinDistance}`,
             pin: true,
             pinSpacing: true,
-            scrub: true,
+            scrub: 0.8,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },
         });
-
-        timeline.addLabel("intro", 0);
-        timeline.addLabel("cardsIn", 0.48);
 
         timeline.to(
           intro,
           {
             autoAlpha: 1,
             y: 0,
-            duration: 0.5,
-            stagger: 0.06,
+            duration: 0.18,
+            stagger: 0.03,
             ease: "power2.out",
           },
-          "intro+=0.08",
-        );
-
-        timeline.to(
-          awardWords,
-          {
-            autoAlpha: isDesktop ? 0.48 : 0.36,
-            y: -vh * (isDesktop ? 0.035 : 0.025),
-            scale: 1,
-            duration: 2.8,
-            ease: "none",
-          },
-          "intro",
+          0,
         );
 
         timeline.to(
@@ -358,46 +351,79 @@ export function AwardsSection() {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 1.2,
-            stagger: 0.055,
-            ease: "power2.out",
+            duration: 0.36,
+            stagger: 0.045,
+            ease: "power3.out",
           },
-          "intro",
+          0.1,
         );
 
-        books.forEach((book, index) => {
-          const award = awards[index];
-          const profile = awardMotionProfiles[index];
-          const startOffset = profile.enterDelay * 0.16;
-          const exitX =
-            award.drift * (isDesktop ? profile.exitX : profile.mobileExitX);
-
-          timeline.to(
-            book,
-            {
-              autoAlpha: 1,
-              duration: isDesktop ? 0.42 : 0.34,
-              ease: "none",
+        timeline.to(
+          books,
+          {
+            autoAlpha: 1,
+            y: vh * (isDesktop ? 0.08 : 0.06),
+            x: (index) => {
+              const profile = awardMotionProfiles[index];
+              return (
+                awards[index].drift *
+                profile.startX *
+                (isDesktop ? 0.25 : 0.12)
+              );
             },
-            `cardsIn+=${startOffset}`,
-          );
-
-          timeline.to(
-            book,
-            {
-              y: bookExitY,
-              x: exitX,
-              rotation: award.rotate * profile.exitRotation,
-              scale: profile.exitScale,
-              duration: isDesktop ? 3.05 : 2.85,
-              ease: "none",
+            rotation: (index) => awards[index].rotate,
+            scale: 1,
+            duration: 0.32,
+            stagger: {
+              each: 0.035,
+              from: "center",
             },
-            `cardsIn+=${startOffset}`,
-          );
-        });
+            ease: "power2.out",
+          },
+          0.3,
+        );
+
+        timeline.to(
+          books,
+          {
+            y: -vh * (isDesktop ? 1.15 : 0.95),
+            x: (index) => {
+              const profile = awardMotionProfiles[index];
+              return (
+                awards[index].drift *
+                profile.exitX *
+                (isDesktop ? 0.85 : 0.32)
+              );
+            },
+            rotation: (index) => {
+              const profile = awardMotionProfiles[index];
+              return awards[index].rotate * profile.exitRotation;
+            },
+            scale: (index) => awardMotionProfiles[index].exitScale,
+            autoAlpha: 0,
+            duration: 0.58,
+            stagger: {
+              each: 0.025,
+              from: "center",
+            },
+            ease: "none",
+          },
+          0.48,
+        );
+
+        timeline.to(
+          letters,
+          {
+            y: -vh * (isDesktop ? 0.08 : 0.04),
+            autoAlpha: 0.82,
+            duration: 0.22,
+            ease: "power2.inOut",
+          },
+          0.78,
+        );
 
         return () => {
-          gsap.set([...awardWords, ...letters, ...books], {
+          gsap.set([...letters, ...books], {
             clearProps: "willChange",
           });
           timeline.scrollTrigger?.kill();
@@ -469,48 +495,14 @@ export function AwardsSection() {
           <div className="relative flex w-full items-end justify-center">
             <h2
               data-award-word
-              aria-hidden="true"
+              aria-label="awards"
               className="relative z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
             >
               {awardLetters.map((letter, index) => (
                 <span
                   key={`${letter}-${index}`}
-                  data-award-letter={
-                    index === 0 || index === 1 || index === 4 || index === 5
-                      ? ""
-                      : undefined
-                  }
-                  data-award-index={
-                    index === 0 || index === 1 || index === 4 || index === 5
-                      ? index
-                      : undefined
-                  }
-                  className={
-                    index === 0 || index === 1 || index === 4 || index === 5
-                      ? "inline-block origin-bottom opacity-100"
-                      : "invisible inline-block origin-bottom"
-                  }
-                >
-                  {letter}
-                </span>
-              ))}
-            </h2>
-
-            <h2
-              data-award-word
-              aria-label="awards"
-              className="absolute left-0 top-0 z-0 flex h-full w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
-            >
-              {awardLetters.map((letter, index) => (
-                <span
-                  key={`${letter}-${index}`}
-                  data-award-letter={index === 2 || index === 3 ? "" : undefined}
-                  data-award-index={index === 2 || index === 3 ? index : undefined}
-                  className={
-                    index === 2 || index === 3
-                      ? "inline-block origin-bottom opacity-100"
-                      : "invisible inline-block origin-bottom"
-                  }
+                  data-award-letter
+                  className="inline-block origin-bottom opacity-0 motion-reduce:opacity-100"
                 >
                   {letter}
                 </span>
