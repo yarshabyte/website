@@ -280,8 +280,8 @@ export function AwardsSection() {
         const vh = isDesktop && scroller ? scroller.clientHeight : window.innerHeight;
 
         const pinDistance = Math.max(
-          vh * (isDesktop ? 2.45 : 2.15),
-          isDesktop ? 1800 : 1300,
+          vh * (isDesktop ? 2.65 : 2.35),
+          isDesktop ? 1900 : 1450,
         );
 
         gsap.set(letters, {
@@ -336,8 +336,8 @@ export function AwardsSection() {
           },
         });
 
-        // Spread normalized hook points across the master sequence so only two books overlap.
-        const sequenceSpan = 2.4;
+        // Keep several books moving through the scene without turning them into one grouped tween.
+        const sequenceSpan = 1.65;
 
         timeline.to(
           intro,
@@ -357,14 +357,14 @@ export function AwardsSection() {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 0.52,
-            stagger: 0.31,
+            duration: 0.56,
+            stagger: 0.25,
             ease: "power3.out",
           },
           sequenceSpan * 0.08,
         );
 
-        const bookTiming = [0.18, 0.3, 0.42, 0.54, 0.66, 0.78, 0.86] as const;
+        const bookTiming = [0.16, 0.29, 0.42, 0.55, 0.68, 0.81, 0.94] as const;
 
         books.forEach((book, index) => {
           const award = awards[index];
@@ -381,7 +381,7 @@ export function AwardsSection() {
               x: exitX * 0.12,
               rotation: award.rotate,
               scale: 1,
-              duration: 0.22,
+              duration: 0.34,
               ease: "power2.out",
             },
             start,
@@ -395,10 +395,10 @@ export function AwardsSection() {
               rotation: award.rotate * profile.exitRotation,
               scale: profile.exitScale,
               autoAlpha: 0,
-              duration: 0.36,
+              duration: 0.62,
               ease: "none",
             },
-            start + 0.2,
+            start + 0.28,
           );
         });
 
@@ -410,7 +410,7 @@ export function AwardsSection() {
             duration: 0.18,
             ease: "power2.inOut",
           },
-          sequenceSpan * 0.94,
+          sequenceSpan * 1.38,
         );
 
         return () => {
@@ -487,7 +487,7 @@ export function AwardsSection() {
             <h2
               data-award-word
               aria-label="awards"
-              className="relative z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:-translate-y-3"
+              className="relative z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:w-max lg:-translate-y-[clamp(6rem,18vh,8rem)]"
             >
               {awardLetters.map((letter, index) => (
                 <span
