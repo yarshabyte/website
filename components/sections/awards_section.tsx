@@ -11,13 +11,13 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const awardLetters = ["a", "w", "a", "r", "d", "s"] as const;
 
 const mobileBookSlots = [
-  { left: "22%", top: "68%", width: "clamp(5.4rem, 28vw, 7.5rem)" },
-  { left: "42%", top: "50%", width: "clamp(5.6rem, 29vw, 7.8rem)" },
-  { left: "66%", top: "62%", width: "clamp(5.4rem, 28vw, 7.5rem)" },
-  { left: "78%", top: "42%", width: "clamp(5.1rem, 27vw, 7.2rem)" },
-  { left: "30%", top: "80%", width: "clamp(5rem, 26vw, 7rem)" },
-  { left: "64%", top: "82%", width: "clamp(5.2rem, 27vw, 7.2rem)" },
-  { left: "48%", top: "58%", width: "clamp(5.5rem, 28vw, 7.6rem)" },
+  { left: "20%", top: "58%", width: "clamp(6.25rem, 31vw, 8.25rem)" },
+  { left: "48%", top: "44%", width: "clamp(6.4rem, 32vw, 8.5rem)" },
+  { left: "78%", top: "58%", width: "clamp(6.1rem, 30vw, 8.1rem)" },
+  { left: "27%", top: "39%", width: "clamp(6rem, 30vw, 8rem)" },
+  { left: "68%", top: "67%", width: "clamp(6.15rem, 30vw, 8.15rem)" },
+  { left: "39%", top: "66%", width: "clamp(6.2rem, 31vw, 8.25rem)" },
+  { left: "73%", top: "38%", width: "clamp(6.4rem, 32vw, 8.5rem)" },
 ] as const;
 
 const awardMotionProfiles = [
@@ -216,7 +216,7 @@ function AwardBook({
           <p className="text-[0.48rem] font-semibold uppercase leading-tight tracking-[0.12em] opacity-64 sm:text-[0.58rem] sm:tracking-[0.14em]">
             {award.label}
           </p>
-          <h3 className="mt-3 hidden max-w-[12rem] text-[clamp(1.35rem,2.1vw,2.3rem)] font-semibold uppercase leading-[0.9] sm:block">
+          <h3 className="mt-2 block max-h-[2.8em] max-w-[12rem] overflow-hidden text-[clamp(0.8rem,3.8vw,1.2rem)] font-semibold uppercase leading-[0.92] lg:mt-3 lg:text-[clamp(1.35rem,2.1vw,2.3rem)]">
             {award.title}
           </h3>
           <p className="mt-4 hidden max-w-[12rem] text-[0.66rem] font-semibold leading-5 opacity-68 md:block">
@@ -274,20 +274,31 @@ export function AwardsSection() {
       }
 
       const createAwardsTimeline = (isDesktop: boolean) => {
+        if (isDesktop && !frameScroller) {
+          return;
+        }
+
+        ScrollTrigger.defaults({
+          scroller: isDesktop ? frameScroller : undefined,
+        });
+
         const scroller = isDesktop ? frameScroller : undefined;
 
         // Cache this immediately to prevent recalculation when mobile browser bars show/hide
-        const vh = isDesktop && scroller ? scroller.clientHeight : window.innerHeight;
+        const vh =
+          isDesktop && frameScroller
+            ? frameScroller.clientHeight
+            : document.documentElement.clientHeight;
 
         const pinDistance = Math.max(
-          vh * (isDesktop ? 2.65 : 2.35),
-          isDesktop ? 1900 : 1450,
+          vh * (isDesktop ? 2.65 : 2.2),
+          isDesktop ? 1900 : 1350,
         );
 
         gsap.set(letters, {
           autoAlpha: 0,
-          y: vh * (isDesktop ? 0.46 : 0.32),
-          scale: isDesktop ? 0.92 : 0.95,
+          y: vh * (isDesktop ? 0.46 : 0.26),
+          scale: isDesktop ? 0.92 : 0.96,
           force3D: true,
           transformOrigin: "50% 100%",
           willChange: "transform, opacity",
@@ -295,17 +306,17 @@ export function AwardsSection() {
 
         gsap.set(books, {
           autoAlpha: 0,
-          y: vh * (isDesktop ? 0.78 : 0.64),
+          y: vh * (isDesktop ? 0.78 : 0.7),
           x: (index) => {
             const profile = awardMotionProfiles[index];
             return (
               awards[index].drift *
               profile.startX *
-              (isDesktop ? 0.85 : 0.34)
+              (isDesktop ? 0.85 : 0.24)
             );
           },
           rotation: (index) =>
-            awards[index].rotate * (isDesktop ? 0.72 : 0.54),
+            awards[index].rotate * (isDesktop ? 0.72 : 0.46),
           scale: (index) =>
             (isDesktop ? 0.94 : 0.96) +
             (index % 3) * (isDesktop ? 0.018 : 0.01),
@@ -330,14 +341,14 @@ export function AwardsSection() {
             end: `+=${pinDistance}`,
             pin: true,
             pinSpacing: true,
-            scrub: 0.8,
+            scrub: isDesktop ? 0.8 : 0.45,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },
         });
 
         // Keep several books moving through the scene without turning them into one grouped tween.
-        const sequenceSpan = 1.65;
+        const sequenceSpan = isDesktop ? 1.65 : 1.82;
 
         timeline.to(
           intro,
@@ -358,7 +369,7 @@ export function AwardsSection() {
             y: 0,
             scale: 1,
             duration: 0.56,
-            stagger: 0.25,
+            stagger: isDesktop ? 0.25 : 0.2,
             ease: "power3.out",
           },
           sequenceSpan * 0.08,
@@ -377,11 +388,11 @@ export function AwardsSection() {
             book,
             {
               autoAlpha: 1,
-              y: vh * (isDesktop ? 0.08 : 0.06),
+              y: vh * (isDesktop ? 0.08 : 0.04),
               x: exitX * 0.12,
               rotation: award.rotate,
               scale: 1,
-              duration: 0.34,
+              duration: isDesktop ? 0.34 : 0.28,
               ease: "power2.out",
             },
             start,
@@ -390,15 +401,15 @@ export function AwardsSection() {
           timeline.to(
             book,
             {
-              y: -vh * (isDesktop ? 1.18 : 1.02),
+              y: -vh * (isDesktop ? 1.18 : 1.08),
               x: exitX,
               rotation: award.rotate * profile.exitRotation,
               scale: profile.exitScale,
               autoAlpha: 0,
-              duration: 0.62,
+              duration: isDesktop ? 0.62 : 0.54,
               ease: "none",
             },
-            start + 0.28,
+            start + (isDesktop ? 0.28 : 0.24),
           );
         });
 
@@ -406,7 +417,7 @@ export function AwardsSection() {
           letters,
           {
             autoAlpha: 0.86,
-            y: -vh * (isDesktop ? 0.04 : 0.02),
+            y: -vh * (isDesktop ? 0.04 : 0.01),
             duration: 0.18,
             ease: "power2.inOut",
           },
@@ -432,10 +443,6 @@ export function AwardsSection() {
         (context) => {
           const isDesktop = Boolean(context.conditions?.isDesktop);
 
-          if (isDesktop && !frameScroller) {
-            return;
-          }
-
           return createAwardsTimeline(isDesktop);
         },
       );
@@ -457,12 +464,12 @@ export function AwardsSection() {
     <section
       ref={sectionRef}
       id="awards"
-      className="fluid-section relative min-h-dvh overflow-hidden bg-background text-foreground lg:min-h-[calc(100vh-1.5rem)] lg:py-0"
+      className="relative h-dvh overflow-hidden bg-background px-4 text-foreground sm:px-8 lg:h-[calc(100vh-1.5rem)] lg:px-[var(--site-gutter)]"
     >
-      <div className="relative mx-auto flex min-h-[calc(100dvh-7rem)] w-full max-w-[118rem] flex-col justify-center lg:min-h-[calc(100vh-1.5rem)] lg:w-[var(--site-content-width)] lg:max-w-none">
+      <div className="relative mx-auto h-full w-full max-w-[118rem] lg:w-[var(--site-content-width)] lg:max-w-none">
         <div
           data-awards-intro
-          className="relative z-20 mb-10 flex items-center gap-3 lg:absolute lg:left-0 lg:top-14 lg:mb-0 lg:opacity-0"
+          className="absolute left-0 top-[calc(var(--header-height)+0.75rem)] z-20 flex items-center gap-3 opacity-0 lg:top-14"
         >
           <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
             <span className="size-1.5 rounded-full bg-accent" />
@@ -474,20 +481,20 @@ export function AwardsSection() {
 
         <p
           data-awards-intro
-          className="relative z-20 max-w-sm text-base font-semibold leading-7 text-foreground/64 lg:absolute lg:bottom-16 lg:left-0 lg:opacity-0"
+          className="absolute bottom-5 left-0 z-20 max-w-[13rem] text-xs font-semibold leading-5 text-foreground/64 opacity-0 sm:max-w-sm sm:text-sm lg:bottom-16 lg:text-base lg:leading-7"
         >
           Awards and Recognition.
         </p>
 
         <div
-          className="pointer-events-none relative flex min-h-[18rem] items-center justify-center sm:min-h-[24rem] lg:min-h-0"
+          className="pointer-events-none absolute inset-0 flex items-center justify-center"
           aria-label="awards"
         >
           <div className="relative flex w-full items-end justify-center">
             <h2
               data-award-word
               aria-label="awards"
-              className="relative z-0 flex w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(5.5rem,17.5vw,20.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:w-max lg:-translate-y-[clamp(6rem,18vh,8rem)]"
+              className="relative z-0 flex w-max items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(4.5rem,19vw,7.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:text-[clamp(5.5rem,17.5vw,20.5rem)] lg:-translate-y-[clamp(6rem,18vh,8rem)]"
             >
               {awardLetters.map((letter, index) => (
                 <span
