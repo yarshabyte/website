@@ -11,13 +11,13 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const awardLetters = ["a", "w", "a", "r", "d", "s"] as const;
 
 const mobileBookSlots = [
-  { left: "20%", top: "58%", width: "clamp(6.25rem, 31vw, 8.25rem)" },
-  { left: "48%", top: "44%", width: "clamp(6.4rem, 32vw, 8.5rem)" },
-  { left: "78%", top: "58%", width: "clamp(6.1rem, 30vw, 8.1rem)" },
-  { left: "27%", top: "39%", width: "clamp(6rem, 30vw, 8rem)" },
-  { left: "68%", top: "67%", width: "clamp(6.15rem, 30vw, 8.15rem)" },
-  { left: "39%", top: "66%", width: "clamp(6.2rem, 31vw, 8.25rem)" },
-  { left: "73%", top: "38%", width: "clamp(6.4rem, 32vw, 8.5rem)" },
+  { left: "20%", top: "58%", width: "clamp(8rem, 37vw, 9.75rem)" },
+  { left: "49%", top: "43%", width: "clamp(8.15rem, 38vw, 10rem)" },
+  { left: "78%", top: "58%", width: "clamp(7.9rem, 36vw, 9.6rem)" },
+  { left: "25%", top: "38%", width: "clamp(7.8rem, 36vw, 9.5rem)" },
+  { left: "69%", top: "67%", width: "clamp(7.95rem, 37vw, 9.7rem)" },
+  { left: "39%", top: "67%", width: "clamp(8rem, 37vw, 9.75rem)" },
+  { left: "74%", top: "37%", width: "clamp(8.15rem, 38vw, 10rem)" },
 ] as const;
 
 const awardMotionProfiles = [
@@ -197,12 +197,12 @@ function AwardBook({
           "--book-ink": award.ink,
         } as CSSProperties
       }
-      className="absolute left-[var(--book-mobile-left)] top-[var(--book-mobile-top)] aspect-[0.68] w-[var(--book-mobile-width)] -translate-x-1/2 overflow-hidden rounded-[0.32rem] border border-foreground/10 bg-[var(--book-bg)] text-[var(--book-ink)] opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.12)] will-change-transform transform-gpu [backface-visibility:hidden] [contain:layout_paint] motion-reduce:opacity-100 lg:left-[var(--book-left)] lg:top-[var(--book-top)] lg:w-[var(--book-width)] lg:shadow-[0_24px_64px_rgba(0,0,0,0.24)]"
+      className="absolute left-[var(--book-mobile-left)] top-[var(--book-mobile-top)] aspect-[0.68] w-[var(--book-mobile-width)] -translate-x-1/2 overflow-hidden rounded-[0.32rem] border border-foreground/10 bg-[var(--book-bg)] text-[var(--book-ink)] opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.12)] will-change-transform transform-gpu [backface-visibility:hidden] [contain:layout_paint] [container-type:inline-size] motion-reduce:opacity-100 lg:left-[var(--book-left)] lg:top-[var(--book-top)] lg:w-[var(--book-width)] lg:shadow-[0_24px_64px_rgba(0,0,0,0.24)]"
     >
       <div className="absolute inset-y-0 left-0 w-[13%] bg-[var(--book-spine)]" />
       <div className="absolute inset-x-[14%] top-0 h-full border-l border-current/18" />
       <div className="absolute inset-x-[18%] top-[54%] h-[18%] -skew-y-6 rounded-full border border-current/24 opacity-35" />
-      <div className="relative z-10 flex h-full flex-col justify-between p-[8%]">
+      <div className="relative z-10 flex h-full min-w-0 flex-col justify-between py-[8%] pl-[18%] pr-[8%]">
         <div className="flex items-start justify-between gap-4">
           <span className="font-helvetica-bold text-[clamp(1.1rem,5.4vw,2rem)] leading-none lg:text-[clamp(1.3rem,2vw,2rem)]">
             {award.letter}
@@ -216,19 +216,19 @@ function AwardBook({
           <p className="text-[0.48rem] font-semibold uppercase leading-tight tracking-[0.12em] opacity-64 sm:text-[0.58rem] sm:tracking-[0.14em]">
             {award.label}
           </p>
-          <h3 className="mt-2 block max-h-[2.8em] max-w-[12rem] overflow-hidden text-[clamp(0.8rem,3.8vw,1.2rem)] font-semibold uppercase leading-[0.92] lg:mt-3 lg:text-[clamp(1.35rem,2.1vw,2.3rem)]">
+          <h3 className="mt-2 min-w-0 max-w-full [overflow-wrap:anywhere] text-[clamp(0.72rem,9.5cqw,1.7rem)] font-semibold uppercase leading-[0.92] lg:mt-3">
             {award.title}
           </h3>
-          <p className="mt-4 hidden max-w-[12rem] text-[0.66rem] font-semibold leading-5 opacity-68 md:block">
+          <p className="mt-3 min-w-0 max-w-full text-[clamp(0.48rem,3.8cqw,0.66rem)] font-semibold leading-[1.45] opacity-68 lg:mt-4">
             {award.detail}
           </p>
         </div>
 
-        <div className="hidden items-end justify-between gap-4 sm:flex">
-          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] opacity-62">
+        <div className="flex items-end justify-between gap-3">
+          <span className="text-[0.46rem] font-semibold uppercase tracking-[0.1em] opacity-62 sm:text-[0.52rem] lg:text-[0.58rem] lg:tracking-[0.12em]">
             {award.meta}
           </span>
-          <span className="h-16 w-px bg-current/30" aria-hidden="true" />
+          <span className="h-8 w-px bg-current/30 lg:h-16" aria-hidden="true" />
         </div>
       </div>
     </article>
@@ -333,6 +333,42 @@ export function AwardsSection() {
         // Tell ScrollTrigger to ignore mobile UI resizes to stop jitter
         ScrollTrigger.config({ ignoreMobileResize: true });
 
+        const arrivalTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            ...(scroller ? { scroller } : {}),
+            start: "top 88%",
+            end: "top 8%",
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        arrivalTimeline
+          .to(
+            letters,
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.42,
+              stagger: isDesktop ? 0.07 : 0.055,
+              ease: "power2.out",
+            },
+            0,
+          )
+          .to(
+            intro,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.26,
+              stagger: 0.025,
+              ease: "power2.out",
+            },
+            0.34,
+          );
+
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: section,
@@ -341,46 +377,22 @@ export function AwardsSection() {
             end: `+=${pinDistance}`,
             pin: true,
             pinSpacing: true,
-            scrub: isDesktop ? 0.8 : 0.45,
+            scrub: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
           },
         });
 
         // Keep several books moving through the scene without turning them into one grouped tween.
-        const sequenceSpan = isDesktop ? 1.65 : 1.82;
-
-        timeline.to(
-          intro,
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.16,
-            stagger: 0.025,
-            ease: "power2.out",
-          },
-          0,
-        );
-
-        timeline.to(
-          letters,
-          {
-            autoAlpha: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.56,
-            stagger: isDesktop ? 0.25 : 0.2,
-            ease: "power3.out",
-          },
-          sequenceSpan * 0.08,
-        );
-
-        const bookTiming = [0.16, 0.29, 0.42, 0.55, 0.68, 0.81, 0.94] as const;
+        const sequenceSpan = isDesktop ? 1.42 : 1.5;
+        const bookTiming = [0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.84] as const;
 
         books.forEach((book, index) => {
           const award = awards[index];
           const profile = awardMotionProfiles[index];
           const start = (bookTiming[index] ?? 0.86) * sequenceSpan;
+          const enterDuration = isDesktop ? 0.3 : 0.26;
+          const holdDuration = isDesktop ? 0.08 : 0.06;
           const exitX =
             award.drift * profile.exitX * (isDesktop ? 1 : 0.34);
 
@@ -392,7 +404,7 @@ export function AwardsSection() {
               x: exitX * 0.12,
               rotation: award.rotate,
               scale: 1,
-              duration: isDesktop ? 0.34 : 0.28,
+              duration: enterDuration,
               ease: "power2.out",
             },
             start,
@@ -406,10 +418,10 @@ export function AwardsSection() {
               rotation: award.rotate * profile.exitRotation,
               scale: profile.exitScale,
               autoAlpha: 0,
-              duration: isDesktop ? 0.62 : 0.54,
+              duration: isDesktop ? 0.58 : 0.5,
               ease: "none",
             },
-            start + (isDesktop ? 0.28 : 0.24),
+            start + enterDuration + holdDuration,
           );
         });
 
@@ -421,13 +433,15 @@ export function AwardsSection() {
             duration: 0.18,
             ease: "power2.inOut",
           },
-          sequenceSpan * 1.38,
+          sequenceSpan * 1.3,
         );
 
         return () => {
           gsap.set([...letters, ...books], {
             clearProps: "willChange",
           });
+          arrivalTimeline.scrollTrigger?.kill();
+          arrivalTimeline.kill();
           timeline.scrollTrigger?.kill();
           timeline.kill();
         };
@@ -494,7 +508,7 @@ export function AwardsSection() {
             <h2
               data-award-word
               aria-label="awards"
-              className="relative z-0 flex w-max items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(4.5rem,19vw,7.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:text-[clamp(5.5rem,17.5vw,20.5rem)] lg:-translate-y-[clamp(6rem,18vh,8rem)]"
+              className="relative z-0 flex w-max max-w-full items-end justify-center gap-[0.012em] text-center font-helvetica-bold text-[clamp(3.8rem,16vw,6.5rem)] lowercase leading-[0.78] tracking-normal text-foreground/62 lg:text-[clamp(5.5rem,17.5vw,20.5rem)] lg:-translate-y-[clamp(6rem,18vh,8rem)]"
             >
               {awardLetters.map((letter, index) => (
                 <span

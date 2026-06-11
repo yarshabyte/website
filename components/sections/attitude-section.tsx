@@ -60,26 +60,20 @@ export function AttitudeSection() {
       mm.add("(min-width: 1024px)", () => {
         const viewportHeight = () => scroller.clientHeight;
         const introOffset = () => scroller.clientWidth + 48;
-        const endFocusOffset = () =>
-          Math.min(scroller.clientWidth * 0.28, 420);
         const horizontalTravel = () =>
-          Math.max(
-            0,
-            track.scrollWidth +
-              introOffset() -
-              Math.min(scroller.clientWidth, section.clientWidth) +
-              endFocusOffset(),
-          );
+          introOffset() +
+          track.scrollWidth +
+          Math.max(240, scroller.clientWidth * 0.12);
         const pinDistance = () =>
           Math.max(
-            horizontalTravel() + scroller.clientHeight * 0.12,
-            scroller.clientHeight * 1.15,
+            scroller.clientHeight * 2.35,
+            1900,
           );
 
         gsap.set(letters, {
-          autoAlpha: 0,
-          y: () => viewportHeight() * 0.42,
-          scale: 0.92,
+          autoAlpha: 1,
+          y: () => viewportHeight() * 0.48,
+          scale: 0.96,
           force3D: true,
           transformOrigin: "50% 100%",
           willChange: "transform, opacity",
@@ -101,13 +95,43 @@ export function AttitudeSection() {
           willChange: "transform",
         });
 
-        const setColorSweep = (progress: number) => {
-          const introEnd = 0.26;
-          const revealEnd = 0.58;
-          const journeyProgress = Math.max(
+        const entryTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            scroller,
+            start: "top 58%",
+            end: "top 4%",
+            scrub: 0.12,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        entryTimeline
+          .to(
+            letters,
+            {
+              y: 0,
+              scale: 1,
+              duration: 0.34,
+              stagger: 0.075,
+              ease: "power2.out",
+            },
             0,
-            Math.min(1, (progress - introEnd) / (1 - introEnd)),
+          )
+          .to(
+            intro,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.28,
+              ease: "power2.out",
+            },
+            0.46,
           );
+
+        const setColorSweep = (progress: number) => {
+          const revealEnd = 0.56;
+          const journeyProgress = Math.max(0, Math.min(1, progress / 0.78));
           const revealLeft =
             journeyProgress < revealEnd
               ? 100 - (journeyProgress / revealEnd) * 100
@@ -153,50 +177,51 @@ export function AttitudeSection() {
 
         timeline
           .to(
-            intro,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.16,
-              ease: "power2.out",
-            },
-            0,
-          )
-          .to(
-            letters,
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.12,
-              stagger: 0.02,
-              ease: "power3.out",
-            },
-            0,
-          )
-          .to(
             track,
             {
               x: () => introOffset() - horizontalTravel(),
               ease: "none",
-              duration: 0.74,
+              duration: 1,
             },
-            0.26,
+            0,
           )
           .to(
             cards,
             {
               scale: 0.976,
-              duration: 0.68,
+              duration: 0.76,
               stagger: 0.012,
               ease: "none",
             },
-            0.28,
+            0.04,
+          )
+          .to(
+            letters,
+            {
+              autoAlpha: 0,
+              y: () => -viewportHeight() * 0.72,
+              duration: 0.24,
+              stagger: 0.012,
+              ease: "power2.in",
+            },
+            0.76,
+          )
+          .to(
+            intro,
+            {
+              autoAlpha: 0,
+              y: -48,
+              duration: 0.2,
+              ease: "power2.in",
+            },
+            0.8,
           );
 
         return () => {
           gsap.set(track, { clearProps: "willChange" });
           gsap.set([...letters, ...cards], { clearProps: "willChange" });
+          entryTimeline.scrollTrigger?.kill();
+          entryTimeline.kill();
           timeline.scrollTrigger?.kill();
           timeline.kill();
         };

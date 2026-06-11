@@ -31,33 +31,33 @@ export function ContactSection() {
   return (
     <footer
       id="contact"
-      className="relative h-dvh overflow-hidden bg-background px-4 pb-4 pt-[calc(var(--header-height)+0.25rem)] text-foreground sm:px-8 sm:pb-6 lg:h-[calc(100vh-1.5rem)] lg:px-[var(--site-gutter)] lg:pb-8 lg:pt-8"
+      className="relative min-h-dvh overflow-hidden bg-background px-5 pb-10 pt-[calc(var(--header-height)+1.5rem)] text-foreground sm:px-8 lg:h-[calc(100vh-1.5rem)] lg:min-h-0 lg:px-[var(--site-gutter)] lg:pb-8 lg:pt-8"
     >
-      <div className="relative mx-auto grid h-full w-full max-w-[90rem] grid-rows-[auto_1px_minmax(0,1fr)_1px_auto]">
+      <div className="relative mx-auto flex w-full max-w-[90rem] flex-col lg:grid lg:h-full lg:grid-rows-[auto_1px_minmax(0,1fr)_1px_auto]">
         <Link
           href="/contact"
-          className={`${displayLinkClass} mx-auto text-center text-[clamp(3rem,14vw,4.75rem)] lg:text-[clamp(5rem,8.2vw,8.5rem)]`}
+          className={`${displayLinkClass} text-[clamp(3.65rem,17vw,5.5rem)] lg:mx-auto lg:text-center lg:text-[clamp(5rem,8.2vw,8.5rem)]`}
         >
           Let&apos;s talk
           <AccentMark />
         </Link>
 
-        <div className="mt-3 h-px w-full bg-foreground/30 lg:mt-4" />
+        <div className="mt-8 h-px w-full bg-foreground/30 lg:mt-4" />
 
-        <div className="grid min-h-0 grid-cols-[1.05fr_0.95fr] items-center gap-5 py-4 sm:gap-8 lg:grid-cols-[0.9fr_0.7fr_1.25fr] lg:gap-8 lg:py-5">
+        <div className="grid min-h-0 gap-0 pb-12 pt-10 lg:grid-cols-[0.9fr_0.7fr_1.25fr] lg:items-center lg:gap-8 lg:py-5">
           <div className="flex min-w-0 flex-col items-start">
             <Link
               href="/studio"
-              className={`${displayLinkClass} text-[clamp(2.25rem,11vw,3.5rem)] lg:text-[clamp(3.5rem,5.8vw,6rem)]`}
+              className={`${displayLinkClass} text-[clamp(3.5rem,16vw,5rem)] lg:text-[clamp(3.5rem,5.8vw,6rem)]`}
             >
               Studio
               <AccentMark />
             </Link>
 
-            <div className="mt-4 grid gap-2.5 text-[0.7rem] font-semibold leading-5 text-foreground/68 sm:text-xs lg:mt-7 lg:gap-3 lg:text-sm">
+            <div className="mt-9 grid gap-3 text-sm font-semibold leading-6 text-foreground/68 lg:mt-7 lg:text-sm">
               <div className="flex items-start gap-3">
                 <MapPin
-                  className="mt-1 size-3.5 shrink-0 text-accent lg:size-4"
+                  className="mt-1 size-4 shrink-0 text-accent"
                   aria-hidden="true"
                 />
                 <span>{contactData.address}</span>
@@ -67,34 +67,26 @@ export function ContactSection() {
                 className="flex items-start gap-3 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 <Mail
-                  className="mt-1 size-3.5 shrink-0 text-accent lg:size-4"
+                  className="mt-1 size-4 shrink-0 text-accent"
                   aria-hidden="true"
                 />
-                <span className="whitespace-nowrap text-[0.62rem] sm:text-xs lg:text-sm">
+                <span className="text-sm">
                   {contactData.email}
                 </span>
               </a>
             </div>
           </div>
 
-          <div className="min-w-0 border-l border-foreground/14 pl-4 sm:pl-6 lg:border-l-0 lg:pl-0">
-            <Link
-              href="/services"
-              className={`${displayLinkClass} mb-3 text-[clamp(1.3rem,6vw,2rem)] lg:hidden`}
-            >
-              Services
-              <AccentMark />
-            </Link>
-
+          <div className="mt-14 min-w-0 pl-[30%] sm:pl-[36%] lg:mt-0 lg:pl-0">
             <nav
               aria-label="Footer services"
-              className="grid content-center gap-1 text-[0.62rem] font-semibold uppercase leading-[1.25] tracking-[0.035em] text-foreground/76 sm:text-[0.7rem] lg:gap-1.5 lg:text-xs"
+              className="grid content-center gap-2.5 text-base font-semibold leading-6 text-foreground/76 lg:gap-1.5 lg:text-xs lg:uppercase lg:leading-[1.25] lg:tracking-[0.035em]"
             >
               {contactData.services.map((service) => (
                 <Link
                   key={service.href}
                   href={service.href}
-                  className="group flex min-h-6 items-center justify-between gap-3 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent lg:min-h-0 lg:py-1"
+                  className="group flex min-h-7 items-center justify-between gap-3 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent lg:min-h-0 lg:py-1"
                 >
                   <span>{service.label}</span>
                   <ArrowUpRight
@@ -104,6 +96,14 @@ export function ContactSection() {
                 </Link>
               ))}
             </nav>
+
+            <Link
+              href="/services"
+              className={`${displayLinkClass} mt-14 text-[clamp(3.5rem,16vw,5rem)] lg:hidden`}
+            >
+              Services
+              <AccentMark />
+            </Link>
           </div>
 
           <div className="hidden justify-end lg:flex">
@@ -119,20 +119,33 @@ export function ContactSection() {
 
         <div className="h-px w-full bg-foreground/30 lg:mx-auto lg:w-[72%]" />
 
-        <div className="grid grid-cols-[1.1fr_0.9fr] gap-x-5 gap-y-3 pt-3 sm:gap-x-8 lg:grid-cols-[1fr_auto_1fr] lg:items-end lg:gap-10 lg:pt-4">
+        <div className="flex flex-col pt-10 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-end lg:gap-10 lg:pt-4">
+          <div className="order-1 lg:order-2 lg:grid lg:content-end lg:justify-items-center">
+            <Link
+              href="/work"
+              className={`${displayLinkClass} text-[clamp(3.5rem,16vw,5rem)] lg:text-[clamp(3.5rem,5.5vw,5.8rem)]`}
+            >
+              Work
+              <AccentMark />
+            </Link>
+            <p className="mt-3 hidden text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-foreground/48 lg:block">
+              &copy; 2026 {contactData.companyName}
+            </p>
+          </div>
+
           <form
             action={`mailto:${contactData.email}`}
             method="post"
             encType="text/plain"
-            className="col-span-2 w-full lg:col-span-1 lg:max-w-xs"
+            className="order-2 mt-14 w-full rounded-2xl bg-foreground/[0.04] p-5 sm:p-6 lg:order-1 lg:mt-0 lg:max-w-xs lg:rounded-none lg:bg-transparent lg:p-0"
           >
             <label
               htmlFor="footer-email"
-              className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-foreground/58 lg:text-[0.68rem]"
+              className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground/58 lg:text-[0.68rem] lg:tracking-[0.18em]"
             >
               Newsletter
             </label>
-            <div className="mt-1 flex min-h-10 items-center border-b border-foreground/48 lg:mt-2">
+            <div className="mt-8 flex min-h-12 items-center border-b border-foreground/48 lg:mt-2 lg:min-h-10">
               <input
                 id="footer-email"
                 name="email"
@@ -152,22 +165,9 @@ export function ContactSection() {
             </div>
           </form>
 
-          <div className="grid content-end justify-items-start lg:justify-items-center">
-            <Link
-              href="/work"
-              className={`${displayLinkClass} text-[clamp(2.35rem,11vw,3.5rem)] lg:text-[clamp(3.5rem,5.5vw,5.8rem)]`}
-            >
-              Work
-              <AccentMark />
-            </Link>
-            <p className="mt-2 text-[0.55rem] font-semibold uppercase tracking-[0.1em] text-foreground/48 lg:mt-3 lg:text-[0.65rem]">
-              &copy; 2026 {contactData.companyName}
-            </p>
-          </div>
-
           <nav
-            aria-label="Social links"
-            className="grid content-end justify-items-start gap-y-0.5 text-[0.62rem] font-semibold sm:grid-cols-2 sm:gap-x-4 sm:gap-y-1 sm:text-[0.68rem] lg:flex lg:flex-wrap lg:justify-end lg:gap-x-5 lg:gap-y-2 lg:pr-16 lg:text-xs"
+            aria-label="Desktop social links"
+            className="hidden content-end flex-wrap justify-end gap-x-5 gap-y-2 pr-16 text-xs font-semibold lg:flex"
           >
             {contactData.socials.map((social) => (
               <a
@@ -176,6 +176,27 @@ export function ContactSection() {
                 target="_blank"
                 rel="noreferrer"
                 className="min-h-6 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent lg:min-h-0"
+              >
+                {social.label}
+              </a>
+            ))}
+          </nav>
+
+          <p className="order-3 mt-12 text-center text-sm font-semibold text-foreground/58 lg:hidden">
+            &copy; 2026 {contactData.companyName}
+          </p>
+
+          <nav
+            aria-label="Social links"
+            className="order-4 mt-10 flex flex-wrap justify-center gap-x-7 gap-y-4 text-sm font-semibold lg:hidden"
+          >
+            {contactData.socials.map((social) => (
+              <a
+                key={`mobile-${social.label}`}
+                href={social.href}
+                target="_blank"
+                rel="noreferrer"
+                className="min-h-7 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 {social.label}
               </a>
