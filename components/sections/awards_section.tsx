@@ -278,27 +278,29 @@ export function AwardsSection() {
           return;
         }
 
-        ScrollTrigger.defaults({
-          scroller: isDesktop ? frameScroller : undefined,
-        });
+        const scroller = isDesktop ? frameScroller! : window;
 
-        const scroller = isDesktop ? frameScroller : undefined;
-
-        // Cache this immediately to prevent recalculation when mobile browser bars show/hide
+        // Keep viewport-derived distances stable while mobile browser chrome expands/collapses.
         const vh =
           isDesktop && frameScroller
             ? frameScroller.clientHeight
             : document.documentElement.clientHeight;
 
         const pinDistance = Math.max(
-          vh * (isDesktop ? 2.65 : 2.2),
-          isDesktop ? 1900 : 1350,
+          vh * (isDesktop ? 2.8 : 2.55),
+          isDesktop ? 2100 : 1600,
         );
+        const sequenceSpan = isDesktop ? 1.5 : 1.65;
+        const travelDuration = isDesktop ? 1.3 : 1.18;
+        const bookTiming = [0.08, 0.22, 0.36, 0.5, 0.64, 0.78, 0.92] as const;
 
         gsap.set(letters, {
-          autoAlpha: 0,
-          y: vh * (isDesktop ? 0.46 : 0.26),
-          scale: isDesktop ? 0.92 : 0.96,
+          autoAlpha: 1,
+          y: (index) =>
+            vh *
+            ((isDesktop ? 0.32 : 0.2) +
+              index * (isDesktop ? 0.022 : 0.016)),
+          scale: 0.97,
           force3D: true,
           transformOrigin: "50% 100%",
           willChange: "transform, opacity",
@@ -330,82 +332,59 @@ export function AwardsSection() {
           y: 28,
         });
 
-        // Tell ScrollTrigger to ignore mobile UI resizes to stop jitter
-        ScrollTrigger.config({ ignoreMobileResize: true });
-
-        const arrivalTimeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            ...(scroller ? { scroller } : {}),
-            start: "top 88%",
-            end: "top 8%",
-            scrub: true,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        arrivalTimeline
-          .to(
-            letters,
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.42,
-              stagger: isDesktop ? 0.07 : 0.055,
-              ease: "power2.out",
-            },
-            0,
-          )
-          .to(
-            intro,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.26,
-              stagger: 0.025,
-              ease: "power2.out",
-            },
-            0.34,
-          );
-
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: section,
-            ...(scroller ? { scroller } : {}),
+            scroller,
             start: "top top",
             end: `+=${pinDistance}`,
             pin: true,
             pinSpacing: true,
             scrub: true,
             anticipatePin: 1,
-            invalidateOnRefresh: true,
           },
         });
 
-        // Keep several books moving through the scene without turning them into one grouped tween.
-        const sequenceSpan = isDesktop ? 1.42 : 1.5;
-        const bookTiming = [0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.84] as const;
+        timeline.to(
+          intro,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.18,
+            stagger: 0.025,
+            ease: "power2.out",
+          },
+          0,
+        );
+
+        timeline.to(
+          letters,
+          {
+            y: () => -vh * (isDesktop ? 0.045 : 0.025),
+            scale: 1,
+            duration: sequenceSpan + travelDuration * 0.72,
+            stagger: isDesktop ? 0.025 : 0.018,
+            ease: "none",
+          },
+          0,
+        );
 
         books.forEach((book, index) => {
           const award = awards[index];
           const profile = awardMotionProfiles[index];
           const start = (bookTiming[index] ?? 0.86) * sequenceSpan;
-          const enterDuration = isDesktop ? 0.3 : 0.26;
-          const holdDuration = isDesktop ? 0.08 : 0.06;
           const exitX =
             award.drift * profile.exitX * (isDesktop ? 1 : 0.34);
 
           timeline.to(
             book,
             {
-              autoAlpha: 1,
-              y: vh * (isDesktop ? 0.08 : 0.04),
-              x: exitX * 0.12,
-              rotation: award.rotate,
-              scale: 1,
-              duration: enterDuration,
-              ease: "power2.out",
+              y: -vh * (isDesktop ? 1.16 : 1.04),
+              x: exitX,
+              rotation: award.rotate * profile.exitRotation,
+              scale: profile.exitScale,
+              duration: travelDuration,
+              ease: "none",
             },
             start,
           );
@@ -413,35 +392,28 @@ export function AwardsSection() {
           timeline.to(
             book,
             {
-              y: -vh * (isDesktop ? 1.18 : 1.08),
-              x: exitX,
-              rotation: award.rotate * profile.exitRotation,
-              scale: profile.exitScale,
-              autoAlpha: 0,
-              duration: isDesktop ? 0.58 : 0.5,
+              autoAlpha: 1,
+              duration: isDesktop ? 0.1 : 0.09,
               ease: "none",
             },
-            start + enterDuration + holdDuration,
+            start,
+          );
+
+          timeline.to(
+            book,
+            {
+              autoAlpha: 0,
+              duration: isDesktop ? 0.16 : 0.14,
+              ease: "none",
+            },
+            start + travelDuration - (isDesktop ? 0.16 : 0.14),
           );
         });
 
-        timeline.to(
-          letters,
-          {
-            autoAlpha: 0.86,
-            y: -vh * (isDesktop ? 0.04 : 0.01),
-            duration: 0.18,
-            ease: "power2.inOut",
-          },
-          sequenceSpan * 1.3,
-        );
-
         return () => {
-          gsap.set([...letters, ...books], {
+          gsap.set([...letters, ...books, ...intro], {
             clearProps: "willChange",
           });
-          arrivalTimeline.scrollTrigger?.kill();
-          arrivalTimeline.kill();
           timeline.scrollTrigger?.kill();
           timeline.kill();
         };

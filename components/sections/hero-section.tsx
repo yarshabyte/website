@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Pencil } from "lucide-react";
+import { PhoneCall } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { HeroCanvasShell } from "@/components/hero/hero-canvas-shell";
 import { heroLatestProject, heroMission } from "@/data/hero";
@@ -25,6 +26,32 @@ const mobileHeroDisplay =
   "font-helvetica-bold text-[clamp(4.15rem,18vw,5.35rem)] uppercase leading-[0.82] tracking-normal";
 
 export function HeroSection() {
+  const [isContactVisible, setIsContactVisible] = useState(false);
+
+  useEffect(() => {
+    const contact = document.querySelector<HTMLElement>("#contact");
+
+    if (!contact) {
+      return;
+    }
+
+    const frame = document.querySelector<HTMLElement>(".site-frame");
+    const root = window.matchMedia("(min-width: 1024px)").matches
+      ? frame
+      : null;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsContactVisible(entry.isIntersecting),
+      {
+        root,
+        threshold: 0.08,
+      },
+    );
+
+    observer.observe(contact);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className="relative min-h-[100svh] overflow-hidden bg-transparent pt-[var(--header-height)] sm:min-h-screen">
       <HeroCanvasShell />
@@ -123,13 +150,22 @@ export function HeroSection() {
 
       <motion.a
         href="#contact"
-        className="fixed bottom-4 right-4 z-40 grid size-14 place-items-center rounded-full bg-accent text-foreground shadow-none transition hover:scale-105 sm:bottom-6 sm:right-6 sm:size-12 lg:bottom-8 lg:right-[calc((100vw-var(--site-content-width))/2)] lg:size-14"
+        className={`fixed bottom-4 right-4 z-40 grid size-14 place-items-center rounded-full bg-accent text-foreground shadow-none hover:scale-105 sm:bottom-6 sm:right-6 sm:size-12 lg:bottom-8 lg:right-[calc((100vw-var(--site-content-width))/2)] lg:size-14 ${
+          isContactVisible
+            ? "pointer-events-none invisible"
+            : "visible"
+        }`}
         initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-        aria-label="Start a project"
+        animate={{
+          opacity: isContactVisible ? 0 : 1,
+          scale: isContactVisible ? 0.9 : 1,
+        }}
+        transition={{ duration: 0.3, ease }}
+        aria-label="Contact Yarsa Byte"
+        aria-hidden={isContactVisible}
+        tabIndex={isContactVisible ? -1 : undefined}
       >
-        <Pencil className="size-5 lg:size-6" />
+        <PhoneCall className="size-5 lg:size-6" aria-hidden="true" />
       </motion.a>
     </section>
   );
