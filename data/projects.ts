@@ -32,3 +32,4 @@ export const projectsIntro = {
   description:
     "A small look at live work from Yarsa Byte, from inquiry-focused consultancy pages to personal portfolio systems.",
 };
+
