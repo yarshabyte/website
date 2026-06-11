@@ -333,15 +333,9 @@ export function AwardsSection() {
         });
 
         const timeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            scroller,
-            start: "top top",
-            end: `+=${pinDistance}`,
-            pin: true,
-            pinSpacing: true,
-            scrub: true,
-            anticipatePin: 1,
+          paused: true,
+          defaults: {
+            lazy: false,
           },
         });
 
@@ -410,11 +404,27 @@ export function AwardsSection() {
           );
         });
 
+        const scrollTrigger = ScrollTrigger.create({
+          trigger: section,
+          scroller,
+          start: "top top",
+          end: `+=${pinDistance}`,
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            timeline.totalProgress(self.progress, true);
+          },
+          onRefresh: (self) => {
+            timeline.totalProgress(self.progress, true);
+          },
+        });
+
         return () => {
           gsap.set([...letters, ...books, ...intro], {
             clearProps: "willChange",
           });
-          timeline.scrollTrigger?.kill();
+          scrollTrigger.kill();
           timeline.kill();
         };
       };
