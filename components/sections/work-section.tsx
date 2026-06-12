@@ -9,6 +9,7 @@ import { projects, projectsIntro } from "@/data/projects";
 const revealEase = [0.22, 1, 0.36, 1] as const;
 
 export function WorkSection() {
+  const featuredProject = projects.slice(0, 2);
   return (
     <section
       id="work"
@@ -52,7 +53,7 @@ export function WorkSection() {
             transition={{ duration: 0.82, delay: 0.08, ease: revealEase }}
             className="grid gap-5 lg:gap-6"
           >
-            {projects.map((project, index) => (
+            {featuredProject.map((project, index) => (
               <article
                 key={project.href}
                 className="brand-preview-surface group relative overflow-hidden rounded-2xl border border-foreground/10 shadow-[0_22px_70px_rgba(0,0,0,0.18)]"
