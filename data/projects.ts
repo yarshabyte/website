@@ -13,6 +13,18 @@ export const projects = [
       "Landing page, navigation structure, conversion CTAs, and admissions-focused content blocks.",
   },
   {
+    title: "GreenStar Automation",
+    label: "Company Website",
+    category: "Automation Solutions",
+    year: "2026",
+    tags: ["Company", "Services", "Portfolio"],
+    href: "https://www.greenstarsuppliers.com.np/",
+    thumbnail: "/work/greenstarsuppliers.png",
+    summary:
+      "A modern digital agency website showcasing services, case studies, and team expertise.",
+    outcome: "Dynamic service pages, project showcases, and a professional brand identity.",
+  },
+  {
     title: "Arvind Pandey Portfolio",
     label: "Client Portfolio",
     category: "Personal Brand",
@@ -23,7 +35,7 @@ export const projects = [
     summary:
       "A clean personal portfolio for an IT lecturer and tech consultant, built around identity, articles, and direct contact.",
     outcome: "Profile-first landing page, article entry points, contact actions, and a polished personal-brand presence.",
-  },
+  }
 ];
 
 export const projectsIntro = {
