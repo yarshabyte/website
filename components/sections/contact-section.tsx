@@ -1,310 +1,199 @@
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Mail,
+  MapPin,
+} from "lucide-react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Mail, MapPin } from "lucide-react";
 
 import { services } from "@/data/services";
 import { socialLinks } from "@/data/socials";
 
-const contactData = {
-  companyName: "Yarsa Byte",
-  address: "Butwal, Nepal",
-  email: "yarsabyte@gmail.com",
-  services: services.map((service) => ({
-    label: service.title,
-    href: `/contact?service=${encodeURIComponent(service.slug)}`,
-  })),
-  socials: socialLinks,
-} as const;
+const pageLinks = [
+  { label: "Studio", href: "/studio" },
+  { label: "Work", href: "/work" },
+  { label: "Services", href: "/services" },
+] as const;
 
-function AccentMark() {
+const smallLabelClass =
+  "text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-background/45";
+
+const footerLinkClass =
+  "w-fit transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent";
+
+function SocialIcon({
+  label,
+}: {
+  label: (typeof socialLinks)[number]["label"];
+}) {
+  if (label === "Instagram") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-[1.05rem]" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" strokeWidth="2" />
+        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+        <circle cx="17.4" cy="6.7" r="1.1" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (label === "LinkedIn") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-[1.05rem]" aria-hidden="true">
+        <path fill="currentColor" d="M5.3 8.5H2.2V21h3.1V8.5ZM3.8 3A1.8 1.8 0 1 0 3.8 6.6 1.8 1.8 0 0 0 3.8 3ZM21.8 13.8c0-3.8-2-5.6-4.7-5.6-2.2 0-3.1 1.2-3.7 2V8.5h-3.1V21h3.1v-6.2c0-1.6.3-3.2 2.3-3.2 2 0 2 1.8 2 3.3V21h3.1l1-7.2Z" />
+      </svg>
+    );
+  }
+
+  if (label === "Facebook") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-[1.05rem]" aria-hidden="true">
+        <path fill="currentColor" d="M14.2 21v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.1H8V13h2.8v8h3.4Z" />
+      </svg>
+    );
+  }
+
   return (
-    <span
-      className="ml-[0.08em] inline-block size-[0.15em] min-h-3 min-w-3 translate-y-[0.02em] bg-accent [clip-path:polygon(25%_6%,75%_6%,100%_50%,75%_94%,25%_94%,0_50%)]"
-      aria-hidden="true"
-    />
+    <svg viewBox="0 0 24 24" className="size-[1.05rem]" aria-hidden="true">
+      <path fill="currentColor" d="M16.7 3c.4 2.2 1.7 3.5 3.8 3.7v3.1a8.7 8.7 0 0 1-3.8-1.1v5.7a6.6 6.6 0 1 1-5.7-6.5v3.2a3.5 3.5 0 1 0 2.5 3.3V3h3.2Z" />
+    </svg>
   );
 }
-
-const displayLinkClass =
-  "group inline-flex w-fit items-baseline font-display uppercase leading-[0.82] tracking-[-0.055em] transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-accent";
 
 export function ContactSection() {
   return (
     <footer
       id="contact"
-      className="relative min-h-dvh overflow-hidden bg-background px-5 pb-10 pt-[calc(var(--header-height)+1.5rem)] text-foreground sm:px-8 lg:h-[calc(100vh-1.5rem)] lg:min-h-0 lg:px-[var(--site-gutter)] lg:pb-8 lg:pt-8"
+      className="relative overflow-hidden bg-foreground text-background"
     >
-      <div className="relative mx-auto flex w-full max-w-[90rem] flex-col lg:hidden">
-        <Link
-          href="/contact"
-          className={`${displayLinkClass} text-[clamp(3.65rem,17vw,5.5rem)]`}
-        >
-          Let&apos;s talk
-          <AccentMark />
-        </Link>
+      <div
+        className="service-grid-surface pointer-events-none absolute inset-0 opacity-[0.035]"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -right-24 top-0 size-80 rounded-full bg-accent/20 blur-[100px] sm:size-[30rem]"
+        aria-hidden="true"
+      />
 
-        <div className="mt-8 h-px w-full bg-foreground/30" />
-
-        <div className="grid min-h-0 gap-0 pb-12 pt-10">
-          <div className="flex min-w-0 flex-col items-start">
-            <Link
-              href="/studio"
-              className={`${displayLinkClass} text-[clamp(3.5rem,16vw,5rem)]`}
-            >
-              Studio
-              <AccentMark />
-            </Link>
-
-            <div className="mt-9 grid gap-3 text-sm font-semibold leading-6 text-foreground/68">
-              <div className="flex items-start gap-3">
-                <MapPin
-                  className="mt-1 size-4 shrink-0 text-accent"
-                  aria-hidden="true"
-                />
-                <span>{contactData.address}</span>
-              </div>
-              <a
-                href={`mailto:${contactData.email}`}
-                className="flex items-start gap-3 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-              >
-                <Mail
-                  className="mt-1 size-4 shrink-0 text-accent"
-                  aria-hidden="true"
-                />
-                <span className="text-sm">
-                  {contactData.email}
-                </span>
-              </a>
-            </div>
+      <div className="studio-container relative py-12 sm:py-16 lg:py-20">
+        <div className="grid gap-8 border-b border-background/15 pb-12 sm:pb-16 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em] text-background/55">
+              <span className="size-2 rounded-full bg-accent" />
+              Available for new projects
+            </p>
+            <h2 className="mt-7 max-w-5xl font-display text-[clamp(3.25rem,8.5vw,8.5rem)] uppercase leading-[0.84] tracking-[-0.045em]">
+              Let&apos;s make
+              <br />
+              something useful.
+            </h2>
           </div>
 
-          <div className="mt-14 min-w-0 pl-[30%] sm:pl-[36%]">
-            <nav
-              aria-label="Mobile footer services"
-              className="grid content-center gap-2.5 text-base font-semibold leading-6 text-foreground/76"
-            >
-              {contactData.services.map((service) => (
+          <Link
+            href="/contact"
+            aria-label="Start a project"
+            className="group grid size-20 shrink-0 place-items-center rounded-full bg-accent text-foreground transition duration-300 hover:rotate-[-8deg] hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-background sm:size-24"
+          >
+            <ArrowUpRight
+              className="size-8 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 sm:size-10"
+              aria-hidden="true"
+            />
+          </Link>
+        </div>
+
+        <div className="grid gap-12 py-12 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.65fr_1.25fr_0.85fr] lg:gap-10 lg:py-16">
+          <section>
+            <p className={smallLabelClass}>Yarsa Byte</p>
+            <p className="mt-5 max-w-sm text-lg leading-8 text-background/70">
+              Digital experiences, visual identities, and launch support for
+              ambitious businesses in Nepal and beyond.
+            </p>
+            <div className="mt-7 grid gap-3 text-sm text-background/65">
+              <a
+                href="mailto:yarsabyte@gmail.com"
+                className={`${footerLinkClass} inline-flex items-center gap-3`}
+              >
+                <Mail className="size-4 text-accent" aria-hidden="true" />
+                yarsabyte@gmail.com
+              </a>
+              <span className="inline-flex items-center gap-3">
+                <MapPin className="size-4 text-accent" aria-hidden="true" />
+                Butwal, Nepal
+              </span>
+            </div>
+          </section>
+
+          <nav aria-label="Footer navigation">
+            <p className={smallLabelClass}>Explore</p>
+            <div className="mt-5 grid gap-3">
+              {pageLinks.map((link) => (
                 <Link
-                  key={service.href}
-                  href={service.href}
-                  className="group flex min-h-7 items-center justify-between gap-3 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                  key={link.href}
+                  href={link.href}
+                  className={`${footerLinkClass} text-base font-semibold`}
                 >
-                  <span>{service.label}</span>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
+
+          <nav aria-label="Footer services">
+            <p className={smallLabelClass}>Services</p>
+            <div className="mt-5 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              {services.map((service) => (
+                <Link
+                  key={service.slug}
+                  href={`/contact?service=${encodeURIComponent(service.slug)}`}
+                  className={`${footerLinkClass} group inline-flex items-start gap-2 text-sm leading-6 text-background/68`}
+                >
+                  <span>{service.title}</span>
                   <ArrowUpRight
-                    className="size-3 shrink-0 opacity-0 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
+                    className="mt-1 size-3 shrink-0 opacity-0 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
                     aria-hidden="true"
                   />
                 </Link>
               ))}
-            </nav>
-          </div>
+            </div>
+          </nav>
 
-          <Link
-            href="/services"
-            className={`${displayLinkClass} ml-auto mt-14 text-right text-[clamp(3rem,14vw,4.25rem)]`}
-          >
-            Services
-            <AccentMark />
-          </Link>
-        </div>
+          <section>
+            <p className={smallLabelClass}>Follow</p>
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              {socialLinks.map((social) => {
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={social.label}
+                    title={social.label}
+                    className="group grid size-11 place-items-center rounded-full border border-background/15 text-background/70 transition duration-300 hover:border-accent hover:bg-accent hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                  >
+                    <span className="transition-transform duration-300 group-hover:scale-110">
+                      <SocialIcon label={social.label} />
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
 
-        <div className="h-px w-full bg-foreground/30" />
-
-        <div className="flex flex-col pt-10">
-          <div>
             <Link
-              href="/work"
-              className={`${displayLinkClass} text-[clamp(3.5rem,16vw,5rem)]`}
+              href="/contact"
+              className="group mt-8 inline-flex min-h-12 items-center gap-3 rounded-full border border-background/15 px-5 text-sm font-semibold transition hover:border-background/35 hover:bg-background hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
             >
-              Work
-              <AccentMark />
-            </Link>
-          </div>
-
-          <form
-            action={`mailto:${contactData.email}`}
-            method="post"
-            encType="text/plain"
-            className="mt-14 w-full rounded-2xl bg-foreground/[0.04] p-5 sm:p-6"
-          >
-            <label
-              htmlFor="footer-email-mobile"
-              className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground/58"
-            >
-              Newsletter
-            </label>
-            <div className="mt-8 flex min-h-12 items-center border-b border-foreground/48">
-              <input
-                id="footer-email-mobile"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="Your email"
-                className="min-w-0 flex-1 bg-transparent py-2 text-base text-foreground outline-none placeholder:text-foreground/42"
+              Start a project
+              <ArrowRight
+                className="size-4 transition-transform group-hover:translate-x-1"
+                aria-hidden="true"
               />
-              <button
-                type="submit"
-                aria-label="Send newsletter email"
-                className="grid size-11 shrink-0 place-items-center transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </button>
-            </div>
-          </form>
-
-          <p className="mt-12 text-center text-sm font-semibold text-foreground/58">
-            &copy; 2026 {contactData.companyName}
-          </p>
-
-          <nav
-            aria-label="Mobile social links"
-            className="mt-10 flex flex-wrap justify-center gap-x-7 gap-y-4 text-sm font-semibold"
-          >
-            {contactData.socials.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noreferrer"
-                className="min-h-7 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-              >
-                {social.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      <div className="relative mx-auto hidden h-full w-full max-w-[90rem] grid-rows-[auto_1px_minmax(0,1fr)_1px_auto] lg:grid">
-        <Link
-          href="/contact"
-          className={`${displayLinkClass} mx-auto text-center text-[clamp(5rem,8.2vw,8.5rem)]`}
-        >
-          Let&apos;s talk
-          <AccentMark />
-        </Link>
-
-        <div className="mt-4 h-px w-full bg-foreground/30" />
-
-        <div className="grid min-h-0 grid-cols-[0.9fr_0.7fr_1.25fr] items-center gap-8 py-5">
-          <div className="flex min-w-0 flex-col items-start">
-            <Link
-              href="/studio"
-              className={`${displayLinkClass} text-[clamp(3.5rem,5.8vw,6rem)]`}
-            >
-              Studio
-              <AccentMark />
             </Link>
-
-            <div className="mt-7 grid gap-3 text-sm font-semibold leading-5 text-foreground/68">
-              <div className="flex items-start gap-3">
-                <MapPin className="mt-1 size-4 shrink-0 text-accent" aria-hidden="true" />
-                <span>{contactData.address}</span>
-              </div>
-              <a
-                href={`mailto:${contactData.email}`}
-                className="flex items-start gap-3 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-              >
-                <Mail className="mt-1 size-4 shrink-0 text-accent" aria-hidden="true" />
-                <span className="whitespace-nowrap text-sm">{contactData.email}</span>
-              </a>
-            </div>
-          </div>
-
-          <nav
-            aria-label="Desktop footer services"
-            className="grid content-center gap-1.5 text-xs font-semibold uppercase leading-[1.25] tracking-[0.035em] text-foreground/76"
-          >
-            {contactData.services.map((service) => (
-              <Link
-                key={service.href}
-                href={service.href}
-                className="group flex items-center justify-between gap-3 py-1 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-              >
-                <span>{service.label}</span>
-                <ArrowUpRight
-                  className="size-3 shrink-0 opacity-0 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
-                  aria-hidden="true"
-                />
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex justify-end">
-            <Link
-              href="/services"
-              className={`${displayLinkClass} text-right text-[clamp(3.25rem,5.2vw,5.8rem)]`}
-            >
-              Services
-              <AccentMark />
-            </Link>
-          </div>
+          </section>
         </div>
 
-        <div className="mx-auto h-px w-[72%] bg-foreground/30" />
-
-        <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-10 pt-4">
-          <form
-            action={`mailto:${contactData.email}`}
-            method="post"
-            encType="text/plain"
-            className="w-full max-w-xs"
-          >
-            <label
-              htmlFor="footer-email-desktop"
-              className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-foreground/58"
-            >
-              Newsletter
-            </label>
-            <div className="mt-2 flex min-h-10 items-center border-b border-foreground/48">
-              <input
-                id="footer-email-desktop"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="Your email"
-                className="min-w-0 flex-1 bg-transparent py-2 text-base text-foreground outline-none placeholder:text-foreground/42"
-              />
-              <button
-                type="submit"
-                aria-label="Send newsletter email"
-                className="grid size-11 shrink-0 place-items-center transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
-                <ArrowRight className="size-5" aria-hidden="true" />
-              </button>
-            </div>
-          </form>
-
-          <div className="grid content-end justify-items-center">
-            <Link
-              href="/work"
-              className={`${displayLinkClass} text-[clamp(3.5rem,5.5vw,5.8rem)]`}
-            >
-              Work
-              <AccentMark />
-            </Link>
-            <p className="mt-3 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-foreground/48">
-              &copy; 2026 {contactData.companyName}
-            </p>
-          </div>
-
-          <nav
-            aria-label="Desktop social links"
-            className="flex flex-wrap justify-end gap-x-5 gap-y-2 pr-16 text-xs font-semibold"
-          >
-            {contactData.socials.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noreferrer"
-                className="transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-              >
-                {social.label}
-              </a>
-            ))}
-          </nav>
+        <div className="flex flex-col gap-4 border-t border-background/15 pt-6 text-xs font-medium text-background/42 sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {new Date().getFullYear()} Yarsa Byte. All rights reserved.</p>
+          <p>Designed and built in Nepal.</p>
         </div>
       </div>
     </footer>
