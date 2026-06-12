@@ -9,24 +9,16 @@ import { projects, projectsIntro } from "@/data/projects";
 const revealEase = [0.22, 1, 0.36, 1] as const;
 
 export function WorkSection() {
+  const featuredProject = projects.slice(0, 2);
   return (
     <section
       id="work"
-      className="relative min-h-screen overflow-hidden bg-transparent px-6 py-24 lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:pb-16 lg:pt-12"
+      className="fluid-section relative min-h-screen overflow-hidden bg-transparent lg:min-h-[calc(100vh-1.5rem)]"
     >
       <div className="mx-auto flex min-h-[calc(100vh-9rem)] w-full max-w-[90rem] flex-col lg:min-h-[calc(100vh-5rem)]">
-        <div className="hidden min-h-[36vh] lg:block" aria-hidden="true" />
+        <div className="hidden min-h-[12vh] lg:block" aria-hidden="true" />
 
-        <div
-          className="hidden items-center px-[8%] lg:flex"
-          aria-hidden="true"
-        >
-          <span className="size-3.5 rounded-full border border-foreground/90" />
-          <span className="h-px flex-1 bg-foreground/80" />
-          <span className="size-3.5 rounded-full border border-foreground/90" />
-        </div>
-
-        <div className="grid gap-10 pb-10 pt-10 lg:grid-cols-[0.46fr_0.54fr] lg:items-start lg:pb-0 lg:pt-6">
+        <div className="grid gap-[var(--space-stack)] pb-10 pt-10 lg:grid-cols-[0.46fr_0.54fr] lg:items-start lg:pb-0 lg:pt-6">
           <motion.div
             initial={{ opacity: 0, y: 34 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -61,7 +53,7 @@ export function WorkSection() {
             transition={{ duration: 0.82, delay: 0.08, ease: revealEase }}
             className="grid gap-5 lg:gap-6"
           >
-            {projects.map((project, index) => (
+            {featuredProject.map((project, index) => (
               <article
                 key={project.href}
                 className="brand-preview-surface group relative overflow-hidden rounded-2xl border border-foreground/10 shadow-[0_22px_70px_rgba(0,0,0,0.18)]"
@@ -96,7 +88,7 @@ export function WorkSection() {
                     <div className="absolute inset-0 bg-gradient-to-t from-background/82 via-background/10 to-transparent" />
                   </div>
 
-                  <div className="relative z-10 flex min-h-[18rem] flex-col justify-between p-6 transition duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:ml-[48%] sm:min-h-[21rem] sm:w-[52%] sm:bg-[color-mix(in_srgb,var(--background)_84%,var(--accent)_16%)] sm:p-8 group-hover:translate-x-1 group-hover:bg-transparent">
+                  <div className="relative z-10 flex min-h-[18rem] flex-col justify-between p-6 transition duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:ml-[48%] sm:min-h-[21rem] sm:w-[52%] sm:bg-[color-mix(in_srgb,var(--background)_84%,var(--accent)_16%)] sm:p-8 group-hover:translate-x-1 group-hover:bg-transparent group-hover:opacity-0">
                     <div className="flex items-center justify-between gap-4 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-foreground/68">
                       <span>{project.category}</span>
                       <span>{project.year}</span>

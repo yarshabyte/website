@@ -18,17 +18,37 @@ const archivoBlack = Archivo_Black({
 });
 
 export const metadata: Metadata = {
-  title: "Yarsa Byte | IT company in Nepal",
+
+  title: "YarsaByte | Your Digital Presence Partner in Nepal",
   description:
-    "Yarsa Byte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
-  metadataBase: new URL("https://yarsabyte.com"),
+    "YarsaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
+  metadataBase: new URL("https://yarsabyte.vercel.app"),
+  alternates: { canonical: "https://yarsabyte.vercel.app" },
   openGraph: {
-    title: "Yarsa Byte | IT company in Nepal",
+    title: "YarsaByte | Your Digital Presence Partner in Nepal",
     description:
-      "Yarsa Byte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
-    siteName: "Yarsa Byte",
+      "YarsaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
+    siteName: "YarsaByte",
     locale: "en_US",
     type: "website",
+    url: "https://yarsabyte.vercel.app",
+    images: [
+      {
+        url: "https://yarsabyte.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "YarsaByte — Web design & development in Nepal",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "YarsaByte | Your Digital Presence Partner in Nepal",
+    description:
+      "YarsaByte helps Nepali businesses create websites, portfolios, branding, and digital setups for a professional online presence.",
+    images: ["https://yarsabyte.vercel.app/og-image.png"],
+    creator: "@yarsabyte",
+    site: "@yarsabyte",
   },
 };
 
@@ -39,6 +59,45 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`h-full antialiased ${archivoBlack.variable}`}>
+      <head>
+        {/* Structured Data: Organization & LocalBusiness */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "YarsaByte",
+              url: "https://yarsabyte.vercel.app",
+              logo: "https://yarsabyte.vercel.app/logo.png",
+              sameAs: [
+                "https://www.facebook.com/yarsabyte",
+                "https://www.instagram.com/yarsabyte",
+                "https://www.linkedin.com/company/yarsabyte",
+              ],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              name: "YarsaByte",
+              description:
+                "Web design, development, branding, and digital services in Nepal",
+              url: "https://yarsabyte.vercel.app",
+              telephone: "+977-1234567890",
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "NP",
+                addressLocality: "Kathmandu",
+              },
+            }),
+          }}
+        />
+      </head>
       <body className="min-h-full font-sans text-foreground">
         <PageLoader>
           <div className="site-frame">

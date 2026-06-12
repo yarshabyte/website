@@ -1,16 +1,14 @@
 "use client";
 
-import Link from "next/link";
-
 import { aboutIntro } from "@/data/about";
 
 export function AboutSection() {
   return (
     <section
       id="about"
-      className="relative min-h-screen overflow-hidden bg-transparent px-6 py-24 lg:min-h-[calc(100vh-1.5rem)] lg:px-16 lg:pb-9 lg:pt-28"
+      className="fluid-section relative min-h-screen overflow-hidden bg-transparent lg:min-h-[calc(100vh-1.5rem)]"
     >
-      <div className="grid min-h-[calc(100vh-12rem)] gap-12 lg:min-h-[calc(100vh-6rem)] lg:grid-cols-[6rem_16rem_1fr_2rem] lg:gap-8">
+      <div className="grid min-h-[calc(100vh-12rem)] gap-[var(--space-stack)] lg:min-h-[calc(100vh-6rem)] lg:grid-cols-[6rem_16rem_1fr_2rem]">
         <div className="hidden lg:block" aria-hidden="true" />
         <div className="flex items-start gap-3 pt-1">
           <span className="mt-1.5 grid size-4 place-items-center rounded-full border border-foreground/20">
@@ -37,24 +35,6 @@ export function AboutSection() {
 
         <div className="hidden lg:block" aria-hidden="true" />
       </div>
-
-      <nav
-        className="mt-16 flex flex-wrap gap-24 pl-0 text-sm font-semibold uppercase tracking-[0.14em] text-foreground lg:ml-[calc(6rem+16rem+5rem)] lg:mt-0"
-        aria-label="About section links"
-      >
-        <Link
-          href="#about"
-          className="border-b border-foreground pb-3 transition hover:border-accent hover:text-accent"
-        >
-          About us
-        </Link>
-        <Link
-          href="#work"
-          className="border-b border-foreground pb-3 transition hover:border-accent hover:text-accent"
-        >
-          Work
-        </Link>
-      </nav>
     </section>
   );
 }

@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { LoadingScreen } from "@/components/loading-screen";
 
-const MIN_LOAD_MS = 2200;
+const MIN_LOAD_MS = 900;
 
 type PageLoaderProps = {
   children: ReactNode;
@@ -50,7 +50,7 @@ export function PageLoader({ children }: PageLoaderProps) {
         if (!cancelled) {
           setIsLoading(false);
         }
-      }, 720);
+      }, 420);
     });
 
     return () => {
@@ -64,8 +64,8 @@ export function PageLoader({ children }: PageLoaderProps) {
       <div
         className={
           shouldShowContent
-            ? "visible opacity-100 transition-opacity duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
-            : "invisible translate-y-8 scale-[0.985] opacity-0"
+            ? "visible opacity-100 transition-opacity duration-500 ease-out"
+            : "invisible translate-y-3 opacity-0"
         }
         aria-hidden={!shouldShowContent}
       >

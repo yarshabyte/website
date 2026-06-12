@@ -1,14 +1,19 @@
 @import "tailwindcss";
+@source "../components/**/*.{ts,tsx}";
+@source "../app/**/*.{ts,tsx}";
+@source "../data/**/*.{ts,tsx}";
+@source "../hooks/**/*.{ts,tsx}";
+
 
 :root {
-  --background: #11130F;
-  --foreground: #FFF8EA;
-  --accent: #B6F35B;
-  --navy: #171A16;
-  --menu-bg: #FFF8EA;
-  --blue: #4D7CFE;
-  --sky: #32D7C2;
-  --hero-bg: #11130F;
+  --background: #f5efe7;
+  --foreground: #1e1a18;
+  --accent: #b86a2c;
+  --navy: #33202a;
+  --menu-bg: #d8b08b;
+  --blue: #7a4b2a;
+  --sky: #d8b08b;
+  --hero-bg: #f5efe7;
   --display-font: "Archivo Black", "Arial Black", Arial, sans-serif;
   --brand-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
@@ -16,6 +21,23 @@
   --hex-opacity: 0;
   --hex-offset-x: 0px;
   --hex-offset-y: 0px;
+  --site-gutter: 1rem;
+  --header-height: 5rem;
+  --space-section: clamp(4.5rem, 10vw, 8rem);
+  --space-section-tight: clamp(3.5rem, 7vw, 6rem);
+  --space-grid: clamp(1rem, 2vw, 1.5rem);
+  --space-stack: clamp(1.5rem, 3vw, 2.5rem);
+  --site-content-width: min(
+    calc(100% - (var(--site-gutter) * 2)),
+    80rem
+  );
+}
+
+@media (min-width: 640px) {
+  :root {
+    --site-gutter: 2rem;
+    --header-height: 5.25rem;
+  }
 }
 
 @theme inline {
@@ -124,6 +146,11 @@ body::-webkit-scrollbar {
     overflow: hidden;
   }
 
+  :root {
+    --site-gutter: clamp(3rem, 4.5vw, 4rem);
+    --header-height: 5.5rem;
+  }
+
   .site-frame {
     height: calc(100vh - 1.5rem);
     min-height: 0;
@@ -185,16 +212,30 @@ h3 {
 
 @layer utilities {
   .studio-container {
-    width: min(100% - 2rem, 80rem);
+    width: var(--site-content-width);
     margin-inline: auto;
   }
 
   .section-spacing {
-    padding-block: clamp(5rem, 12vw, 9rem);
+    padding-block: var(--space-section);
   }
 
   .section-spacing-tight {
-    padding-block: clamp(4rem, 9vw, 7rem);
+    padding-block: var(--space-section-tight);
+  }
+
+  .page-hero-spacing {
+    padding-top: calc(var(--header-height) + clamp(1rem, 2vw, 2rem));
+  }
+
+  .fluid-section {
+    padding-block: var(--space-section);
+    padding-inline: var(--site-gutter);
+  }
+
+  .fluid-section-tight {
+    padding-block: var(--space-section-tight);
+    padding-inline: var(--site-gutter);
   }
 
   .gradient-text {
@@ -257,6 +298,13 @@ h3 {
     font-synthesis: none;
     font-stretch: normal;
   }
+
+  .transform-gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+
 
   .text-balance {
     text-wrap: balance;
@@ -389,3 +437,6 @@ h3 {
     transform: translateX(-50%);
   }
 }
+
+
+

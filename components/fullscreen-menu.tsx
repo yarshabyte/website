@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   AnimatePresence,
@@ -111,21 +110,7 @@ export function FullscreenMenu({ open, onClose, origin }: FullscreenMenuProps) {
                 aria-hidden="true"
               />
             )}
-
             <div className="relative z-10 flex h-full flex-col">
-              <div className="studio-container flex h-[4.5rem] shrink-0 items-center">
-                <motion.div variants={linkVariants}>
-                  <Link
-                    href="/"
-                    onClick={onClose}
-                    className="flex items-center gap-3"
-                    aria-label="Yarsa Byte home"
-                  >
-                  {/*<Image src="/logo.svg" alt="" width={36} height={36} className="size-9" />*/}
-                  </Link>
-                </motion.div>
-              </div>
-
               <nav
                 className="flex flex-1 flex-col items-center justify-center px-6 pb-[28vh] sm:pb-[24vh]"
                 aria-label="Primary navigation"

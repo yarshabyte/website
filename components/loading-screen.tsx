@@ -35,7 +35,7 @@ export function LoadingScreen({ isExiting }: LoadingScreenProps) {
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
-          <g stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <g stroke="black" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
             {[
               "M40 120 L80 96 L120 120 L160 96 L200 120 L240 96 L280 120",
               "M80 96 L100 72 L120 96 L140 72 L160 96 L180 72 L200 96",
@@ -61,7 +61,7 @@ export function LoadingScreen({ isExiting }: LoadingScreenProps) {
 
         <p
           className={cn(
-            "text-center text-[0.65rem] uppercase tracking-[0.42em] text-white transition-all duration-700 sm:text-xs",
+            "text-center text-[0.65rem] uppercase tracking-[0.42em] text-black transition-all duration-700 sm:text-xs",
             drawn ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
           )}
           style={{ transitionDelay: "0.6s" }}

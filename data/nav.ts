@@ -1,8 +1,8 @@
 export const menuLinks = [
-  { label: "Work", href: "/#work" },
+  { label: "Work", href: "/work" },
   { label: "Services", href: "/services" },
-  { label: "Studio", href: "/#about" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Studio", href: "/studio" },
+  { label: "Contact", href: "/contact" },
 ];
 
 /** @deprecated Use menuLinks */
