@@ -17,7 +17,13 @@ const sectionStyle = {
   "--attitude-reveal-right": "0%",
 } as CSSProperties;
 
-const cardOffsets = ["-2rem", "2rem", "-1rem", "1.75rem", "-1.5rem"];
+const desktopCardPositions = [
+  { align: "flex-start", offset: "0rem" },
+  { align: "flex-end", offset: "0rem" },
+  { align: "center", offset: "-1.5rem" },
+  { align: "flex-start", offset: "2rem" },
+  { align: "center", offset: "1.5rem" },
+] as const;
 
 export function AttitudeSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -55,172 +61,154 @@ export function AttitudeSection() {
         return;
       }
 
-      const mm = gsap.matchMedia();
+      let mm: gsap.MatchMedia | undefined;
+      let initialized = false;
 
-      mm.add("(max-width: 1023px)", () => {
-        const cardHeight = () => cards[0]?.offsetHeight ?? 320;
+      const initializeAttitude = () => {
+        if (initialized) {
+          return;
+        }
 
-        section.style.setProperty("--attitude-reveal-left", "100%");
-        section.style.setProperty("--attitude-reveal-right", "0%");
+        initialized = true;
+        mm = gsap.matchMedia();
 
-        gsap.set(cards, {
-          autoAlpha: 1,
-          yPercent: 145,
-          scale: 1,
-          zIndex: (index) => index + 1,
-          force3D: true,
-          willChange: "transform",
-        });
+        mm.add("(max-width: 1023px)", () => {
+          const cardHeight = () => cards[0]?.offsetHeight ?? 320;
 
-        const stackTimeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            scroller: window,
-            start: "top top",
-            end: () => `+=${cardHeight() * cards.length}`,
-            pin: true,
-            scrub: 0.18,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
+          section.style.setProperty("--attitude-reveal-left", "100%");
+          section.style.setProperty("--attitude-reveal-right", "0%");
 
-        stackTimeline.to(cards, {
-          yPercent: (index) => index * 18,
-          duration: 1,
-          stagger: 1,
-          ease: "none",
-        });
-
-        return () => {
-          stackTimeline.scrollTrigger?.kill();
-          stackTimeline.kill();
           gsap.set(cards, {
-            clearProps: "transform,zIndex,willChange",
+            autoAlpha: 1,
+            yPercent: 145,
+            scale: 1,
+            zIndex: (index) => index + 1,
+            force3D: true,
+            willChange: "transform",
           });
-        };
-      });
 
-      mm.add("(min-width: 1024px)", () => {
-        const viewportHeight = () => scroller.clientHeight;
-        const introOffset = () => scroller.clientWidth + 48;
-        const horizontalTravel = () =>
-          introOffset() +
-          track.scrollWidth +
-          Math.max(240, scroller.clientWidth * 0.12);
-        const pinDistance = () =>
-          Math.max(
-            scroller.clientHeight * 2.35,
-            1900,
-          );
-
-        gsap.set(letters, {
-          autoAlpha: 1,
-          y: () => viewportHeight() * 0.48,
-          scale: 0.96,
-          force3D: true,
-          transformOrigin: "50% 100%",
-          willChange: "transform, opacity",
-        });
-        gsap.set(intro, {
-          autoAlpha: 0,
-          y: 24,
-        });
-        gsap.set(cards, {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1.012,
-          force3D: true,
-          willChange: "transform",
-        });
-        gsap.set(track, {
-          x: () => introOffset(),
-          force3D: true,
-          willChange: "transform",
-        });
-
-        const entryTimeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            scroller,
-            start: "top 58%",
-            end: "top 4%",
-            scrub: 0.12,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        entryTimeline
-          .to(
-            letters,
-            {
-              y: 0,
-              scale: 1,
-              duration: 0.34,
-              stagger: 0.075,
-              ease: "power2.out",
+          const stackTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              scroller: window,
+              start: "top top",
+              end: () => `+=${cardHeight() * cards.length}`,
+              pin: true,
+              scrub: 0.18,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
             },
-            0,
-          )
-          .to(
-            intro,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.28,
-              ease: "power2.out",
-            },
-            0.46,
-          );
+          });
 
-        const setColorSweep = (progress: number) => {
-          const revealEnd = 0.56;
-          const journeyProgress = Math.max(0, Math.min(1, progress / 0.78));
-          const revealLeft =
-            journeyProgress < revealEnd
-              ? 100 - (journeyProgress / revealEnd) * 100
-              : 0;
-          const revealRight =
-            journeyProgress > revealEnd
-              ? ((journeyProgress - revealEnd) / (1 - revealEnd)) * 100
-              : 0;
+          stackTimeline.to(cards, {
+            yPercent: (index) => index * 18,
+            duration: 1,
+            stagger: 1,
+            ease: "none",
+          });
 
-          section.style.setProperty(
-            "--attitude-reveal-left",
-            `${Math.max(0, revealLeft)}%`,
-          );
-          section.style.setProperty(
-            "--attitude-reveal-right",
-            `${Math.min(100, revealRight)}%`,
-          );
-        };
-
-        setColorSweep(0);
-
-        const timeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            scroller,
-            start: "top top",
-            end: () => `+=${pinDistance()}`,
-            pin: true,
-            scrub: 0.12,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              setColorSweep(self.progress);
-            },
-            onLeave: () => {
-              setColorSweep(1);
-            },
-            onLeaveBack: () => {
-              setColorSweep(0);
-            },
-          },
+          return () => {
+            stackTimeline.scrollTrigger?.kill();
+            stackTimeline.kill();
+            gsap.set(cards, {
+              clearProps: "transform,zIndex,willChange",
+            });
+          };
         });
 
-        timeline
-          .to(
+        mm.add("(min-width: 1024px)", () => {
+          const introOffset = () => scroller.clientWidth + 48;
+          const horizontalTravel = () =>
+            introOffset() +
+            track.scrollWidth +
+            Math.max(200, scroller.clientWidth * 0.1);
+          const pinDistance = () =>
+            Math.max(scroller.clientHeight * 3, track.scrollWidth * 0.72);
+
+          gsap.set(letters, {
+            autoAlpha: 1,
+            clearProps: "transform",
+          });
+          gsap.set(intro, {
+            autoAlpha: 1,
+            clearProps: "transform",
+          });
+          gsap.set(cards, {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            force3D: true,
+            transformOrigin: "50% 50%",
+            willChange: "transform",
+          });
+          gsap.set(track, {
+            x: () => introOffset(),
+            force3D: true,
+            willChange: "transform",
+          });
+
+          const setColorSweep = (progress: number) => {
+            const clampedProgress = Math.max(0, Math.min(1, progress));
+            const revealLeft =
+              clampedProgress <= 0.5
+                ? 100 - clampedProgress * 200
+                : 0;
+            const revealRight =
+              clampedProgress > 0.5
+                ? (clampedProgress - 0.5) * 200
+                : 0;
+
+            section.style.setProperty(
+              "--attitude-reveal-left",
+              `${revealLeft}%`,
+            );
+            section.style.setProperty(
+              "--attitude-reveal-right",
+              `${revealRight}%`,
+            );
+          };
+
+          let currentTrackX = track.getBoundingClientRect().left;
+          let currentScale = 1;
+          let scaleFrame = 0;
+
+          const updateCardScale = () => {
+            const nextTrackX = track.getBoundingClientRect().left;
+            const pixelDelta = Math.abs(nextTrackX - currentTrackX);
+            const targetScale = 1 - Math.min(pixelDelta / 70, 1) * 0.08;
+
+            currentScale += (targetScale - currentScale) * 0.22;
+            gsap.set(cards, { scale: currentScale });
+            currentTrackX = nextTrackX;
+            scaleFrame = requestAnimationFrame(updateCardScale);
+          };
+
+          setColorSweep(0);
+          scaleFrame = requestAnimationFrame(updateCardScale);
+
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              scroller,
+              start: "top top",
+              end: () => `+=${pinDistance()}`,
+              pin: true,
+              scrub: 0.16,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              onUpdate: (self) => {
+                setColorSweep(self.progress);
+              },
+              onLeave: () => {
+                setColorSweep(1);
+              },
+              onLeaveBack: () => {
+                setColorSweep(0);
+              },
+            },
+          });
+
+          timeline.to(
             track,
             {
               x: () => introOffset() - horizontalTravel(),
@@ -228,50 +216,36 @@ export function AttitudeSection() {
               duration: 1,
             },
             0,
-          )
-          .to(
-            cards,
-            {
-              scale: 0.976,
-              duration: 0.76,
-              stagger: 0.012,
-              ease: "none",
-            },
-            0.04,
-          )
-          .to(
-            letters,
-            {
-              autoAlpha: 0,
-              y: () => -viewportHeight() * 0.72,
-              duration: 0.24,
-              stagger: 0.012,
-              ease: "power2.in",
-            },
-            0.76,
-          )
-          .to(
-            intro,
-            {
-              autoAlpha: 0,
-              y: -48,
-              duration: 0.2,
-              ease: "power2.in",
-            },
-            0.8,
           );
 
-        return () => {
-          gsap.set(track, { clearProps: "willChange" });
-          gsap.set([...letters, ...cards], { clearProps: "willChange" });
-          entryTimeline.scrollTrigger?.kill();
-          entryTimeline.kill();
-          timeline.scrollTrigger?.kill();
-          timeline.kill();
-        };
-      });
+          return () => {
+            cancelAnimationFrame(scaleFrame);
+            gsap.set(track, { clearProps: "willChange" });
+            gsap.set([...letters, ...cards], {
+              clearProps: "scale,willChange",
+            });
+            timeline.scrollTrigger?.kill();
+            timeline.kill();
+          };
+        });
+      };
 
-      return () => mm.revert();
+      const waitsForLenis =
+        window.matchMedia("(min-width: 1024px)").matches &&
+        window.matchMedia("(pointer: fine)").matches;
+
+      if (!waitsForLenis || scroller.dataset.lenisReady === "true") {
+        initializeAttitude();
+      } else {
+        window.addEventListener("lenis:ready", initializeAttitude, {
+          once: true,
+        });
+      }
+
+      return () => {
+        window.removeEventListener("lenis:ready", initializeAttitude);
+        mm?.revert();
+      };
     },
     { scope: sectionRef },
   );
@@ -287,30 +261,35 @@ export function AttitudeSection() {
         className="pointer-events-none absolute inset-0 flex items-start justify-center overflow-hidden pt-[calc(var(--header-height)+1rem)] lg:items-center lg:pt-0"
         aria-hidden="true"
       >
-        <h2 className="font-helvetica-bold flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-foreground lg:text-[clamp(5.4rem,17vw,20rem)]">
-          {attitudeLetters.map((letter, index) => (
-            <span
-              key={`${letter}-${index}`}
-              data-attitude-letter
-              className="inline-block origin-bottom lg:opacity-0 motion-reduce:opacity-100"
-            >
-              {letter}
-            </span>
-          ))}
-        </h2>
-        <h2
-          className="font-helvetica-bold absolute left-1/2 flex -translate-x-1/2 select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-accent lg:text-[clamp(5.4rem,17vw,20rem)]"
-          style={{
-            clipPath:
-              "inset(0 var(--attitude-reveal-right) 0 var(--attitude-reveal-left))",
-          }}
-        >
-          {attitudeLetters.map((letter, index) => (
-            <span key={`accent-${letter}-${index}`} className="inline-block">
-              {letter}
-            </span>
-          ))}
-        </h2>
+        <div className="relative">
+          <h2 className="font-helvetica-bold flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-foreground lg:text-[clamp(5.4rem,17vw,20rem)]">
+            {attitudeLetters.map((letter, index) => (
+              <span
+                key={`${letter}-${index}`}
+                data-attitude-letter
+                className="inline-block origin-bottom lg:opacity-0 motion-reduce:opacity-100"
+              >
+                {letter}
+              </span>
+            ))}
+          </h2>
+          <h2
+            className="font-helvetica-bold absolute inset-0 flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-accent will-change-[clip-path] lg:text-[clamp(5.4rem,17vw,20rem)]"
+            style={{
+              clipPath:
+                "inset(0 var(--attitude-reveal-right) 0 var(--attitude-reveal-left))",
+            }}
+          >
+            {attitudeLetters.map((letter, index) => (
+              <span
+                key={`accent-${letter}-${index}`}
+                className="inline-block"
+              >
+                {letter}
+              </span>
+            ))}
+          </h2>
+        </div>
       </div>
 
       <div className="relative z-10 mx-auto flex h-full min-h-[34rem] w-full max-w-[98rem] flex-col justify-start pt-[calc(var(--header-height)+5.5rem)] motion-reduce:h-auto motion-reduce:pb-12 lg:min-h-0 lg:justify-center lg:pt-0">
@@ -325,7 +304,7 @@ export function AttitudeSection() {
         <div className="relative -mx-5 min-h-0 flex-1 overflow-hidden px-5 pb-6 motion-reduce:overflow-visible sm:-mx-8 sm:px-8 lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-center lg:overflow-visible lg:px-0 lg:pb-0">
           <div
             ref={trackRef}
-            className="relative h-full w-full will-change-transform [transform:translateZ(0)] motion-reduce:flex motion-reduce:h-auto motion-reduce:flex-col motion-reduce:gap-4 lg:flex lg:h-auto lg:w-max lg:items-center lg:gap-7"
+            className="relative h-full w-full will-change-transform [transform:translateZ(0)] motion-reduce:flex motion-reduce:h-auto motion-reduce:flex-col motion-reduce:gap-4 lg:flex lg:h-[78%] lg:w-max lg:items-stretch lg:gap-[4.1666vw]"
           >
             {attitudeCards.map((card, index) => (
               <article
@@ -334,25 +313,26 @@ export function AttitudeSection() {
                 data-attitude-card
                 style={
                   {
-                    "--card-offset": cardOffsets[index],
+                    "--card-align": desktopCardPositions[index].align,
+                    "--card-offset": desktopCardPositions[index].offset,
                   } as CSSProperties
                 }
-                className="absolute inset-x-0 top-0 min-h-[20rem] w-full shrink-0 rounded-2xl border border-foreground/10 bg-background p-7 opacity-100 last:border-foreground/20 motion-reduce:relative motion-reduce:inset-auto sm:min-h-[22rem] lg:relative lg:inset-auto lg:min-h-[23.5rem] lg:w-[29rem] lg:p-8 lg:[margin-top:var(--card-offset)] xl:w-[31rem]"
+                className="absolute inset-x-0 top-0 min-h-[20rem] w-full shrink-0 rounded-2xl border border-foreground/10 bg-background p-7 opacity-100 last:border-foreground/20 motion-reduce:relative motion-reduce:inset-auto sm:min-h-[22rem] lg:relative lg:inset-auto lg:min-h-[clamp(23rem,54vh,32rem)] lg:w-[clamp(24rem,29vw,35rem)] lg:[align-self:var(--card-align)] lg:[top:var(--card-offset)] lg:p-[clamp(2rem,3.2vw,4rem)]"
               >
                 <div className="flex items-center gap-3">
                   <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
                     <span className="size-1.5 rounded-full bg-accent" />
                   </span>
-                  <p className="text-xs font-semibold  tracking-[0.16em] text-foreground/88">
+                  <p className="text-[0.78rem] font-semibold uppercase tracking-[0.08em] text-foreground/88 lg:text-[0.84rem]">
                     {card.rule}
                   </p>
                 </div>
 
-                <h3 className="font-display mt-7 text-[clamp(2.35rem,11vw,3.25rem)] uppercase leading-[0.9] text-foreground lg:mt-8 lg:text-[clamp(2.65rem,3.8vw,4rem)]">
+                <h3 className="font-display mt-7 text-[clamp(2.5rem,11vw,3.5rem)] uppercase leading-[0.9] tracking-[-0.035em] text-foreground lg:mt-8 lg:text-[clamp(3.4rem,4.5vw,5.4rem)]">
                   {card.title}
                 </h3>
 
-                <p className="mt-8 max-w-md text-[0.95rem] font-semibold leading-6 text-foreground/62 sm:text-base sm:leading-7 lg:mt-12 lg:text-[1.02rem] lg:leading-8">
+                <p className="mt-8 max-w-md text-base font-semibold leading-7 text-foreground/62 sm:text-[1.05rem] sm:leading-7 lg:mt-[clamp(3rem,8vh,5.5rem)] lg:max-w-[30rem] lg:text-[clamp(1.12rem,1.35vw,1.45rem)] lg:leading-[1.45]">
                   {card.description}
                 </p>
 

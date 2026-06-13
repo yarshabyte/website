@@ -189,7 +189,7 @@ export function AwardsSection() {
     <section
       ref={sectionRef}
       id="awards"
-      className="relative hidden h-[calc(100svh-3rem)] min-h-[620px] overflow-hidden bg-background text-foreground lg:block"
+      className="relative hidden h-[calc(100svh-0.75rem)] min-h-[620px] overflow-hidden bg-background text-foreground lg:block"
     >
       <div
         data-awards-scroll
