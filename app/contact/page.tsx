@@ -16,7 +16,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactPage() {
+type ContactPageProps = {
+  searchParams: Promise<{
+    service?: string | string[];
+  }>;
+};
+
+export default async function ContactPage({ searchParams }: ContactPageProps) {
+  const params = await searchParams;
+  const service = Array.isArray(params.service)
+    ? params.service[0]
+    : params.service;
+
   const breadcrumb = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -29,7 +40,7 @@ export default function ContactPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <ContactPageClient />
+      <ContactPageClient prefilledServiceSlug={service} />
     </>
   );
 }

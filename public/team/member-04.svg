@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#7a4b2a"/><stop offset="1" stop-color="#d8b08b"/></linearGradient></defs>
+  <rect width="600" height="600" fill="url(#g)"/>
+  <circle cx="300" cy="232" r="112" fill="#f5efe7" opacity=".88"/>
+  <path d="M96 600c18-151 91-229 204-229s186 78 204 229" fill="#f5efe7" opacity=".88"/>
+  <text x="300" y="548" text-anchor="middle" fill="#33202a" font-family="Arial, sans-serif" font-size="30" font-weight="700">MEMBER 04</text>
+</svg>

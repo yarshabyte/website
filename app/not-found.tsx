@@ -52,8 +52,8 @@ export default function NotFound() {
               </Link>
             </li>
             <li>
-              <Link href="/studio" className="text-foreground/70 hover:text-foreground">
-                Studio
+              <Link href="/about" className="text-foreground/70 hover:text-foreground">
+                About
               </Link>
             </li>
           </ul>
