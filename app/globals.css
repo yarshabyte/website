@@ -10,11 +10,11 @@
   --foreground: #1e1a18;
   --accent: #b86a2c;
   --navy: #33202a;
-  --menu-bg: #d8b08b;
+  --menu-bg: #c8a381;
   --blue: #7a4b2a;
-  --sky: #d8b08b;
+  --sky: #c8a381;
   --hero-bg: #f5efe7;
-  --display-font: "Archivo Black", "Arial Black", Arial, sans-serif;
+  --display-font: "Arial Black", Arial, Helvetica, sans-serif;
   --brand-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
   --border-soft: color-mix(in srgb, var(--foreground) 12%, transparent);

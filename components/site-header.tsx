@@ -2,39 +2,33 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { FullscreenMenu } from "@/components/fullscreen-menu";
 import { MenuIcon } from "@/components/menu-icon";
 
-type MenuOrigin = { x: number; y: number };
-
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuOrigin, setMenuOrigin] = useState<MenuOrigin | null>(null);
   const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const wasMenuOpen = useRef(false);
   const lastScrollY = useRef(0);
   const directionStartY = useRef(0);
   const lastDirection = useRef<"up" | "down" | null>(null);
   const isTicking = useRef(false);
   const scrollElementRef = useRef<Window | HTMLElement | null>(null);
 
-  const updateMenuOrigin = useCallback(() => {
-    const button = menuButtonRef.current;
-    if (!button) {
-      return;
-    }
-
-    const rect = button.getBoundingClientRect();
-    setMenuOrigin({
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
-    });
-  }, []);
-
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    const siteFrame = document.querySelector<HTMLElement>(".site-frame");
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousFrameOverflowY = siteFrame?.style.overflowY ?? "";
+
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+      if (siteFrame) {
+        siteFrame.style.overflowY = "hidden";
+      }
+    }
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -45,21 +39,21 @@ export function SiteHeader() {
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousBodyOverflow;
+      if (siteFrame) {
+        siteFrame.style.overflowY = previousFrameOverflowY;
+      }
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [isMenuOpen]);
 
   useEffect(() => {
-    if (!isMenuOpen) {
-      return;
+    if (wasMenuOpen.current && !isMenuOpen) {
+      menuButtonRef.current?.focus({ preventScroll: true });
     }
 
-    updateMenuOrigin();
-    window.addEventListener("resize", updateMenuOrigin);
-
-    return () => window.removeEventListener("resize", updateMenuOrigin);
-  }, [isMenuOpen, updateMenuOrigin]);
+    wasMenuOpen.current = isMenuOpen;
+  }, [isMenuOpen]);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -164,7 +158,6 @@ export function SiteHeader() {
 
   const toggleMenu = () => {
     if (!isMenuOpen) {
-      updateMenuOrigin();
       setIsHeaderHidden(false);
     }
     setIsMenuOpen((current) => !current);
@@ -173,26 +166,31 @@ export function SiteHeader() {
   return (
     <>
       <header
-        className={`pointer-events-none fixed inset-x-0 top-0 z-[90] transition duration-300 ease-out lg:left-3 lg:right-3 lg:top-3 ${
+        className={`pointer-events-none fixed inset-x-0 top-0 z-[90] transition duration-300 ease-out ${
           isHeaderHidden ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"
         }`}
       >
-        <div className="studio-container flex h-[var(--header-height)] items-center justify-between gap-[var(--space-grid)]">
+        <div className="relative h-[calc(4.1666vw+clamp(3.125rem,4.1666vw,6.5rem))] min-h-[4.75rem] w-full">
           <Link
             href="/"
-            className="pointer-events-auto flex min-w-0 items-center gap-2.5 sm:gap-3"
+            className="pointer-events-auto absolute left-[4.1666vw] top-[4.1666vw] flex min-w-0 items-center gap-3 sm:gap-4 lg:gap-[4.1666vw]"
             aria-label="Yarsa Byte home"
             onClick={() => setIsMenuOpen(false)}
           >
             <Image
               src="/logo-icon.png"
               alt="Yarsa Byte logo"
-              width={64}
-              height={64}
-              className="size-10 shrink-0 rounded-md bg-white object-contain p-1 sm:size-11"
+              width={104}
+              height={104}
+              className="size-[3.125rem] shrink-0 rounded-md bg-white object-contain p-1 sm:size-[3.75rem] lg:size-[clamp(3.75rem,4.1666vw,6.5rem)]"
               priority
+              unoptimized
             />
-            <span className="truncate text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-foreground sm:text-[0.8rem]">
+            <span
+              className={`truncate text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-foreground transition-[opacity,transform] duration-300 sm:text-[0.78rem] ${
+                isMenuOpen ? "-translate-y-2 opacity-0" : "translate-y-0 opacity-100"
+              }`}
+            >
               Yarsa Byte
             </span>
           </Link>
@@ -204,18 +202,14 @@ export function SiteHeader() {
             aria-controls="site-menu"
             aria-expanded={isMenuOpen}
             onClick={toggleMenu}
-            className="pointer-events-auto grid size-12 shrink-0 place-items-center text-foreground transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:size-15"
+            className="pointer-events-auto absolute right-[4.1666vw] top-[4.1666vw] grid h-[3.125rem] w-10 shrink-0 place-items-center text-foreground transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:h-[3.75rem] sm:w-14 lg:h-[clamp(3.75rem,4.1666vw,6.5rem)] lg:w-20"
           >
-            <MenuIcon open={isMenuOpen} stroke={isMenuOpen ? "#252524" : "currentColor"} />
+            <MenuIcon open={isMenuOpen} />
           </button>
         </div>
       </header>
 
-      <FullscreenMenu
-        open={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-        origin={menuOrigin}
-      />
+      <FullscreenMenu open={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </>
   );
 }
