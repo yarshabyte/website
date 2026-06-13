@@ -10,7 +10,7 @@ import { services } from "@/data/services";
 import { socialLinks } from "@/data/socials";
 
 const pageLinks = [
-  { label: "Studio", href: "/studio" },
+  { label: "About", href: "/about" },
   { label: "Work", href: "/work" },
   { label: "Services", href: "/services" },
 ] as const;

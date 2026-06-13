@@ -8,7 +8,7 @@ import {
   budgetRanges,
   contactIntents,
   referralSources,
-} from "@/data/studio-pages";
+} from "@/data/contact-options";
 import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/ui/container";
