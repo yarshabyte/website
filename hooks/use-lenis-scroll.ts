@@ -71,7 +71,7 @@ export function useLenisScroll() {
           height: wrapper.clientHeight,
         };
       },
-      pinType: wrapper.style.transform ? "transform" : "fixed",
+      pinType: "transform",
     });
 
     ScrollTrigger.defaults({ scroller: wrapper });

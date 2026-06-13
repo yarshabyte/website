@@ -287,7 +287,7 @@ export function AttitudeSection() {
         className="pointer-events-none absolute inset-0 flex items-start justify-center overflow-hidden pt-[calc(var(--header-height)+1rem)] lg:items-center lg:pt-0"
         aria-hidden="true"
       >
-        <h2 className="font-helvetica-bold flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-foreground/[0.08] lg:text-[clamp(5.4rem,17vw,20rem)]">
+        <h2 className="font-helvetica-bold flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-foreground lg:text-[clamp(5.4rem,17vw,20rem)]">
           {attitudeLetters.map((letter, index) => (
             <span
               key={`${letter}-${index}`}
@@ -318,12 +318,8 @@ export function AttitudeSection() {
           data-attitude-reveal
           className="mb-7 flex items-center gap-3 lg:absolute lg:left-0 lg:top-14 lg:mb-0 lg:opacity-0"
         >
-          <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
-            <span className="size-1.5 rounded-full bg-accent" />
-          </span>
-          <p className="text-sm font-semibold tracking-[0.14em] text-foreground/90">
-            Attitude
-          </p>
+         
+         
         </div>
 
         <div className="relative -mx-5 min-h-0 flex-1 overflow-hidden px-5 pb-6 motion-reduce:overflow-visible sm:-mx-8 sm:px-8 lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-center lg:overflow-visible lg:px-0 lg:pb-0">

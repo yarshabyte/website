@@ -18,70 +18,22 @@ const awardLetters = [
 ] as const;
 
 const books = [
-  {
-    src: "/books/book-01.webp",
-    width: 480,
-    height: 638,
-    left: "25vw",
-    zIndex: 15,
-    startRotation: 20,
-    endRotation: -20,
-  },
-  {
-    src: "/books/book-02.webp",
-    width: 3614,
-    height: 4795,
-    left: "62.5vw",
-    zIndex: 5,
-    startRotation: -20,
-    endRotation: 20,
-  },
-  {
-    src: "/books/book-03.webp",
-    width: 3614,
-    height: 4795,
-    left: "37.5vw",
-    zIndex: 12,
-    startRotation: 20,
-    endRotation: -20,
-  },
-  {
-    src: "/books/book-04.webp",
-    width: 480,
-    height: 638,
-    left: "54.166vw",
-    zIndex: 13,
-    startRotation: -20,
-    endRotation: 20,
-  },
-  {
-    src: "/books/book-05.webp",
-    width: 2480,
-    height: 3508,
-    left: "25vw",
-    zIndex: 8,
-    startRotation: 20,
-    endRotation: -20,
-  },
-  {
-    src: "/books/book-06.webp",
-    width: 480,
-    height: 638,
-    left: "58.333vw",
-    zIndex: 15,
-    startRotation: -20,
-    endRotation: 20,
-  },
-  {
-    src: "/books/book-07.webp",
-    width: 2480,
-    height: 3508,
-    left: "37.5vw",
-    zIndex: 11,
-    startRotation: 20,
-    endRotation: -20,
-  },
+  { src: "/books/book-01.webp", width: 480, height: 638, left: "25vw", zIndex: 15, startRotation: 20, endRotation: -20 },
+  { src: "/books/book-02.webp", width: 3614, height: 4795, left: "62.5vw", zIndex: 5, startRotation: -20, endRotation: 20 },
+  { src: "/books/book-03.webp", width: 3614, height: 4795, left: "37.5vw", zIndex: 12, startRotation: 20, endRotation: -20 },
+  { src: "/books/book-04.webp", width: 480, height: 638, left: "54.166vw", zIndex: 13, startRotation: -20, endRotation: 20 },
+  { src: "/books/book-05.webp", width: 2480, height: 3508, left: "25vw", zIndex: 8, startRotation: 20, endRotation: -20 },
+  { src: "/books/book-06.webp", width: 480, height: 638, left: "58.333vw", zIndex: 15, startRotation: -20, endRotation: 20 },
+  { src: "/books/book-07.webp", width: 2480, height: 3508, left: "37.5vw", zIndex: 11, startRotation: 20, endRotation: -20 },
 ] as const;
+
+function getScroller(): HTMLElement | null {
+  return document.querySelector<HTMLElement>(".site-frame");
+}
+
+function scrollTriggerBase(scroller: HTMLElement | null): ScrollTrigger.Vars {
+  return scroller ? { scroller } : {};
+}
 
 export function AwardsSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -89,128 +41,146 @@ export function AwardsSection() {
   useGSAP(
     () => {
       const section = sectionRef.current;
-      const scroller = document.querySelector<HTMLElement>(".site-frame");
+      if (!section) return;
 
-      if (!section || !scroller) {
-        return;
-      }
+      const scroller = getScroller();
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      const reduceMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      const letters = gsap.utils.toArray<HTMLElement>(
-        "[data-award-letter]",
-        section,
-      );
-      const bookFrames = gsap.utils.toArray<HTMLElement>(
-        "[data-award-book]",
-        section,
-      );
-      const content = section.querySelector<HTMLElement>(
-        "[data-awards-content]",
-      );
+      const ctx = gsap.context(() => {
+        const canvas = section.querySelector<HTMLElement>("[data-awards-scroll]");
+        const letters = gsap.utils.toArray<HTMLElement>("[data-award-letter]", section);
+        const bookFrames = gsap.utils.toArray<HTMLElement>("[data-award-book]", section);
+        const content = section.querySelector<HTMLElement>("[data-awards-content]");
 
-      if (!content) {
-        return;
-      }
+        if (!canvas || !content || letters.length === 0 || bookFrames.length === 0) return;
 
-      if (reduceMotion) {
-        gsap.set(letters, { yPercent: 0, scale: 1 });
-        gsap.set(bookFrames, { y: "-18vh", scale: 1 });
-        gsap.set(content, { yPercent: 0 });
-        return;
-      }
+        if (reduceMotion) {
+          gsap.set(canvas, { autoAlpha: 1 });
+          gsap.set(letters, { y: "10vh", scale: 1, opacity: 1 });
+          gsap.set(bookFrames, { y: 0, scale: 1, rotate: 0 });
+          gsap.set(content, { autoAlpha: 1 });
+          return;
+        }
 
-      const media = gsap.matchMedia();
+        const mm = gsap.matchMedia();
 
-      media.add("(min-width: 1024px)", () => {
-        const viewportHeight = () => scroller.clientHeight;
+        mm.add("(min-width: 1024px)", () => {
+          let awardTimeline: gsap.core.Timeline | undefined;
 
-        gsap.set(letters, {
-          yPercent: 200,
-          scale: 2,
-          transformOrigin: "50% 100%",
-          force3D: true,
+          const buildAwards = () => {
+            awardTimeline?.scrollTrigger?.kill();
+            awardTimeline?.kill();
+
+            const sectionHeight = section.clientHeight;
+            const scrollDistance = Math.max(sectionHeight * 3.4, 2200);
+
+            gsap.set(canvas, { autoAlpha: 0 });
+
+           gsap.set(letters, {
+  y: section.clientHeight + 220,
+  scale: 2,
+  opacity: 0.6,
+  force3D: true,
+});
+
+            gsap.set(bookFrames, {
+              y: (index) => sectionHeight + 180 + index * 110,
+              rotate: (index) => books[index]?.startRotation ?? 0,
+              scale: 0.82,
+              transformOrigin: "50% 50%",
+              force3D: true,
+            });
+
+            gsap.set(content, {
+              y: "20vh",
+              autoAlpha: 0,
+            });
+
+            gsap.set(canvas, { autoAlpha: 1 });
+
+            awardTimeline = gsap.timeline({
+              scrollTrigger: {
+                trigger: section,
+                start: "top top",
+                end: `+=${scrollDistance}`,
+                scrub: 0.25,
+                pin: true,
+                pinType: "transform",
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+                ...scrollTriggerBase(scroller),
+                onToggle: (self) => {
+                  scroller?.classList.toggle("awards-is-pinned", self.isActive);
+
+                 
+                },
+              },
+            });
+
+            awardTimeline
+              .to(
+                letters,
+                {
+                  y: "10vh",
+                  scale: 1,
+                  opacity: 1,
+                  duration: 4,
+                  stagger: { amount: 2.2 },
+                  ease: "power1.out",
+                },
+                0,
+              )
+              .to(
+                bookFrames,
+                {
+                  y: (_index, target) => -((target as HTMLElement).offsetHeight + 220),
+                  scale: 1,
+                  rotate: (index) => books[index]?.endRotation ?? 0,
+                  duration: 5.2,
+                  stagger: { amount: 2 },
+                  ease: "none",
+                },
+                0,
+              )
+              .to(
+                content,
+                {
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: 1.4,
+                  ease: "none",
+                },
+                3.7,
+              );
+
+            ScrollTrigger.refresh();
+          };
+
+          const waitsForLenis =
+            !!scroller &&
+            window.matchMedia("(pointer: fine)").matches &&
+            window.matchMedia("(min-width: 768px)").matches;
+
+          if (!waitsForLenis || scroller?.dataset.lenisReady === "true") {
+            buildAwards();
+          } else {
+            window.addEventListener("lenis:ready", buildAwards, { once: true });
+          }
+
+          const onLoad = () => ScrollTrigger.refresh();
+          window.addEventListener("load", onLoad, { once: true });
+
+          return () => {
+            window.removeEventListener("lenis:ready", buildAwards);
+            window.removeEventListener("load", onLoad);
+            scroller?.classList.remove("awards-is-pinned");
+            awardTimeline?.scrollTrigger?.kill();
+            awardTimeline?.kill();
+          };
         });
-        gsap.set(bookFrames, {
-          y: (index) => viewportHeight() * (0.5 + index * 0.2),
-          rotation: (index) => books[index].startRotation,
-          scale: 0.8,
-          transformOrigin: "50% 50%",
-          force3D: true,
-        });
-        gsap.set(content, { yPercent: 130, force3D: true });
+      }, section);
 
-        const timeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            scroller,
-            start: "top 80%",
-            end: () => `+=${viewportHeight() * 3.8}`,
-            toggleActions: "play reverse play reverse",
-            anticipatePin: 1,
-            scrub: 0.2,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        const pinTrigger = ScrollTrigger.create({
-          trigger: section,
-          scroller,
-          start: "top 20%",
-          end: () => `+=${viewportHeight() * 3.2}`,
-          toggleActions: "play reverse play reverse",
-          pin: true,
-          pinSpacing: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        });
-
-        timeline.to(letters, {
-          yPercent: 0,
-          scale: 1,
-          duration: 4,
-          stagger: { amount: 3 },
-          ease: "power1.out",
-        });
-        timeline.to(
-          bookFrames,
-          {
-            y: () => -viewportHeight() * 0.85,
-            scale: 1,
-            rotation: (index) => books[index].endRotation,
-            duration: 4,
-            stagger: { amount: 3 },
-            ease: "none",
-          },
-          "<",
-        );
-        timeline.to(
-          content,
-          {
-            yPercent: 0,
-            duration: 2,
-            ease: "none",
-          },
-          "-=2",
-        );
-
-        return () => {
-          pinTrigger.kill();
-          timeline.scrollTrigger?.kill();
-          timeline.kill();
-        };
-      });
-
-      const refresh = () => ScrollTrigger.refresh();
-      const refreshFrame = requestAnimationFrame(refresh);
-      window.addEventListener("load", refresh, { once: true });
-
-      return () => {
-        cancelAnimationFrame(refreshFrame);
-        window.removeEventListener("load", refresh);
-        media.revert();
-      };
+      return () => ctx.revert();
     },
     { scope: sectionRef },
   );
@@ -219,15 +189,19 @@ export function AwardsSection() {
     <section
       ref={sectionRef}
       id="awards"
-      className="relative hidden h-[calc(100vh-1.5rem)] overflow-hidden bg-background text-foreground lg:block"
+      className="relative hidden h-[calc(100svh-3rem)] min-h-[620px] overflow-hidden bg-background text-foreground lg:block"
     >
-      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute left-[12.5vw] top-[8vh] whitespace-nowrap font-display text-[37vw] lowercase leading-[0.8] tracking-[-0.055em]">
+      <div
+        data-awards-scroll
+        className="invisible absolute inset-0 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div className="absolute left-[3.5vw] top-[22vh] whitespace-nowrap font-display text-[21.5vw] lowercase leading-[0.8] tracking-[-0.065em] text-foreground">
           {awardLetters.map(({ character, zIndex }, index) => (
             <span
               key={`${character}-${index}`}
               data-award-letter
-              className="relative inline-block translate-y-[200%] scale-200 will-change-transform"
+              className="relative inline-block translate-y-[185%] scale-[2] opacity-60 will-change-transform"
               style={{ zIndex }}
             >
               {character}
@@ -239,7 +213,7 @@ export function AwardsSection() {
           <figure
             key={book.src}
             data-award-book
-            className="absolute bottom-0 w-[12.5vw] translate-y-[100vh] overflow-hidden rounded-[5px] will-change-transform"
+            className="absolute left-0 top-0 w-[12.5vw] translate-y-[120vh] overflow-hidden rounded-[5px] will-change-transform"
             style={{ left: book.left, zIndex: book.zIndex }}
           >
             <Image
@@ -249,6 +223,7 @@ export function AwardsSection() {
               height={book.height}
               sizes="12.5vw"
               className="block h-auto w-full"
+              priority
             />
           </figure>
         ))}
@@ -256,26 +231,12 @@ export function AwardsSection() {
 
       <div
         data-awards-content
-        className="absolute inset-x-[12.5vw] bottom-[7vh] z-30 translate-y-[130%] will-change-transform"
+        className="absolute inset-x-[12.5vw] bottom-[7vh] z-30 invisible translate-y-[20vh] will-change-transform"
       >
         <div className="flex items-center" aria-hidden="true">
           <span className="size-2.5 rotate-45 border border-foreground/55 bg-background" />
           <span className="h-px flex-1 bg-foreground/45" />
           <span className="size-2.5 rotate-45 border border-foreground/55 bg-background" />
-        </div>
-
-        <p className="mt-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/65">
-          <span className="size-1.5 rounded-full bg-accent" />
-          Latest award
-        </p>
-
-        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-10">
-          <h2 className="font-display text-[clamp(4rem,9vw,9rem)] uppercase leading-[0.8] tracking-[-0.05em]">
-            Yarsa Byte
-          </h2>
-          <p className="max-w-56 pb-1 text-sm font-semibold leading-6 text-foreground/60">
-            Awards and recognition.
-          </p>
         </div>
       </div>
     </section>

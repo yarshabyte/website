@@ -163,6 +163,12 @@ body::-webkit-scrollbar {
     overscroll-behavior: contain;
   }
 
+  .site-frame.awards-is-pinned {
+    box-shadow:
+      0 24px 70px color-mix(in srgb, #000 18%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--menu-bg) 72%, var(--foreground) 28%);
+  }
+
   .site-frame::before {
     position: fixed;
     inset: 0.75rem;
