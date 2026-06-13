@@ -133,7 +133,7 @@ function ServiceCard({
                 className="w-full sm:w-auto"
                 onClick={(event) => event.stopPropagation()}
               >
-                Start this service
+                Start this project
               </PremiumButton>
             </div>
           </motion.div>
