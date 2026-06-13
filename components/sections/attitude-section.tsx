@@ -57,6 +57,50 @@ export function AttitudeSection() {
 
       const mm = gsap.matchMedia();
 
+      mm.add("(max-width: 1023px)", () => {
+        const cardHeight = () => cards[0]?.offsetHeight ?? 320;
+
+        section.style.setProperty("--attitude-reveal-left", "100%");
+        section.style.setProperty("--attitude-reveal-right", "0%");
+
+        gsap.set(cards, {
+          autoAlpha: 1,
+          yPercent: 145,
+          scale: 1,
+          zIndex: (index) => index + 1,
+          force3D: true,
+          willChange: "transform",
+        });
+
+        const stackTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            scroller: window,
+            start: "top top",
+            end: () => `+=${cardHeight() * cards.length}`,
+            pin: true,
+            scrub: 0.18,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        stackTimeline.to(cards, {
+          yPercent: (index) => index * 18,
+          duration: 1,
+          stagger: 1,
+          ease: "none",
+        });
+
+        return () => {
+          stackTimeline.scrollTrigger?.kill();
+          stackTimeline.kill();
+          gsap.set(cards, {
+            clearProps: "transform,zIndex,willChange",
+          });
+        };
+      });
+
       mm.add("(min-width: 1024px)", () => {
         const viewportHeight = () => scroller.clientHeight;
         const introOffset = () => scroller.clientWidth + 48;
@@ -237,13 +281,13 @@ export function AttitudeSection() {
       ref={sectionRef}
       id="attitude"
       style={sectionStyle}
-      className="relative h-dvh overflow-hidden bg-background px-5 py-12 text-foreground sm:px-8 lg:h-[calc(100vh-1.5rem)] lg:px-[var(--site-gutter)] lg:py-0"
+      className="relative h-dvh overflow-hidden bg-background px-5 text-foreground motion-reduce:h-auto motion-reduce:min-h-dvh motion-reduce:overflow-visible sm:px-8 lg:h-[calc(100vh-1.5rem)] lg:px-[var(--site-gutter)]"
     >
       <div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+        className="pointer-events-none absolute inset-0 flex items-start justify-center overflow-hidden pt-[calc(var(--header-height)+1rem)] lg:items-center lg:pt-0"
         aria-hidden="true"
       >
-        <h2 className="font-helvetica-bold flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[clamp(5.4rem,17vw,20rem)] lowercase leading-[0.78] text-foreground/[0.08]">
+        <h2 className="font-helvetica-bold flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-foreground/[0.08] lg:text-[clamp(5.4rem,17vw,20rem)]">
           {attitudeLetters.map((letter, index) => (
             <span
               key={`${letter}-${index}`}
@@ -255,7 +299,7 @@ export function AttitudeSection() {
           ))}
         </h2>
         <h2
-          className="font-helvetica-bold absolute left-1/2 flex -translate-x-1/2 select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[clamp(5.4rem,17vw,20rem)] lowercase leading-[0.78] text-accent"
+          className="font-helvetica-bold absolute left-1/2 flex -translate-x-1/2 select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-accent lg:text-[clamp(5.4rem,17vw,20rem)]"
           style={{
             clipPath:
               "inset(0 var(--attitude-reveal-right) 0 var(--attitude-reveal-left))",
@@ -269,10 +313,10 @@ export function AttitudeSection() {
         </h2>
       </div>
 
-      <div className="relative z-10 mx-auto flex h-full min-h-[34rem] w-full max-w-[98rem] flex-col justify-center lg:min-h-0">
+      <div className="relative z-10 mx-auto flex h-full min-h-[34rem] w-full max-w-[98rem] flex-col justify-start pt-[calc(var(--header-height)+5.5rem)] motion-reduce:h-auto motion-reduce:pb-12 lg:min-h-0 lg:justify-center lg:pt-0">
         <div
           data-attitude-reveal
-          className="mb-10 flex items-center gap-3 lg:absolute lg:left-0 lg:top-14 lg:mb-0 lg:opacity-0"
+          className="mb-7 flex items-center gap-3 lg:absolute lg:left-0 lg:top-14 lg:mb-0 lg:opacity-0"
         >
           <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
             <span className="size-1.5 rounded-full bg-accent" />
@@ -282,10 +326,10 @@ export function AttitudeSection() {
           </p>
         </div>
 
-        <div className="-mx-5 overflow-x-auto px-5 pb-4 scrollbar-none lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-center lg:overflow-visible lg:px-0 lg:pb-0">
+        <div className="relative -mx-5 min-h-0 flex-1 overflow-hidden px-5 pb-6 motion-reduce:overflow-visible sm:-mx-8 sm:px-8 lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-center lg:overflow-visible lg:px-0 lg:pb-0">
           <div
             ref={trackRef}
-            className="flex w-max gap-5 will-change-transform [transform:translateZ(0)] lg:items-center lg:gap-7"
+            className="relative h-full w-full will-change-transform [transform:translateZ(0)] motion-reduce:flex motion-reduce:h-auto motion-reduce:flex-col motion-reduce:gap-4 lg:flex lg:h-auto lg:w-max lg:items-center lg:gap-7"
           >
             {attitudeCards.map((card, index) => (
               <article
@@ -297,7 +341,7 @@ export function AttitudeSection() {
                     "--card-offset": cardOffsets[index],
                   } as CSSProperties
                 }
-                className="relative min-h-[22rem] w-[min(78vw,22rem)] shrink-0 rounded-2xl border border-foreground/10 bg-[color-mix(in_srgb,var(--background)_86%,var(--foreground)_6%)] p-7 opacity-100 shadow-[0_24px_70px_rgba(0,0,0,0.16)] backdrop-blur sm:w-[25rem] lg:min-h-[23.5rem] lg:w-[29rem] lg:p-8 lg:[margin-top:var(--card-offset)] xl:w-[31rem]"
+                className="absolute inset-x-0 top-0 min-h-[20rem] w-full shrink-0 rounded-2xl border border-foreground/10 bg-background p-7 opacity-100 last:border-foreground/20 motion-reduce:relative motion-reduce:inset-auto sm:min-h-[22rem] lg:relative lg:inset-auto lg:min-h-[23.5rem] lg:w-[29rem] lg:p-8 lg:[margin-top:var(--card-offset)] xl:w-[31rem]"
               >
                 <div className="flex items-center gap-3">
                   <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
@@ -308,11 +352,11 @@ export function AttitudeSection() {
                   </p>
                 </div>
 
-                <h3 className="font-display mt-8 text-[clamp(2.65rem,3.8vw,4rem)] uppercase leading-[0.9] text-foreground">
+                <h3 className="font-display mt-7 text-[clamp(2.35rem,11vw,3.25rem)] uppercase leading-[0.9] text-foreground lg:mt-8 lg:text-[clamp(2.65rem,3.8vw,4rem)]">
                   {card.title}
                 </h3>
 
-                <p className="mt-10 max-w-md text-base font-semibold leading-7 text-foreground/62 lg:mt-12 lg:text-[1.02rem] lg:leading-8">
+                <p className="mt-8 max-w-md text-[0.95rem] font-semibold leading-6 text-foreground/62 sm:text-base sm:leading-7 lg:mt-12 lg:text-[1.02rem] lg:leading-8">
                   {card.description}
                 </p>
 
