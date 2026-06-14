@@ -62,7 +62,8 @@ export default async function TeamMemberPage({
                 src={member.image}
                 alt={`${member.name}, ${member.role}`}
                 fill
-                priority
+                preload
+                quality={78}
                 sizes="(max-width: 1024px) 80vw, 380px"
                 className="object-cover"
               />

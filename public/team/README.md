@@ -6,9 +6,9 @@ For each of the six members:
 
 1. Replace the placeholder name, role, email, introduction, biography, skills,
    and project highlights in `data/team.ts`.
-2. Replace the matching SVG in this folder with a real square portrait.
-3. Keep the same filename (`member-01.svg`, `member-02.svg`, etc.), or update
-   the member's `image` value in `data/team.ts` if using JPG, PNG, or WebP.
+2. Export the real portrait as WebP and replace the matching file here.
+3. Keep the same filename (`member-01.webp`, `member-02.webp`, etc.).
 4. Keep every `slug` unique. It controls the member portfolio URL.
 
-Recommended portrait size: at least 800 x 800 pixels, centered on the face.
+Recommended portrait size: 800 x 800 pixels, WebP quality 75-82, centered on
+the face.

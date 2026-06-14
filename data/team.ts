@@ -3,7 +3,7 @@
  * Replace the placeholder values below with your real team information.
  * For each member:
  * 1. Change name, role, bio, location, email, skills, and project highlights.
- * 2. Replace `/public/team/member-0X.svg` with a square portrait using the
+ * 2. Replace `/public/team/member-0X.webp` with a square WebP portrait using the
  *    same filename. The UI automatically crops it into a circle.
  * 3. Keep each slug unique because it becomes the portfolio URL:
  *    `/team/member-01`, `/team/member-02`, and so on.
@@ -14,7 +14,7 @@ export const teamMembers = [
     name: "Team Member 01",
     initials: "TM",
     role: "Creative Director",
-    image: "/team/member-01.svg",
+    image: "/team/member-01.webp",
     location: "Butwal, Nepal",
     email: "member01@yarsabyte.com",
     intro: "Shapes the visual direction, brand systems, and creative standard behind every Yarsa Byte project.",
@@ -30,7 +30,7 @@ export const teamMembers = [
     name: "Team Member 02",
     initials: "TM",
     role: "Frontend Developer",
-    image: "/team/member-02.svg",
+    image: "/team/member-02.webp",
     location: "Butwal, Nepal",
     email: "member02@yarsabyte.com",
     intro: "Turns design systems into responsive, accessible, and polished web experiences.",
@@ -46,7 +46,7 @@ export const teamMembers = [
     name: "Team Member 03",
     initials: "TM",
     role: "Backend Developer",
-    image: "/team/member-03.svg",
+    image: "/team/member-03.webp",
     location: "Butwal, Nepal",
     email: "member03@yarsabyte.com",
     intro: "Builds reliable systems, integrations, and technical foundations that keep products moving.",
@@ -62,7 +62,7 @@ export const teamMembers = [
     name: "Team Member 04",
     initials: "TM",
     role: "Graphic Designer",
-    image: "/team/member-04.svg",
+    image: "/team/member-04.webp",
     location: "Butwal, Nepal",
     email: "member04@yarsabyte.com",
     intro: "Creates clear, memorable visuals for brands, campaigns, social media, and launch moments.",
@@ -78,7 +78,7 @@ export const teamMembers = [
     name: "Team Member 05",
     initials: "TM",
     role: "Motion & Video Editor",
-    image: "/team/member-05.svg",
+    image: "/team/member-05.webp",
     location: "Butwal, Nepal",
     email: "member05@yarsabyte.com",
     intro: "Gives ideas rhythm through reels, motion graphics, edits, pacing, and sound-led storytelling.",
@@ -94,7 +94,7 @@ export const teamMembers = [
     name: "Team Member 06",
     initials: "TM",
     role: "Strategy & Client Success",
-    image: "/team/member-06.svg",
+    image: "/team/member-06.webp",
     location: "Butwal, Nepal",
     email: "member06@yarsabyte.com",
     intro: "Connects client goals to practical plans, clear communication, and smooth project delivery.",

@@ -11,5 +11,5 @@ export const heroMission =
 export const heroLatestProject = {
   label: "Latest project",
   title: "Consultancy Website",
-  href: "#work",
+  href: "/work",
 };

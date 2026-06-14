@@ -175,6 +175,7 @@ export default function AboutPage() {
                       src={member.image}
                       alt={`${member.name}, ${member.role}`}
                       fill
+                      quality={72}
                       sizes="(max-width: 640px) 42vw, (max-width: 1024px) 28vw, 140px"
                       className="object-cover transition duration-700 ease-out group-hover:scale-103"
                     />
