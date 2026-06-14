@@ -4,6 +4,7 @@ import { AttitudeSection } from "@/components/sections/attitude-section";
 import { ContactSection } from "@/components/sections/contact-section";
 import { HeroSection } from "@/components/sections/hero-section";
 import { AwardsSection } from "@/components/sections/awards_section";
+import { TestimonialsSection } from "@/components/sections/testimonials";
 import { WorkSection } from "@/components/sections/work-section";
 
 export const metadata: Metadata = {
@@ -44,6 +45,7 @@ export default function Home() {
         <WorkSection />
         <AttitudeSection />
         <AwardsSection />
+        <TestimonialsSection />
         <ContactSection />
       </main>
     </>

@@ -133,16 +133,67 @@ export function AttitudeSection() {
               trigger: section,
               scroller: window,
               start: "top top",
-              end: () => `+=${cardHeight() * cards.length}`,
+              end: () => `+=${cardHeight() * cards.length + 96}`,
               pin: true,
               scrub: 0.18,
               anticipatePin: 1,
               invalidateOnRefresh: true,
+              onUpdate: (self) => {
+                if (window.innerWidth >= 1024 || self.progress < 0.85) {
+                  return;
+                }
+
+                const lastCard = cards[cards.length - 1];
+                const cardTrack = track;
+                const cardArea = cardTrack?.parentElement;
+
+                if (!lastCard || !cardTrack || !cardArea) {
+                  return;
+                }
+
+                const lastRect = lastCard.getBoundingClientRect();
+                const areaRect = cardArea.getBoundingClientRect();
+                const sectionRect = section.getBoundingClientRect();
+                const areaStyle = window.getComputedStyle(cardArea);
+                const sectionStyle = window.getComputedStyle(section);
+
+                // #region agent log
+                fetch(
+                  "http://127.0.0.1:7276/ingest/c9890c38-b7a2-45fd-8ec6-57a202cb4ca7",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "X-Debug-Session-Id": "f74586",
+                    },
+                    body: JSON.stringify({
+                      sessionId: "f74586",
+                      runId: "pre-fix",
+                      hypothesisId: "A-E",
+                      location: "attitude-section.tsx:stack-onUpdate",
+                      message: "mobile last card geometry at end scroll",
+                      data: {
+                        progress: self.progress,
+                        lastCardBottom: lastRect.bottom,
+                        areaBottom: areaRect.bottom,
+                        sectionBottom: sectionRect.bottom,
+                        bottomGap: areaRect.bottom - lastRect.bottom,
+                        areaOverflow: areaStyle.overflow,
+                        sectionOverflow: sectionStyle.overflow,
+                        areaPaddingBottom: areaStyle.paddingBottom,
+                        yPercent: gsap.getProperty(lastCard, "yPercent"),
+                      },
+                      timestamp: Date.now(),
+                    }),
+                  },
+                ).catch(() => {});
+                // #endregion
+              },
             },
           });
 
           stackTimeline.to(cards, {
-            yPercent: (index) => index * 18,
+            yPercent: (index) => index * 15,
             duration: 1,
             stagger: 1,
             ease: "none",
@@ -414,10 +465,10 @@ export function AttitudeSection() {
          
         </div>
 
-        <div className="relative -mx-5 min-h-0 flex-1 overflow-hidden px-5 pb-6 motion-reduce:overflow-visible sm:-mx-8 sm:px-8 lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-center lg:overflow-visible lg:px-0 lg:pb-0">
+        <div className="relative -mx-5 min-h-0 flex-1 overflow-x-hidden overflow-y-visible px-5 pb-14 motion-reduce:overflow-visible sm:-mx-8 sm:px-8 sm:pb-16 lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-center lg:overflow-visible lg:px-0 lg:pb-0">
           <div
             ref={trackRef}
-            className="relative h-full w-full will-change-transform [transform:translateZ(0)] motion-reduce:flex motion-reduce:h-auto motion-reduce:flex-col motion-reduce:gap-4 lg:flex lg:h-[78%] lg:w-max lg:items-stretch lg:gap-[4.1666vw]"
+            className="relative h-full w-full max-lg:pb-[min(38vw,12rem)] pb-2 will-change-transform [transform:translateZ(0)] motion-reduce:flex motion-reduce:h-auto motion-reduce:flex-col motion-reduce:gap-4 motion-reduce:pb-0 lg:flex lg:h-[78%] lg:w-max lg:items-stretch lg:gap-[4.1666vw] lg:pb-0"
           >
             {attitudeCards.map((card, index) => (
               <article
@@ -430,7 +481,7 @@ export function AttitudeSection() {
                     "--card-offset": desktopCardPositions[index].offset,
                   } as CSSProperties
                 }
-                className="absolute inset-x-0 top-0 min-h-[20rem] w-full shrink-0 rounded-2xl border border-foreground/10 bg-background p-7 opacity-100 last:border-foreground/20 motion-reduce:relative motion-reduce:inset-auto sm:min-h-[22rem] lg:relative lg:inset-auto lg:min-h-[clamp(23rem,54vh,32rem)] lg:w-[clamp(24rem,29vw,35rem)] lg:[align-self:var(--card-align)] lg:[top:var(--card-offset)] lg:p-[clamp(2rem,3.2vw,4rem)]"
+                className="absolute inset-x-0 top-0 min-h-[20rem] w-full shrink-0 rounded-2xl border border-foreground/10 bg-background p-7 opacity-100 last:max-lg:border-b-foreground/25 last:max-lg:shadow-[inset_0_-1px_0_0_color-mix(in_srgb,var(--foreground)_22%,transparent)] motion-reduce:relative motion-reduce:inset-auto sm:min-h-[22rem] lg:relative lg:inset-auto lg:min-h-[clamp(23rem,54vh,32rem)] lg:w-[clamp(24rem,29vw,35rem)] lg:shadow-none lg:[align-self:var(--card-align)] lg:[top:var(--card-offset)] lg:p-[clamp(2rem,3.2vw,4rem)]"
               >
                 <div className="flex items-center gap-3">
                   <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
