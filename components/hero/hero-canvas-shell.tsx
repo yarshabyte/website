@@ -1,50 +1,67 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef } from "react";
 
-import { CanvasLoader } from "@/components/three/CanvasLoader";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const HeroCanvas = dynamic(
-  () =>
-    import("@/components/three/HeroCanvas").then((mod) => mod.HeroCanvas),
-  {
-    ssr: false,
-    loading: () => <CanvasLoader />,
-  },
-);
-
-/** Buzzworthy-style blob: free-floating, no visible container. */
+/** Responsive 3D brand mark: lightweight on phones and pointer-reactive on larger screens. */
 export function HeroCanvasShell() {
-  const [canRenderWebGl, setCanRenderWebGl] = useState(false);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
-    const media = window.matchMedia("(min-width: 640px)");
-    const update = () => setCanRenderWebGl(media.matches);
+    if (reduceMotion || !window.matchMedia("(min-width: 640px)").matches) {
+      return;
+    }
 
-    update();
-    media.addEventListener("change", update);
+    const logo = logoRef.current;
+    if (!logo) {
+      return;
+    }
 
-    return () => media.removeEventListener("change", update);
-  }, []);
+    const handlePointerMove = (event: PointerEvent) => {
+      const x = event.clientX / window.innerWidth - 0.5;
+      const y = event.clientY / window.innerHeight - 0.5;
+
+      logo.style.setProperty("--logo-rotate-x", `${-y * 8}deg`);
+      logo.style.setProperty("--logo-rotate-y", `${x * 12}deg`);
+    };
+
+    const resetTilt = () => {
+      logo.style.setProperty("--logo-rotate-x", "0deg");
+      logo.style.setProperty("--logo-rotate-y", "0deg");
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("pointerleave", resetTilt);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerleave", resetTilt);
+    };
+  }, [reduceMotion]);
 
   return (
     <div
-      className="pointer-events-none absolute left-1/2 top-[22vh] z-[2] h-[34vh] w-[92vw] max-w-none -translate-x-1/2 sm:top-[calc(4.5rem+5vh)] sm:h-[min(52vh,26rem)] sm:w-[min(58vw,24rem)] sm:max-w-[26rem] lg:left-0 lg:top-[calc(4.5rem+4vh)] lg:h-[min(56vh,28rem)] lg:w-[min(42vw,26rem)] lg:translate-x-0"
+      // I changed lg:-left-24 to lg:-left-32 and xl:-left-32 to xl:-left-40
+      className="pointer-events-none absolute left-1/2 top-[18vh] z-[2] h-[34vh] w-[84vw] max-w-[28rem] -translate-x-1/2 sm:top-[calc(4.5rem+3vh)] sm:h-[min(52vh,28rem)] sm:w-[min(56vw,28rem)] lg:-left-16 lg:top-[calc(4.5rem+1vh)] lg:h-[min(58vh,31rem)] lg:w-[min(40vw,31rem)] lg:max-w-[31rem] lg:translate-x-0 xl:-left-24"
       aria-hidden="true"
     >
       <div
-        className="hero-glow absolute left-1/2 top-[52%] h-[86%] w-[86%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl sm:left-[42%] sm:top-[48%] sm:h-[95%] sm:w-[95%]"
+        className="hero-glow absolute left-1/2 top-1/2 h-[82%] w-[82%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl"
         aria-hidden="true"
       />
-      {canRenderWebGl ? (
-        <HeroCanvas />
-      ) : (
-        <div className="absolute left-1/2 top-1/2 aspect-square w-[min(72vw,17rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-foreground/10 bg-[radial-gradient(circle_at_34%_28%,var(--sky),var(--accent)_42%,var(--navy)_76%)] shadow-[inset_-22px_-26px_55px_rgba(30,26,24,0.3),0_24px_70px_color-mix(in_srgb,var(--accent)_24%,transparent)]">
-          <div className="absolute inset-[12%] rounded-full border border-background/20" />
-          <div className="absolute inset-[28%] rounded-full border border-background/15" />
-        </div>
-      )}
+      <div ref={logoRef} className="hero-logo-3d relative h-full w-full">
+        <Image
+          src="/logo-3d.png"
+          alt=""
+          fill
+          priority
+          sizes="(max-width: 639px) 84vw, (max-width: 1023px) 56vw, 40vw"
+          className="object-contain drop-shadow-[0_28px_38px_rgba(30,26,24,0.2)]"
+        />
+      </div>
     </div>
   );
 }

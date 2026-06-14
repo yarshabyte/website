@@ -326,6 +326,19 @@ h3 {
       );
   }
 
+  .hero-logo-3d {
+    --logo-rotate-x: 0deg;
+    --logo-rotate-y: 0deg;
+    transform:
+      perspective(900px)
+      rotateX(var(--logo-rotate-x))
+      rotateY(var(--logo-rotate-y));
+    transform-style: preserve-3d;
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    animation: heroLogoFloat 6s ease-in-out infinite;
+    will-change: transform;
+  }
+
   .brand-preview-surface {
     background: color-mix(in srgb, var(--background) 86%, var(--accent) 14%);
   }
@@ -431,6 +444,24 @@ h3 {
 
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes heroLogoFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo-3d {
+    animation: none;
+    transition: none;
   }
 }
 

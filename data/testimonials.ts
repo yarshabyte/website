@@ -9,6 +9,8 @@ export const testimonials = [
     name: "Avenue Butwal",
     role: "Education Consultancy",
     project: "Website design and development",
+    href: "https://www.avenuebutwal.edu.np",
+    thumbnail: "/work/avenuebutwal.png",
   },
   {
     quote:
@@ -16,12 +18,7 @@ export const testimonials = [
     name: "GreenStar Automation",
     role: "Automation Solutions",
     project: "Company website",
-  },
-  {
-    quote:
-      "The final portfolio presents my work clearly, feels personal, and makes it much easier for people to reach me.",
-    name: "Arvind Pandey",
-    role: "IT Lecturer & Consultant",
-    project: "Personal portfolio",
+    href: "https://www.greenstarsuppliers.com.np/",
+    thumbnail: "/work/greenstarsuppliers.png",
   },
 ] as const;
