@@ -441,7 +441,7 @@ export function AttitudeSection() {
                   </p>
                 </div>
 
-                <h3 className="font-display mt-7 text-[clamp(2.5rem,11vw,3.5rem)] uppercase leading-[0.9] tracking-[-0.035em] text-foreground lg:mt-8 lg:text-[clamp(3.4rem,4.5vw,5.4rem)]">
+                <h3 className="font-display mt-7 text-[clamp(2.5rem,11vw,3.5rem)] uppercase leading-[0.9] tracking-[-0.035em] text-foreground lg:mt-8 lg:text-[clamp(3.4rem,3.5vw,5.4rem)]">
                   {card.title}
                 </h3>
 

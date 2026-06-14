@@ -9,14 +9,8 @@ import { MenuIcon } from "@/components/menu-icon";
 
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const wasMenuOpen = useRef(false);
-  const lastScrollY = useRef(0);
-  const directionStartY = useRef(0);
-  const lastDirection = useRef<"up" | "down" | null>(null);
-  const isTicking = useRef(false);
-  const scrollElementRef = useRef<Window | HTMLElement | null>(null);
 
   useEffect(() => {
     const siteFrame = document.querySelector<HTMLElement>(".site-frame");
@@ -55,121 +49,13 @@ export function SiteHeader() {
     wasMenuOpen.current = isMenuOpen;
   }, [isMenuOpen]);
 
-  useEffect(() => {
-    if (isMenuOpen) {
-      return;
-    }
-
-    const getScrollElement = () => {
-      const wrapper = document.querySelector<HTMLElement>(".site-frame");
-      if (!wrapper) {
-        return window;
-      }
-
-      const style = window.getComputedStyle(wrapper);
-      const canScroll = wrapper.scrollHeight > wrapper.clientHeight;
-      const overflowY = style.overflowY;
-
-      if (wrapper.dataset.lenisReady === "true" || (canScroll && overflowY !== "visible")) {
-        return wrapper;
-      }
-
-      return window;
-    };
-
-    const readScrollTop = (element: Window | HTMLElement) =>
-      element instanceof Window ? element.scrollY : element.scrollTop;
-
-    const handleScrollPosition = (currentY: number) => {
-      const delta = currentY - lastScrollY.current;
-      const direction = delta > 0 ? "down" : delta < 0 ? "up" : null;
-
-      if (currentY < 24) {
-        setIsHeaderHidden(false);
-        directionStartY.current = currentY;
-      } else if (direction) {
-        if (direction !== lastDirection.current) {
-          lastDirection.current = direction;
-          directionStartY.current = currentY;
-        }
-
-        const directionDistance = Math.abs(currentY - directionStartY.current);
-
-        if (direction === "down" && directionDistance > 32) {
-          setIsHeaderHidden(true);
-        } else if (direction === "up" && directionDistance > 20) {
-          setIsHeaderHidden(false);
-        }
-      }
-
-      lastScrollY.current = currentY;
-    };
-
-    const scheduleUpdate = (currentY: number) => {
-      if (isTicking.current) {
-        return;
-      }
-
-      isTicking.current = true;
-      window.requestAnimationFrame(() => {
-        handleScrollPosition(currentY);
-        isTicking.current = false;
-      });
-    };
-
-    const onScroll = () => {
-      const element = scrollElementRef.current ?? window;
-      scheduleUpdate(readScrollTop(element));
-    };
-
-    const onLenisScroll = (event: Event) => {
-      const detail = (event as CustomEvent<{ scroll: number }>).detail;
-      if (!detail) {
-        return;
-      }
-
-      scheduleUpdate(detail.scroll);
-    };
-
-    const attachListener = () => {
-      const element = getScrollElement();
-      if (scrollElementRef.current === element) {
-        return;
-      }
-
-      scrollElementRef.current?.removeEventListener("scroll", onScroll);
-      scrollElementRef.current = element;
-      lastScrollY.current = readScrollTop(element);
-      directionStartY.current = lastScrollY.current;
-      lastDirection.current = null;
-      element.addEventListener("scroll", onScroll, { passive: true });
-    };
-
-    attachListener();
-    window.addEventListener("lenis:ready", attachListener);
-    window.addEventListener("lenis:scroll", onLenisScroll as EventListener);
-
-    return () => {
-      window.removeEventListener("lenis:ready", attachListener);
-      window.removeEventListener("lenis:scroll", onLenisScroll as EventListener);
-      scrollElementRef.current?.removeEventListener("scroll", onScroll);
-    };
-  }, [isMenuOpen]);
-
   const toggleMenu = () => {
-    if (!isMenuOpen) {
-      setIsHeaderHidden(false);
-    }
     setIsMenuOpen((current) => !current);
   };
 
   return (
     <>
-      <header
-        className={`pointer-events-none fixed inset-x-0 top-0 z-[90] transition duration-300 ease-out ${
-          isHeaderHidden ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"
-        }`}
-      >
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-[90]">
         <div className="relative h-[calc(4.1666vw+clamp(3.125rem,4.1666vw,6.5rem))] min-h-[4.75rem] w-full">
           <Link
             href="/"
