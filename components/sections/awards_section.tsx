@@ -8,6 +8,8 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+const ENTRY_EDGE_OVERSHOOT = 4;
+
 const awardLetters = [
   { character: "a", zIndex: 16 },
   { character: "w", zIndex: 6 },
@@ -76,19 +78,35 @@ export function AwardsSection() {
 
             gsap.set(canvas, { autoAlpha: 0 });
 
-           gsap.set(letters, {
-  y: section.clientHeight + 220,
-  scale: 2,
-  opacity: 0.6,
-  force3D: true,
-});
-
             gsap.set(bookFrames, {
-              y: (index) => sectionHeight + 180 + index * 110,
+              y: 0,
               rotate: (index) => books[index]?.startRotation ?? 0,
               scale: 0.82,
               transformOrigin: "50% 50%",
               force3D: true,
+            });
+
+            gsap.set(letters, {
+              y: 0,
+              scale: 2,
+              opacity: 0.6,
+              force3D: true,
+            });
+
+            const sectionBounds = section.getBoundingClientRect();
+
+            gsap.set(letters, {
+              y: (_index, target) =>
+                sectionBounds.bottom -
+                (target as HTMLElement).getBoundingClientRect().top +
+                ENTRY_EDGE_OVERSHOOT,
+            });
+
+            gsap.set(bookFrames, {
+              y: (_index, target) =>
+                sectionBounds.bottom -
+                (target as HTMLElement).getBoundingClientRect().top +
+                ENTRY_EDGE_OVERSHOOT,
             });
 
             gsap.set(content, {

@@ -13,8 +13,18 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const attitudeLetters = ["a", "t", "t", "i", "t", "u", "d", "e"] as const;
 
 const sectionStyle = {
-  "--attitude-reveal-left": "100%",
-  "--attitude-reveal-right": "0%",
+  "--attitude-color-start": "100%",
+  "--attitude-color-end": "100%",
+} as CSSProperties;
+
+const attitudeGlyphStyle = {
+  backgroundImage:
+    "linear-gradient(90deg, var(--foreground) 0 var(--attitude-color-start), var(--accent) var(--attitude-color-start) var(--attitude-color-end), var(--foreground) var(--attitude-color-end) 100%)",
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  backgroundRepeat: "no-repeat",
+  color: "transparent",
+  WebkitTextFillColor: "transparent",
 } as CSSProperties;
 
 const desktopCardPositions = [
@@ -24,6 +34,13 @@ const desktopCardPositions = [
   { align: "flex-start", offset: "2rem" },
   { align: "center", offset: "1.5rem" },
 ] as const;
+
+const LETTER_INTRO_DURATION = 1.2;
+const LETTER_INTRO_STAGGER = 0.75;
+const TRAVEL_DURATION = 5.2;
+const LETTER_EXIT_DURATION = 0.28;
+const LETTER_EXIT_STAGGER = 0.16;
+const LETTER_EDGE_OVERSHOOT = 4;
 
 export function AttitudeSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -48,7 +65,31 @@ export function AttitudeSection() {
       const letters = gsap.utils.toArray<HTMLElement>(
         "[data-attitude-letter]",
       );
+      const glyphs = gsap.utils.toArray<HTMLElement>(
+        "[data-attitude-glyph]",
+      );
+      const heading = section.querySelector<HTMLElement>(
+        "[data-attitude-heading]",
+      );
       const cards = gsap.utils.toArray<HTMLElement>("[data-attitude-card]");
+
+      if (!heading || glyphs.length !== letters.length) {
+        return;
+      }
+
+      const syncGlyphGradients = () => {
+        const headingWidth = heading.getBoundingClientRect().width;
+
+        glyphs.forEach((glyph, index) => {
+          const letter = letters[index];
+          const offset = letter?.offsetLeft ?? 0;
+
+          glyph.style.backgroundSize = `${headingWidth}px 100%`;
+          glyph.style.backgroundPosition = `${-offset}px 0`;
+        });
+      };
+
+      syncGlyphGradients();
 
       if (reduceMotion) {
         gsap.set([intro, ...letters, ...cards], {
@@ -56,8 +97,8 @@ export function AttitudeSection() {
           y: 0,
           scale: 1,
         });
-        section.style.setProperty("--attitude-reveal-left", "0%");
-        section.style.setProperty("--attitude-reveal-right", "0%");
+        section.style.setProperty("--attitude-color-start", "0%");
+        section.style.setProperty("--attitude-color-end", "100%");
         return;
       }
 
@@ -75,8 +116,8 @@ export function AttitudeSection() {
         mm.add("(max-width: 1023px)", () => {
           const cardHeight = () => cards[0]?.offsetHeight ?? 320;
 
-          section.style.setProperty("--attitude-reveal-left", "100%");
-          section.style.setProperty("--attitude-reveal-right", "0%");
+          section.style.setProperty("--attitude-color-start", "0%");
+          section.style.setProperty("--attitude-color-end", "0%");
 
           gsap.set(cards, {
             autoAlpha: 1,
@@ -123,11 +164,40 @@ export function AttitudeSection() {
             track.scrollWidth +
             Math.max(200, scroller.clientWidth * 0.1);
           const pinDistance = () =>
-            Math.max(scroller.clientHeight * 3, track.scrollWidth * 0.72);
+            Math.max(scroller.clientHeight * 3.4, track.scrollWidth * 0.82);
 
           gsap.set(letters, {
+            y: 0,
+            scale: 1,
             autoAlpha: 1,
-            clearProps: "transform",
+          });
+
+          const sectionBounds = section.getBoundingClientRect();
+          const entryPositions = new Map<HTMLElement, number>();
+          const exitPositions = new Map<HTMLElement, number>();
+
+          letters.forEach((letter) => {
+            const letterBounds = letter.getBoundingClientRect();
+
+            entryPositions.set(
+              letter,
+              sectionBounds.bottom -
+                letterBounds.top +
+                LETTER_EDGE_OVERSHOOT,
+            );
+            exitPositions.set(
+              letter,
+              sectionBounds.top -
+                letterBounds.bottom -
+                LETTER_EDGE_OVERSHOOT,
+            );
+          });
+
+          gsap.set(letters, {
+            y: (_index, target) =>
+              entryPositions.get(target as HTMLElement) ?? 0,
+            force3D: true,
+            willChange: "transform",
           });
           gsap.set(intro, {
             autoAlpha: 1,
@@ -147,26 +217,40 @@ export function AttitudeSection() {
             willChange: "transform",
           });
 
-          const setColorSweep = (progress: number) => {
-            const clampedProgress = Math.max(0, Math.min(1, progress));
-            const revealLeft =
-              clampedProgress <= 0.5
-                ? 100 - clampedProgress * 200
-                : 0;
-            const revealRight =
-              clampedProgress > 0.5
-                ? (clampedProgress - 0.5) * 200
-                : 0;
+          let colorDisplacement = 0;
+
+          const setColorSweep = (displacement: number) => {
+            const headingWidth = heading.getBoundingClientRect().width;
+            colorDisplacement = Math.max(0, displacement);
+            const clampedDisplacement = Math.max(
+              0,
+              Math.min(headingWidth * 2, colorDisplacement),
+            );
+            const colorStart = Math.max(
+              0,
+              headingWidth - clampedDisplacement,
+            );
+            const colorEnd =
+              clampedDisplacement <= headingWidth
+                ? headingWidth
+                : Math.max(0, headingWidth * 2 - clampedDisplacement);
 
             section.style.setProperty(
-              "--attitude-reveal-left",
-              `${revealLeft}%`,
+              "--attitude-color-start",
+              `${colorStart}px`,
             );
             section.style.setProperty(
-              "--attitude-reveal-right",
-              `${revealRight}%`,
+              "--attitude-color-end",
+              `${colorEnd}px`,
             );
           };
+
+          const glyphResizeObserver = new ResizeObserver(() => {
+            syncGlyphGradients();
+            setColorSweep(colorDisplacement);
+          });
+
+          glyphResizeObserver.observe(heading);
 
           let currentTrackX = track.getBoundingClientRect().left;
           let currentScale = 1;
@@ -185,6 +269,7 @@ export function AttitudeSection() {
 
           setColorSweep(0);
           scaleFrame = requestAnimationFrame(updateCardScale);
+          let colorTrackStartX = Number(gsap.getProperty(track, "x"));
 
           const timeline = gsap.timeline({
             scrollTrigger: {
@@ -196,11 +281,8 @@ export function AttitudeSection() {
               scrub: 0.16,
               anticipatePin: 1,
               invalidateOnRefresh: true,
-              onUpdate: (self) => {
-                setColorSweep(self.progress);
-              },
               onLeave: () => {
-                setColorSweep(1);
+                setColorSweep(horizontalTravel());
               },
               onLeaveBack: () => {
                 setColorSweep(0);
@@ -208,21 +290,59 @@ export function AttitudeSection() {
             },
           });
 
-          timeline.to(
-            track,
-            {
-              x: () => introOffset() - horizontalTravel(),
-              ease: "none",
-              duration: 1,
-            },
-            0,
-          );
+          timeline
+            .to(
+              letters,
+              {
+                y: 0,
+                duration: LETTER_INTRO_DURATION,
+                stagger: { amount: LETTER_INTRO_STAGGER },
+                ease: "power1.out",
+              },
+              0,
+            )
+            .addLabel("travel")
+            .call(
+              () => {
+                colorTrackStartX = Number(gsap.getProperty(track, "x"));
+                setColorSweep(0);
+              },
+              undefined,
+              "travel",
+            )
+            .to(
+              track,
+              {
+                x: () => introOffset() - horizontalTravel(),
+                ease: "none",
+                duration: TRAVEL_DURATION,
+                onUpdate() {
+                  const currentTrackX = Number(gsap.getProperty(track, "x"));
+
+                  setColorSweep(colorTrackStartX - currentTrackX);
+                },
+              },
+              "travel",
+            )
+            .addLabel("exit")
+            .to(
+              [...letters].reverse(),
+              {
+                y: (_index, target) =>
+                  exitPositions.get(target as HTMLElement) ?? 0,
+                duration: LETTER_EXIT_DURATION,
+                stagger: { amount: LETTER_EXIT_STAGGER },
+                ease: "power2.in",
+              },
+              "exit",
+            );
 
           return () => {
+            glyphResizeObserver.disconnect();
             cancelAnimationFrame(scaleFrame);
             gsap.set(track, { clearProps: "willChange" });
             gsap.set([...letters, ...cards], {
-              clearProps: "scale,willChange",
+              clearProps: "transform,opacity,visibility,willChange",
             });
             timeline.scrollTrigger?.kill();
             timeline.kill();
@@ -262,30 +382,23 @@ export function AttitudeSection() {
         aria-hidden="true"
       >
         <div className="relative">
-          <h2 className="font-helvetica-bold flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-foreground lg:text-[clamp(5.4rem,17vw,20rem)]">
+          <h2
+            data-attitude-heading
+            className="font-helvetica-bold flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] lg:text-[clamp(5.4rem,17vw,20rem)]"
+          >
             {attitudeLetters.map((letter, index) => (
               <span
                 key={`${letter}-${index}`}
                 data-attitude-letter
-                className="inline-block origin-bottom lg:opacity-0 motion-reduce:opacity-100"
+                className="inline-block origin-bottom will-change-transform lg:opacity-0 motion-reduce:opacity-100"
               >
-                {letter}
-              </span>
-            ))}
-          </h2>
-          <h2
-            className="font-helvetica-bold absolute inset-0 flex select-none items-end justify-center gap-[0.012em] whitespace-nowrap text-[24vw] lowercase leading-[0.78] text-accent will-change-[clip-path] lg:text-[clamp(5.4rem,17vw,20rem)]"
-            style={{
-              clipPath:
-                "inset(0 var(--attitude-reveal-right) 0 var(--attitude-reveal-left))",
-            }}
-          >
-            {attitudeLetters.map((letter, index) => (
-              <span
-                key={`accent-${letter}-${index}`}
-                className="inline-block"
-              >
-                {letter}
+                <span
+                  data-attitude-glyph
+                  className="inline-block pb-[0.035em]"
+                  style={attitudeGlyphStyle}
+                >
+                  {letter}
+                </span>
               </span>
             ))}
           </h2>
