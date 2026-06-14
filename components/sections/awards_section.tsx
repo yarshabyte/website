@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
@@ -9,6 +10,14 @@ import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const ENTRY_EDGE_OVERSHOOT = 4;
+
+const sectionWordStyle = {
+  fontFamily: '"TT Tunnels Bold", Impact, "Arial Black", sans-serif',
+  fontWeight: 400,
+  fontSynthesis: "weight style small-caps",
+  letterSpacing: "normal",
+  textTransform: "none",
+} as CSSProperties;
 
 const awardLetters = [
   { character: "a", zIndex: 16 },
@@ -214,7 +223,11 @@ export function AwardsSection() {
         className="invisible absolute inset-0 overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute left-[3.5vw] top-[22vh] whitespace-nowrap font-display text-[21.5vw] lowercase leading-[0.8] tracking-[-0.065em] text-foreground">
+        <div
+          data-awards-title
+          className="absolute inset-x-0 top-[24vh] flex justify-center whitespace-nowrap text-[clamp(24rem,28.5vw,35rem)] leading-[0.8] text-foreground"
+          style={sectionWordStyle}
+        >
           {awardLetters.map(({ character, zIndex }, index) => (
             <span
               key={`${character}-${index}`}

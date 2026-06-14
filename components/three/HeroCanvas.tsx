@@ -13,7 +13,7 @@ export function HeroCanvas() {
   return (
     <Canvas
       className="h-full w-full touch-none"
-      camera={{ position: [0, 0, 6.8], fov: 36 }}
+      camera={{ position: [0, 0, 15], fov: 30 }}
       gl={{
         alpha: true,
         antialias: false,
@@ -22,8 +22,6 @@ export function HeroCanvas() {
       dpr={[1, 1.15]}
       frameloop="always"
     >
-      <ambientLight intensity={0.14} color="#FDFBF7" />
-      <directionalLight position={[2, 3, 5]} intensity={0.22} color="#7BA05B" />
       <InteractiveBlob />
     </Canvas>
   );

@@ -20,10 +20,10 @@ const fade = {
 };
 
 const heroDisplay =
-  "font-helvetica-bold text-[clamp(3.5rem,15.2vw,14.65rem)] uppercase leading-[0.8] tracking-normal";
+  "font-hero-display text-[clamp(5.625rem,15.27vw,21.25rem)] uppercase leading-[0.8] tracking-normal";
 
 const mobileHeroDisplay =
-  "font-helvetica-bold text-[clamp(4.15rem,18vw,5.35rem)] uppercase leading-[0.82] tracking-normal";
+  "font-hero-display text-[clamp(5.625rem,22vw,7.5rem)] uppercase leading-[0.8] tracking-normal";
 
 export function HeroSection() {
   const [isContactVisible, setIsContactVisible] = useState(false);
@@ -86,7 +86,7 @@ export function HeroSection() {
           </motion.h2>
 
           <motion.h2
-            className="pointer-events-none relative z-20 hidden pt-6 text-right sm:block lg:pt-10"
+            className="pointer-events-none relative z-20 hidden pt-[max(17.5vh,8rem)] text-right sm:block"
             aria-label="Portfoo"
             initial="hidden"
             animate="visible"

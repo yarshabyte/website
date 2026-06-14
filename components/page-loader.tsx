@@ -22,6 +22,7 @@ export function PageLoader({ children }: PageLoaderProps) {
 
     if (prefersReducedMotion) {
       const reducedMotionTimer = window.setTimeout(() => setIsLoading(false), 0);
+      window.dispatchEvent(new CustomEvent("yarsa:blob-enter"));
       return () => window.clearTimeout(reducedMotionTimer);
     }
 
@@ -46,6 +47,7 @@ export function PageLoader({ children }: PageLoaderProps) {
       }
 
       setIsExiting(true);
+      window.dispatchEvent(new CustomEvent("yarsa:blob-enter"));
       window.setTimeout(() => {
         if (!cancelled) {
           setIsLoading(false);
@@ -61,15 +63,8 @@ export function PageLoader({ children }: PageLoaderProps) {
   return (
     <>
       {isLoading ? <LoadingScreen isExiting={isExiting} /> : null}
-      <div
-        className={
-          shouldShowContent
-            ? "visible opacity-100 transition-opacity duration-500 ease-out"
-            : "invisible translate-y-3 opacity-0"
-        }
-        aria-hidden={!shouldShowContent}
-      >
-        {shouldShowContent ? children : null}
+      <div className="visible opacity-100" aria-hidden={!shouldShowContent}>
+        {children}
       </div>
     </>
   );

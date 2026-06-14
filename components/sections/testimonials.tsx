@@ -61,7 +61,8 @@ function TestimonialCard({
           alt={author}
           width={64}
           height={64}
-          className="absolute left-0 top-[5px] size-16 rounded-full object-cover"
+          draggable={false}
+          className="pointer-events-none absolute left-0 top-[5px] size-16 select-none rounded-full object-cover [-webkit-user-drag:none]"
         />
         <span>{message}</span>
       </p>
@@ -104,73 +105,7 @@ export function TestimonialsSection() {
     });
   };
 
-  const snapToNearest = (animate = true) => {
-    const track = trackRef.current;
-    const slides = slideRefs.current.filter(Boolean);
-    const { translate, minX, slideWidth } = dragState.current;
-
-    if (!track || slideWidth === 0 || slides.length === 0) {
-      return;
-    }
-
-    let index = Math.round(-translate / slideWidth);
-    index = clamp(index, 0, slides.length - 1);
-
-    if (translate <= minX + slideWidth * 0.4) {
-      index = slides.length - 1;
-    }
-
-    const snapped = clamp(
-      index === 0
-        ? 0
-        : index === slides.length - 1
-          ? minX
-          : -slides[index].offsetLeft,
-      minX,
-      0,
-    );
-    dragState.current.translate = snapped;
-
-    // #region agent log
-    fetch("http://127.0.0.1:7276/ingest/c9890c38-b7a2-45fd-8ec6-57a202cb4ca7", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "f74586",
-      },
-      body: JSON.stringify({
-        sessionId: "f74586",
-        runId: "last-slide-fix",
-        hypothesisId: "snap-minX",
-        location: "testimonials.tsx:snapToNearest",
-        message: "snap position",
-        data: {
-          index,
-          translate,
-          snapped,
-          minX,
-          slideWidth,
-          slideCount: slides.length,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-
-    if (animate) {
-      gsap.to(track, {
-        x: snapped,
-        duration: 0.72,
-        ease: "power3.out",
-        onUpdate: updateProgress,
-      });
-    } else {
-      gsap.set(track, { x: snapped });
-      updateProgress();
-    }
-  };
-
-  const endDrag = (pointerId: number, animate = true) => {
+  const endDrag = (pointerId: number) => {
     const slider = sliderRef.current;
     const state = dragState.current;
 
@@ -191,10 +126,7 @@ export function TestimonialsSection() {
 
     resetSlideScale();
 
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    snapToNearest(!reduceMotion && animate);
+    updateProgress();
   };
 
   const updateProgress = () => {
@@ -460,6 +392,10 @@ export function TestimonialsSection() {
         dragState.current.mouseY = event.clientY;
       };
 
+      const onDragStart = (event: DragEvent) => {
+        event.preventDefault();
+      };
+
       slider.addEventListener("pointerdown", onPointerDown);
       slider.addEventListener("pointermove", onPointerMove);
       slider.addEventListener("pointerup", onPointerUp);
@@ -467,6 +403,7 @@ export function TestimonialsSection() {
       slider.addEventListener("mouseenter", onMouseEnter);
       slider.addEventListener("mouseleave", onMouseLeave);
       slider.addEventListener("mousemove", onMouseMove);
+      slider.addEventListener("dragstart", onDragStart);
       window.addEventListener("pointerup", onWindowPointerUp);
       window.addEventListener("pointercancel", onWindowPointerUp);
 
@@ -480,6 +417,7 @@ export function TestimonialsSection() {
         slider.removeEventListener("mouseenter", onMouseEnter);
         slider.removeEventListener("mouseleave", onMouseLeave);
         slider.removeEventListener("mousemove", onMouseMove);
+        slider.removeEventListener("dragstart", onDragStart);
         window.removeEventListener("pointerup", onWindowPointerUp);
         window.removeEventListener("pointercancel", onWindowPointerUp);
         document.body.style.cursor = "";

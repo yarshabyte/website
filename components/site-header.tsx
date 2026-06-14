@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 import { FullscreenMenu } from "@/components/fullscreen-menu";
 import { MenuIcon } from "@/components/menu-icon";
@@ -53,15 +53,32 @@ export function SiteHeader() {
     setIsMenuOpen((current) => !current);
   };
 
+  const handleLogoClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    setIsMenuOpen(false);
+
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    window.dispatchEvent(new CustomEvent("yarsa:home-transition"));
+  };
+
   return (
     <>
       <header className="pointer-events-none fixed inset-x-0 top-0 z-[90]">
         <div className="relative h-[calc(4.1666vw+clamp(3.125rem,4.1666vw,6.5rem))] min-h-[4.75rem] w-full">
           <Link
             href="/"
-            className="pointer-events-auto absolute left-[4.1666vw] top-[4.1666vw] flex min-w-0 items-center gap-3 sm:gap-4 lg:gap-[4.1666vw]"
+            className="pointer-events-auto absolute left-[4.1666vw] top-[4.1666vw] block"
             aria-label="Yarsa Byte home"
-            onClick={() => setIsMenuOpen(false)}
+            onClick={handleLogoClick}
           >
             <Image
               src="/logo-icon.png"
@@ -72,13 +89,6 @@ export function SiteHeader() {
               priority
               unoptimized
             />
-            <span
-              className={`truncate text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-foreground transition-[opacity,transform] duration-300 sm:text-[0.78rem] ${
-                isMenuOpen ? "-translate-y-2 opacity-0" : "translate-y-0 opacity-100"
-              }`}
-            >
-              Yarsa Byte
-            </span>
           </Link>
 
           <button

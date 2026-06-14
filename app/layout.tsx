@@ -1,21 +1,12 @@
 import type { Metadata } from "next";
-import { Archivo_Black } from "next/font/google";
 
 import { PageLoader } from "@/components/page-loader";
+import { PageWaveTransition } from "@/components/page-wave-transition";
 import { ScrollHexBackground } from "@/components/scroll-hex-background";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { SiteHeader } from "@/components/site-header";
 
 import "./globals.css";
-
-const archivoBlack = Archivo_Black({
-  weight: "400",
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--next-display-font",
-  fallback: ["Arial Black", "Arial", "sans-serif"],
-  adjustFontFallback: false,
-});
 
 export const metadata: Metadata = {
 
@@ -58,8 +49,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased ${archivoBlack.variable}`}>
+    <html lang="en" className="h-full antialiased">
       <head>
+        <link
+          rel="preload"
+          href="/fonts/SuisseIntl-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/TTTunnels-Bold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/TTLakesNeue-Medium.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         {/* Structured Data: Organization & LocalBusiness */}
         <script
           type="application/ld+json"
@@ -100,6 +112,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full font-sans text-foreground">
         <PageLoader>
+          <PageWaveTransition />
           <div className="site-frame">
             <ScrollHexBackground />
             <div className="site-frame-content">

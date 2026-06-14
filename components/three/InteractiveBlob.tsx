@@ -1,126 +1,215 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import gsap from "gsap";
 import {
-  AdditiveBlending,
-  BackSide,
+  ClampToEdgeWrapping,
   Color,
-  DoubleSide,
+  LinearFilter,
+  SRGBColorSpace,
+  TextureLoader,
+  Vector2,
   type Group,
   type ShaderMaterial,
 } from "three";
 
-import { blobFragmentShader, blobVertexShader } from "@/components/three/blob-shaders";
+import {
+  blobFragmentShader,
+  blobVertexShader,
+} from "@/components/three/blob-shaders";
 import { usePagePointer } from "@/hooks/usePagePointer";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { BLOB_CONFIG, damp } from "@/lib/three-utils";
+import { damp } from "@/lib/three-utils";
 
-function hexToVec3(hex: string): [number, number, number] {
-  const c = new Color(hex);
-  return [c.r, c.g, c.b];
-}
+// Replace this file to change the image refracted through the blob.
+const BLOB_TEXTURE_URL = "/blob/sae.png";
 
 export function InteractiveBlob() {
   const groupRef = useRef<Group>(null);
+  const materialRef = useRef<ShaderMaterial>(null);
+  const hasEnteredRef = useRef(false);
   const pointer = usePagePointer();
   const reduceMotion = useReducedMotion();
+  const { viewport, size } = useThree();
+  const mobile = viewport.width / viewport.height < 0.78;
+  const restingScale = mobile ? 0.68 : 0.72;
 
-  const materialRef = useRef<ShaderMaterial>(null);
-  const rimMaterialRef = useRef<ShaderMaterial>(null);
-
-  const surfaceUniforms = useMemo(() => {
-    return {
-      uTime: { value: 0 },
-      uDistort: { value: BLOB_CONFIG.distortAmount },
-      uCoreColor: { value: hexToVec3(BLOB_CONFIG.coreColor) },
-      uRimColor: { value: hexToVec3(BLOB_CONFIG.rimColor) },
-      uGridColor: { value: hexToVec3(BLOB_CONFIG.gridColor) },
-      uGridScale: { value: BLOB_CONFIG.gridScale },
-      uGridStrength: { value: BLOB_CONFIG.gridStrength },
-      uRimStrength: { value: BLOB_CONFIG.rimStrength },
-      uOpacity: { value: BLOB_CONFIG.opacity },
-    };
+  const texture = useMemo(() => {
+    const configuredTexture = new TextureLoader().load(BLOB_TEXTURE_URL);
+    configuredTexture.colorSpace = SRGBColorSpace;
+    configuredTexture.wrapS = ClampToEdgeWrapping;
+    configuredTexture.wrapT = ClampToEdgeWrapping;
+    configuredTexture.minFilter = LinearFilter;
+    configuredTexture.magFilter = LinearFilter;
+    return configuredTexture;
   }, []);
 
-  const rimUniforms = useMemo(() => {
-    return {
+  const textureImage = texture.image as HTMLImageElement | undefined;
+  const uniforms = useMemo(
+    () => ({
       uTime: { value: 0 },
-      uDistort: { value: BLOB_CONFIG.distortAmount * 1.04 },
-      uCoreColor: { value: hexToVec3(BLOB_CONFIG.rimGlowCore) },
-      uRimColor: { value: hexToVec3(BLOB_CONFIG.rimGlowColor) },
-      uGridColor: { value: hexToVec3("#000000") },
-      uGridScale: { value: 0 },
-      uGridStrength: { value: 0 },
-      uRimStrength: { value: 1.1 },
-      uOpacity: { value: 0.16 },
-    };
-  }, []);
+      uSpeed: { value: 0.09 },
+      uFrequency: { value: 0.55 },
+      uAmplitude: { value: 2.4 },
+      uTexture: { value: texture },
+      uResolution: { value: new Vector2(size.width, size.height) },
+      uTextureSize: {
+        value: new Vector2(
+          textureImage?.naturalWidth || textureImage?.width || 1,
+          textureImage?.naturalHeight || textureImage?.height || 1,
+        ),
+      },
+      uReflectionColor: { value: new Color("#edece2") },
+      uIor: { value: 1.03 },
+      uLightFactor: { value: 1 },
+    }),
+    [size.height, size.width, texture, textureImage],
+  );
 
-  useFrame(({ clock }, delta) => {
+  useEffect(() => {
+    uniforms.uResolution.value.set(size.width, size.height);
+  }, [size.height, size.width, uniforms]);
+
+  useEffect(() => {
     const group = groupRef.current;
+
     if (!group) {
       return;
     }
 
-    const t = clock.elapsedTime;
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = t;
-    }
-    if (rimMaterialRef.current) {
-      rimMaterialRef.current.uniforms.uTime.value = t;
-    }
+    const enter = () => {
+      if (hasEnteredRef.current) {
+        return;
+      }
 
-    if (reduceMotion) {
-      group.rotation.y += BLOB_CONFIG.idleRotationSpeed * 0.25 * delta;
+      hasEnteredRef.current = true;
+      gsap.to(group.scale, {
+        x: restingScale,
+        y: restingScale,
+        z: restingScale,
+        duration: 0.75,
+        ease: "power4.inOut",
+      });
+      gsap.fromTo(
+        group.rotation,
+        { y: group.rotation.y - 0.8 },
+        { y: group.rotation.y, duration: 1.1, ease: "power4.out" },
+      );
+    };
+
+    const fallback = window.setTimeout(enter, 1500);
+    window.addEventListener("yarsa:blob-enter", enter);
+
+    return () => {
+      window.clearTimeout(fallback);
+      window.removeEventListener("yarsa:blob-enter", enter);
+      gsap.killTweensOf(group.scale);
+      gsap.killTweensOf(group.rotation);
+    };
+  }, [restingScale]);
+
+  useEffect(() => {
+    const handlePulse = (event: Event) => {
+      const group = groupRef.current;
+      const material = materialRef.current;
+
+      if (!group || !material || reduceMotion) {
+        return;
+      }
+
+      const clockwise =
+        (event as CustomEvent<{ clockwise?: boolean }>).detail?.clockwise ??
+        false;
+      const { uAmplitude, uFrequency, uLightFactor } = material.uniforms;
+
+      gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor, group.rotation]);
+      gsap
+        .timeline()
+        .to(
+          uAmplitude,
+          {
+            value: 8.4,
+            duration: 0.35,
+            ease: "power4.inOut",
+            yoyo: true,
+            repeat: 1,
+          },
+          0,
+        )
+        .to(
+          uFrequency,
+          {
+            value: 0.56,
+            duration: 0.35,
+            ease: "power4.inOut",
+            yoyo: true,
+            repeat: 1,
+          },
+          0,
+        )
+        .to(
+          uLightFactor,
+          {
+            value: 2.35,
+            duration: 0.35,
+            ease: "power4.inOut",
+            yoyo: true,
+            repeat: 1,
+          },
+          0,
+        );
+      gsap.to(group.rotation, {
+        y: group.rotation.y + (clockwise ? -2 : 2),
+        duration: 0.8,
+        ease: "power4.out",
+      });
+    };
+
+    window.addEventListener("yarsa:blob-pulse", handlePulse);
+    return () => window.removeEventListener("yarsa:blob-pulse", handlePulse);
+  }, [reduceMotion]);
+
+  useFrame(({ camera }, delta) => {
+    const group = groupRef.current;
+    const material = materialRef.current;
+
+    if (!group || !material) {
       return;
     }
 
-    const { x, y } = pointer.current;
-    const targetRotY = -x * BLOB_CONFIG.cursorRotationInfluence;
-    const targetRotX = y * BLOB_CONFIG.cursorRotationInfluence * 0.42;
+    material.uniforms.uTime.value += delta;
 
-    group.rotation.y = damp(
-      group.rotation.y,
-      targetRotY,
-      BLOB_CONFIG.rotationSmoothing,
-      delta,
-    );
-    group.rotation.x = damp(
-      group.rotation.x,
-      targetRotX,
-      BLOB_CONFIG.rotationSmoothing,
-      delta,
-    );
+    const targetX = mobile ? 0 : -viewport.width * 0.255;
+    const targetY = mobile ? viewport.height * 0.1 : -viewport.height * 0.11;
+    group.position.x = damp(group.position.x, targetX, 7, delta);
+    group.position.y = damp(group.position.y, targetY, 7, delta);
+    group.rotation.z = damp(group.rotation.z, -0.08, 4, delta);
+    group.rotation.y += delta * (reduceMotion ? 0.025 : 0.055);
 
-    group.rotation.y += BLOB_CONFIG.idleRotationSpeed * delta;
+    if (!reduceMotion) {
+      camera.position.x = damp(camera.position.x, pointer.current.x * 0.62, 4, delta);
+      camera.position.y = damp(camera.position.y, pointer.current.y * 0.42, 4, delta);
+      camera.position.z = damp(camera.position.z, 15, 4, delta);
+      camera.lookAt(0, 0, 0);
+    }
   });
 
   return (
-    <group ref={groupRef} scale={BLOB_CONFIG.scale} rotation={[0.12, -0.34, -0.08]}>
+    <group
+      ref={groupRef}
+      scale={reduceMotion ? restingScale : 0.001}
+      rotation={[0.12, -0.34, -0.08]}
+    >
       <mesh>
-        <sphereGeometry args={[1, 64, 42]} />
+        <icosahedronGeometry args={[2.5, 6]} />
         <shaderMaterial
           ref={materialRef}
           vertexShader={blobVertexShader}
           fragmentShader={blobFragmentShader}
-          uniforms={surfaceUniforms}
+          uniforms={uniforms}
           transparent
           depthWrite={false}
-          side={DoubleSide}
-        />
-      </mesh>
-      <mesh scale={1.045}>
-        <sphereGeometry args={[1, 48, 32]} />
-        <shaderMaterial
-          ref={rimMaterialRef}
-          vertexShader={blobVertexShader}
-          fragmentShader={blobFragmentShader}
-          uniforms={rimUniforms}
-          transparent
-          depthWrite={false}
-          blending={AdditiveBlending}
-          side={BackSide}
         />
       </mesh>
     </group>

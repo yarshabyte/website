@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Mail, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 
+import { ContactSection } from "@/components/sections/contact-section";
 import { Container } from "@/components/ui/container";
 import { teamMembers } from "@/data/team";
 
@@ -45,6 +46,7 @@ export default async function TeamMemberPage({
   }
 
   return (
+    <>
     <main className="page-hero-spacing overflow-hidden">
       <section className="border-b border-foreground/10 pb-[var(--space-section)]">
         <Container>
@@ -168,5 +170,7 @@ export default async function TeamMemberPage({
         </Container>
       </section>
     </main>
+    <ContactSection />
+    </>
   );
 }

@@ -1,9 +1,10 @@
-# Font
+# Local Fonts
 
-The site uses the brand system font stack via `app/globals.css`:
+The typography system is self-hosted and declared in `app/globals.css`:
 
-```css
--apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
-```
+- Suisse Intl Regular and Bold for body copy
+- TT Tunnels Regular and Bold for display headings
+- TT Lakes Neue Medium for technical labels
 
-No self-hosted font files are currently required.
+WOFF2 files are served to modern browsers, with WOFF files retained as
+fallbacks. No external font request is required.

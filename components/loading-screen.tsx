@@ -19,8 +19,10 @@ export function LoadingScreen({ isExiting }: LoadingScreenProps) {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-background transition-[opacity,visibility] duration-700 ease-in-out",
-        isExiting ? "pointer-events-none opacity-0 invisible" : "opacity-100 visible",
+        "fixed inset-0 z-[1000] flex flex-col items-center justify-center overflow-hidden bg-background transition-[inset,border-radius,opacity,visibility] duration-700 ease-in-out",
+        isExiting
+          ? "pointer-events-none invisible inset-[10px] rounded-[30px] opacity-0"
+          : "visible opacity-100",
       )}
       aria-hidden={isExiting}
       aria-busy={!isExiting}

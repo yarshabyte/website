@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 
+import { ContactSection } from "@/components/sections/contact-section";
 import { Container } from "@/components/ui/container";
 import { teamMembers } from "@/data/team";
 
@@ -251,6 +252,7 @@ export default function AboutPage() {
           </Container>
         </section>
       </main>
+      <ContactSection />
     </>
   );
 }

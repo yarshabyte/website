@@ -8,6 +8,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { projects } from "@/data/projects";
 import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
+import { ContactSection } from "@/components/sections/contact-section";
 import { Container } from "@/components/ui/container";
 import { PremiumButton } from "@/components/ui/premium-button";
 
@@ -38,6 +39,7 @@ export function WorkPageClient() {
   };
 
   return (
+    <>
     <main className="overflow-hidden">
       <section className="page-hero-spacing relative min-h-dvh overflow-hidden">
         <div className="service-grid-surface absolute inset-0 opacity-20" aria-hidden="true" />
@@ -264,5 +266,7 @@ export function WorkPageClient() {
         </Container>
       </section>
     </main>
+    <ContactSection />
+    </>
   );
 }
