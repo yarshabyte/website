@@ -803,6 +803,10 @@ h6 {
   margin: 0 auto;
 }
 
+.services-page .services-hero-intro {
+  display: none;
+}
+
 .services-page .services-hero-line {
   font-family: var(--display-font);
   font-size: clamp(1.5rem, 11.2vw, 11.25rem);
@@ -969,6 +973,109 @@ h6 {
 
   50% {
     transform: scale(1.05);
+  }
+}
+
+@media (max-width: 639px) {
+  .services-page .services-breadcrumb {
+    position: absolute;
+    z-index: 2;
+    top: clamp(5rem, 10.5svh, 5.75rem);
+    left: 50%;
+    width: max-content;
+    max-width: calc(100% - 9rem);
+    justify-content: center;
+    padding: 0;
+    transform: translateX(-50%);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+  }
+
+  .services-page .services-hero {
+    min-height: max(100svh, 44rem);
+    align-items: stretch;
+    padding:
+      clamp(9rem, 18.5svh, 9.75rem)
+      clamp(1rem, 5vw, 1.5rem)
+      clamp(2.75rem, 5.5svh, 3.25rem);
+  }
+
+  .services-page .services-hero-grid {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    place-items: center;
+    max-width: 31rem;
+  }
+
+  .services-page .services-hero-line {
+    position: relative;
+    grid-row: 1;
+    width: 100%;
+    padding-top: clamp(10.5rem, 44vw, 11.5rem);
+    font-size: clamp(3.15rem, 15vw, 5.2rem);
+    line-height: 0.82;
+    letter-spacing: -0.025em;
+    text-align: center;
+  }
+
+  .services-page .services-title-switch {
+    height: 0.88em;
+    color: var(--accent);
+  }
+
+  .services-page .services-title-switch span {
+    right: 0;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .services-page .services-hero-row {
+    justify-content: center;
+    gap: 0;
+    text-align: center;
+  }
+
+  .services-page .services-hero-row.offset {
+    padding-top: 0;
+  }
+
+  .services-page .services-hero-row.right {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .services-page .services-button-switch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: clamp(7.5rem, 35vw, 9rem);
+    height: clamp(7.5rem, 35vw, 9rem);
+    margin: 0;
+    transform: translateX(-50%);
+  }
+
+  .services-page .services-button-switch svg {
+    width: 1.65rem;
+    height: 1.65rem;
+  }
+
+  .services-page .services-hero-intro {
+    display: block;
+    grid-row: 3;
+    max-width: 20.5rem;
+    margin-inline: auto;
+    text-align: center;
+    font-size: clamp(0.9rem, 4vw, 1.05rem);
+    line-height: 1.35;
+    color: color-mix(in srgb, var(--foreground) 74%, transparent);
+  }
+
+  .services-page .services-scroll-to {
+    display: none;
+  }
+
+  .services-page .services-block-description {
+    display: none;
   }
 }
 

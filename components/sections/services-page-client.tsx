@@ -245,6 +245,12 @@ export function ServicesPageClient() {
               </div>
               <div className="services-hero-row right shift-3">business</div>
             </h1>
+
+            <p className="services-hero-intro">
+              At Yarsa Byte, we build digital systems for Nepali businesses:
+              websites, portfolios, branding, and launch setup that look
+              credible and are easy to keep improving.
+            </p>
           </div>
 
           <button
@@ -260,7 +266,7 @@ export function ServicesPageClient() {
           <div className="services-block-grid">
             <div>
               <SectionLabel>What we do</SectionLabel>
-              <p className="mt-6 max-w-md text-base leading-7 text-foreground/68 sm:text-lg">
+              <p className="services-block-description mt-6 max-w-md text-base leading-7 text-foreground/68 sm:text-lg">
                 At Yarsa Byte, we build digital systems for Nepali businesses
                 websites, portfolios, branding, and launch setup that look
                 credible and are easy to keep improving.
