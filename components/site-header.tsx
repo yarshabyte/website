@@ -81,7 +81,7 @@ export function SiteHeader() {
             onClick={handleLogoClick}
           >
             <Image
-              src="/logo-icon.png"
+              src="/logo-icon.webp"
               alt="Yarsa Byte logo"
               width={104}
               height={104}

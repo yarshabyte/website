@@ -6,7 +6,7 @@ export const projects = [
     year: "2026",
     tags: ["Website", "Consultancy", "Admissions"],
     href: "https://www.avenuebutwal.edu.np",
-    thumbnail: "/work/avenuebutwal.png",
+    thumbnail: "/work/avenuebutwal.webp",
     summary:
       "A trust-forward consultancy website with destination pathways, counseling calls to action, and a clear student inquiry flow.",
     outcome:
@@ -19,7 +19,7 @@ export const projects = [
     year: "2026",
     tags: ["Company", "Services", "Portfolio"],
     href: "https://www.greenstarsuppliers.com.np/",
-    thumbnail: "/work/greenstarsuppliers.png",
+    thumbnail: "/work/greenstarsuppliers.webp",
     summary:
       "A modern digital agency website showcasing services, case studies, and team expertise.",
     outcome: "Dynamic service pages, project showcases, and a professional brand identity.",
@@ -31,7 +31,7 @@ export const projects = [
     year: "2026",
     tags: ["Portfolio", "Personal Website", "Blog"],
     href: "https://www.arvindpandey.com.np/",
-    thumbnail: "/work/arvindpandey.png",
+    thumbnail: "/work/arvindpandey.webp",
     summary:
       "A clean personal portfolio for an IT lecturer and tech consultant, built around identity, articles, and direct contact.",
     outcome: "Profile-first landing page, article entry points, contact actions, and a polished personal-brand presence.",

@@ -23,7 +23,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { damp } from "@/lib/three-utils";
 
 // Replace this file to change the image refracted through the blob.
-const BLOB_TEXTURE_URL = "/blob/sae.png";
+const BLOB_TEXTURE_URL = "/blob/blob.webp";
 
 export function InteractiveBlob() {
   const groupRef = useRef<Group>(null);

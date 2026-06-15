@@ -8,10 +8,10 @@ import { TestimonialsSection } from "@/components/sections/testimonials";
 import { WorkSection } from "@/components/sections/work-section";
 
 export const metadata: Metadata = {
-  title: "YarsaByte | Web Design & Development in Nepal",
+  title: "Yarsa Byte | Creative approach to your business",
   description:
     "YarsaByte helps Nepali businesses create websites, portfolios, and digital presences with web design, branding, and development services.",
-  keywords: ["web design Nepal", "website development Kathmandu", "digital agency Nepal"],
+  keywords: ["web design Nepal", "Business growth", "digital agency Nepal"],
   alternates: { canonical: "https://yarsabyte.vercel.app/" },
   openGraph: {
     url: "https://yarsabyte.vercel.app/",

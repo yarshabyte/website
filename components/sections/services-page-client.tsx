@@ -1,11 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 
 import { ContactSection } from "@/components/sections/contact-section";
 import {
@@ -16,7 +16,7 @@ import {
 } from "@/data/services-page";
 import { cn } from "@/lib/utils";
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+gsap.registerPlugin(useGSAP);
 
 function SectionLabel({ children }: { children: string }) {
   return (
@@ -39,74 +39,18 @@ function MiniMark() {
 export function ServicesPageClient() {
   const pageRef = useRef<HTMLElement>(null);
   const switchBtnRef = useRef<HTMLButtonElement>(null);
-  const lifecycleRef = useRef<HTMLElement>(null);
-  const panesRef = useRef<HTMLDivElement>(null);
   const [activeWord, setActiveWord] = useState(0);
   const [activePane, setActivePane] = useState(0);
+  const [workflowDirection, setWorkflowDirection] = useState<1 | -1>(1);
   const wordIndexRef = useRef(0);
 
   useGSAP(
     () => {
-      const panes = panesRef.current;
-      const lifecycle = lifecycleRef.current;
       const switchBtn = switchBtnRef.current;
 
-      if (!panes) {
-        return;
-      }
-
-      const scroller = document.querySelector<HTMLElement>(".site-frame");
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-
-      const mm = gsap.matchMedia();
-
-      mm.add("(max-width: 1023px)", () => {
-        if (!lifecycle || reduceMotion) {
-          return;
-        }
-
-        const stackItems = gsap.utils.toArray<HTMLElement>(
-          ".services-fp-item.is-stack",
-        );
-
-        if (stackItems.length === 0) {
-          return;
-        }
-
-        lifecycle.style.marginBottom = "35vh";
-
-        gsap.set(stackItems, {
-          yPercent: (index) => (index + 1) * 10,
-          scale: 0.9,
-        });
-
-        const timeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: panes,
-            scroller: scroller ?? window,
-            start: "top 10%",
-            end: "bottom -250%",
-            scrub: true,
-            pin: lifecycle,
-          },
-        });
-
-        timeline.to(stackItems, {
-          yPercent: (index) => -100 + (index + 1) * 10,
-          scale: 1,
-          stagger: 0.5,
-          duration: 0.5,
-          ease: "none",
-        });
-
-        return () => {
-          lifecycle.style.marginBottom = "";
-          timeline.scrollTrigger?.kill();
-          timeline.kill();
-        };
-      });
 
       let switchCleanup: (() => void) | undefined;
 
@@ -161,7 +105,6 @@ export function ServicesPageClient() {
 
       return () => {
         switchCleanup?.();
-        mm.revert();
       };
     },
     { scope: pageRef },
@@ -187,6 +130,16 @@ export function ServicesPageClient() {
       .getElementById("service-block")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  const changeWorkflowStep = (direction: 1 | -1) => {
+    setWorkflowDirection(direction);
+    setActivePane(
+      (current) =>
+        (current + direction + workflowSteps.length) % workflowSteps.length,
+    );
+  };
+
+  const activeWorkflowStep = workflowSteps[activePane];
 
   return (
     <>
@@ -285,10 +238,7 @@ export function ServicesPageClient() {
           </div>
         </section>
 
-        <section
-          ref={lifecycleRef}
-          className="services-block services-lifecycle"
-        >
+        <section className="services-block services-lifecycle">
           <div className="services-block-grid !grid-cols-1 lg:!grid-cols-[0.42fr_0.58fr]">
             <SectionLabel>Workflow</SectionLabel>
             <h2 className="services-headline lg:col-start-2">
@@ -298,14 +248,13 @@ export function ServicesPageClient() {
           </div>
 
           <div className="services-flying-stage mx-auto mt-8 max-w-[98rem] lg:mt-10">
-            <div ref={panesRef} className="services-flying-panes">
+            <div className="services-flying-panes">
               {workflowSteps.map((step, index) => (
                 <article
                   key={step.number}
                   className={cn(
                     "services-fp-item",
                     index === activePane && "is-active",
-                    index > 0 && "is-stack",
                   )}
                   tabIndex={0}
                   onMouseEnter={() => setActivePane(index)}
@@ -332,10 +281,58 @@ export function ServicesPageClient() {
                 </article>
               ))}
             </div>
+
+            <div className="services-workflow-carousel">
+              <article
+                key={`${activeWorkflowStep.number}-${workflowDirection}`}
+                className={cn(
+                  "services-workflow-card",
+                  workflowDirection === 1 ? "from-next" : "from-previous",
+                )}
+                aria-live="polite"
+              >
+                <p className="services-section-label services-fp-number">
+                  <span className="dot-ring" aria-hidden="true" />
+                  {activeWorkflowStep.number}
+                </p>
+                <h3 className="services-workflow-card-title">
+                  {activeWorkflowStep.title[0]}
+                  <br />
+                  {activeWorkflowStep.title[1]}
+                </h3>
+                <p className="services-workflow-card-body">
+                  {activeWorkflowStep.description}
+                </p>
+              </article>
+
+              <div className="services-workflow-controls">
+                <button
+                  type="button"
+                  className="services-workflow-arrow"
+                  aria-label="Show previous workflow step"
+                  onClick={() => changeWorkflowStep(-1)}
+                >
+                  <ChevronLeft aria-hidden="true" />
+                </button>
+                <span className="services-workflow-progress" aria-hidden="true">
+                  {String(activePane + 1).padStart(2, "0")}
+                  <i />
+                  {String(workflowSteps.length).padStart(2, "0")}
+                </span>
+                <button
+                  type="button"
+                  className="services-workflow-arrow"
+                  aria-label="Show next workflow step"
+                  onClick={() => changeWorkflowStep(1)}
+                >
+                  <ChevronRight aria-hidden="true" />
+                </button>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="services-block">
+        <section className="services-block services-results">
           <div className="mx-auto max-w-[98rem] text-center">
             <SectionLabel>Results driven</SectionLabel>
             <h2 className="services-headline mt-6">
@@ -353,11 +350,16 @@ export function ServicesPageClient() {
             {resultCases.map((item) => (
               <article key={item.name} className="services-goal-card">
                 <div className="inner">
-                  <div className={`thumb bg-gradient-to-br ${item.tone}`}>
-                    <span aria-hidden="true" />
+                  <div className="thumb">
+                    <Image
+                      src={item.image}
+                      alt={item.imageAlt}
+                      fill
+                      sizes="(max-width: 767px) 42vw, (max-width: 1279px) 28vw, 24vw"
+                    />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold">{item.name}</h3>
+                  <div className="services-goal-content">
+                    <h3 className="services-goal-title">{item.name}</h3>
                     <div className="services-goal-stat">
                       {item.prefix ? (
                         <span className="text-xs font-semibold">

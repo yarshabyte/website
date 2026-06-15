@@ -10,13 +10,13 @@ import "./globals.css";
 
 export const metadata: Metadata = {
 
-  title: "YarsaByte | Your Digital Presence Partner in Nepal",
+  title: "YarsaByte | Creative approach to your business",
   description:
     "YarsaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
   metadataBase: new URL("https://yarsabyte.vercel.app"),
   alternates: { canonical: "https://yarsabyte.vercel.app" },
   openGraph: {
-    title: "YarsaByte | Your Digital Presence Partner in Nepal",
+    title: "Yarsa Byte | Creative approach to your business",
     description:
       "YarsaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
     siteName: "YarsaByte",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "YarsaByte | Your Digital Presence Partner in Nepal",
+    title: "YarsaByte | Creative approach to your business",
     description:
       "YarsaByte helps Nepali businesses create websites, portfolios, branding, and digital setups for a professional online presence.",
     images: ["https://yarsabyte.vercel.app/og-image.png"],
@@ -81,7 +81,7 @@ export default function RootLayout({
               "@type": "Organization",
               name: "YarsaByte",
               url: "https://yarsabyte.vercel.app",
-              logo: "https://yarsabyte.vercel.app/logo.png",
+              logo: "https://yarsabyte.vercel.app/logo.webp",
               sameAs: [
                 "https://www.facebook.com/yarsabyte",
                 "https://www.instagram.com/yarsabyte",

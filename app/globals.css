@@ -1230,6 +1230,10 @@ h6 {
   background: color-mix(in srgb, var(--services-stage-bg) 92%, black);
 }
 
+.services-page .services-workflow-carousel {
+  display: none;
+}
+
 .services-page .services-fp-item {
   position: relative;
   flex: 1 1 clamp(3.75rem, 8.333vw, 7.5rem);
@@ -1352,55 +1356,54 @@ h6 {
 .services-page .services-goal-boxes {
   display: grid;
   gap: 1rem;
-  min-height: 24rem;
-  align-items: end;
-}
-
-@media (min-width: 768px) {
-  .services-page .services-goal-boxes {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    min-height: 60vh;
-  }
+  min-height: 0;
 }
 
 .services-page .services-goal-card {
-  height: 100%;
-  min-height: 18rem;
+  min-height: 0;
   display: flex;
 }
 
 .services-page .services-goal-card .inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 0.88fr) minmax(0, 1.12fr);
+  align-items: center;
+  gap: clamp(1rem, 5vw, 1.5rem);
   flex: 1;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-self: flex-end;
   width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  padding: 1.5rem;
+  border-radius: 1.1rem;
+  padding: clamp(0.85rem, 3.5vw, 1.1rem);
   background: color-mix(in srgb, var(--foreground) 5%, var(--background));
   border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
   transform-origin: bottom center;
-  transition: transform 0.55s var(--services-pane-ease);
-}
-
-.services-page .services-goal-card:hover .inner {
-  transform: translateY(-6px) scale(0.96);
+  transition:
+    transform 620ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 620ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .services-page .services-goal-card .thumb {
   position: relative;
   width: 100%;
-  padding-bottom: 100%;
-  border-radius: 10px;
+  aspect-ratio: 1;
+  border-radius: 0.8rem;
   overflow: hidden;
-  margin-bottom: 1rem;
+  background: color-mix(in srgb, var(--foreground) 8%, var(--background));
 }
 
-.services-page .services-goal-card .thumb > span {
-  position: absolute;
-  inset: 0;
+.services-page .services-goal-card .thumb img {
+  object-fit: cover;
+}
+
+.services-page .services-goal-content {
+  min-width: 0;
+}
+
+.services-page .services-goal-title {
+  font-family: var(--display-font);
+  font-size: clamp(1.75rem, 8vw, 2.75rem);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
 }
 
 .services-page .services-goal-stat {
@@ -1428,7 +1431,7 @@ h6 {
 
 .services-page .services-goal-stat .value {
   font-size: 1.25rem;
-  line-height: 3rem;
+  line-height: 2.4rem;
   font-weight: 700;
 }
 
@@ -1448,91 +1451,181 @@ h6 {
       calc(var(--services-header-safe-start) - var(--site-gutter))
     );
   }
+}
+
+@media (max-width: 767px) {
+  .services-page .services-lifecycle {
+    padding-bottom: clamp(3rem, 10vw, 4.5rem);
+  }
 
   .services-page .services-flying-stage {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.6rem;
+    overflow: hidden;
   }
 
   .services-page .services-flying-panes {
-    display: block;
-    height: auto;
-    min-height: auto;
-    background: transparent;
-    overflow: visible;
+    display: none;
   }
 
-  .services-page .services-lifecycle {
-    position: relative;
+  .services-page .services-workflow-carousel {
+    display: block;
   }
 
-  .services-page .services-fp-item {
-    position: absolute;
-    display: block;
-    width: 100%;
-    max-width: none;
-    flex: none;
-    border-radius: 1rem;
-    box-shadow: 0 16px 40px color-mix(in srgb, var(--foreground) 12%, transparent);
+  .services-page .services-workflow-card {
+    min-height: clamp(22rem, 64svh, 28rem);
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.35rem, 6vw, 2rem);
+    color: var(--services-card-text);
+    background: var(--services-card-bg);
+    border-radius: 0.9rem;
     border: 1px solid color-mix(in srgb, var(--background) 14%, transparent);
+    box-shadow: 0 16px 40px color-mix(in srgb, var(--foreground) 12%, transparent);
+    will-change: transform, opacity;
   }
 
-  .services-page .services-fp-item:first-child {
-    position: relative;
+  .services-page .services-workflow-card.from-next {
+    animation: servicesWorkflowFromNext 520ms var(--services-pane-ease) both;
   }
 
-  .services-page .services-fp-item:nth-child(1) {
-    z-index: 1;
-  }
-  .services-page .services-fp-item:nth-child(2) {
-    z-index: 2;
-  }
-  .services-page .services-fp-item:nth-child(3) {
-    z-index: 3;
-  }
-  .services-page .services-fp-item:nth-child(4) {
-    z-index: 4;
-  }
-  .services-page .services-fp-item:nth-child(5) {
-    z-index: 5;
-  }
-  .services-page .services-fp-item:nth-child(6) {
-    z-index: 6;
+  .services-page .services-workflow-card.from-previous {
+    animation: servicesWorkflowFromPrevious 520ms var(--services-pane-ease) both;
   }
 
-  .services-page .services-fp-inner {
-    display: block;
+  .services-page .services-workflow-card-title {
+    margin-top: clamp(2rem, 9vw, 3rem);
+    font-family: var(--display-font);
+    font-size: clamp(2.9rem, 14vw, 4.6rem);
+    line-height: 0.88;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
   }
 
-  .services-page .services-fp-bottom {
-    position: static;
-    display: block;
-    width: 100%;
-    height: auto;
-    pointer-events: auto;
+  .services-page .services-workflow-card-body {
+    max-width: 32rem;
+    margin: auto 0 0;
+    padding-top: clamp(2rem, 8vw, 3rem);
+    font-size: clamp(0.95rem, 4vw, 1.05rem);
+    line-height: 1.6;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--services-card-text) 68%, transparent);
   }
 
-  .services-page .services-fp-title {
-    position: static;
-    width: auto;
-    margin-top: 0.35em;
-    transform: none !important;
+  .services-page .services-workflow-controls {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0.1rem 0.1rem;
   }
 
-  .services-page .services-fp-body-track {
-    position: static;
-    display: block;
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-    transform: none;
+  .services-page .services-workflow-arrow {
+    width: 4.5rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--background) 24%, transparent);
+    border-radius: 0.75rem;
+    color: var(--background);
+    background: color-mix(in srgb, var(--background) 8%, transparent);
+    transition:
+      transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 260ms ease;
   }
 
-  .services-page .services-fp-body {
-    margin-top: 1.5em;
-    padding-left: 0;
-    width: auto;
-    transform: none !important;
+  .services-page .services-workflow-arrow:first-child {
+    justify-self: start;
+  }
+
+  .services-page .services-workflow-arrow:last-child {
+    justify-self: end;
+  }
+
+  .services-page .services-workflow-arrow:active {
+    transform: scale(0.92);
+  }
+
+  .services-page .services-workflow-arrow svg {
+    width: 1.7rem;
+    height: 1.7rem;
+    stroke-width: 1.6;
+  }
+
+  .services-page .services-workflow-progress {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: color-mix(in srgb, var(--background) 78%, transparent);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  .services-page .services-workflow-progress i {
+    width: 2.25rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--background) 38%, transparent);
+  }
+
+  .services-page .services-results {
+    padding-top: clamp(3.5rem, 12vw, 5rem);
+  }
+}
+
+@media (min-width: 768px) {
+  .services-page .services-goal-boxes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: clamp(0.75rem, 1.4vw, 1.5rem);
+    padding-bottom: clamp(3rem, 5vw, 5rem);
+  }
+
+  .services-page .services-goal-card {
+    min-height: clamp(28rem, 42vw, 38rem);
+  }
+
+  .services-page .services-goal-card:nth-child(2) {
+    transform: translateY(clamp(2rem, 4vw, 4rem));
+  }
+
+  .services-page .services-goal-card .inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-self: stretch;
+    gap: 0;
+    padding: clamp(1.1rem, 1.6vw, 1.6rem);
+    border-radius: 0.8rem;
+  }
+
+  .services-page .services-goal-card .thumb {
+    margin-bottom: clamp(1.5rem, 3vw, 3.5rem);
+  }
+
+  .services-page .services-goal-content {
+    text-align: center;
+  }
+
+  .services-page .services-goal-title {
+    font-size: clamp(1.45rem, 2.1vw, 2.35rem);
+  }
+
+  .services-page .services-goal-stat {
+    margin: 0.75rem 0 0.9rem;
+  }
+
+  .services-page .services-goal-stat .value {
+    font-size: clamp(1.35rem, 2vw, 1.85rem);
+    line-height: 2.8rem;
+  }
+
+}
+
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .services-page .services-goal-card:hover .inner {
+    transform: translateY(-0.7rem) scale(1.015);
+    box-shadow: 0 22px 45px color-mix(in srgb, var(--foreground) 14%, transparent);
   }
 }
 
@@ -1541,5 +1634,37 @@ h6 {
   .services-page .services-fp-item:hover,
   .services-page .services-fp-item:focus-visible {
     flex: 1 1 42vw;
+  }
+}
+
+@keyframes servicesWorkflowFromNext {
+  from {
+    opacity: 0;
+    transform: translateX(12%) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes servicesWorkflowFromPrevious {
+  from {
+    opacity: 0;
+    transform: translateX(-12%) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .services-page .services-workflow-card,
+  .services-page .services-goal-card .inner {
+    animation: none;
+    transition: none;
   }
 }
