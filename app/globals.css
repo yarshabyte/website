@@ -1176,16 +1176,17 @@ h6 {
 
 .services-page .services-fp-bottom {
   position: absolute;
-  inset: auto 0 clamp(2rem, 4vw, 3.5rem);
+  inset: 0;
   width: 100%;
-  height: clamp(12rem, 22vw, 18rem);
+  height: 100%;
   overflow: visible;
+  pointer-events: none;
 }
 
 .services-page .services-fp-title {
   position: absolute;
   left: 50%;
-  bottom: 0;
+  bottom: clamp(2rem, 4vw, 3.5rem);
   width: clamp(13rem, 18vw, 18rem);
   font-family: var(--display-font);
   font-size: clamp(1.35rem, calc(24px + 2.8vw), 4.5rem);
@@ -1194,24 +1195,22 @@ h6 {
   text-transform: uppercase;
   transform: translateX(-50%) rotate(-90deg) scale(0.46);
   transform-origin: center center;
-  transition: transform var(--services-pane-duration) var(--services-pane-ease);
-  will-change: transform;
+  transition:
+    left var(--services-pane-duration) var(--services-pane-ease),
+    bottom var(--services-pane-duration) var(--services-pane-ease),
+    transform var(--services-pane-duration) var(--services-pane-ease);
+  will-change: left, bottom, transform;
 }
 
 .services-page .services-fp-body-track {
-  display: none;
-  width: 100%;
-  min-width: 0;
-  overflow: visible;
-  opacity: 0;
-  transition: opacity 0.4s var(--services-pane-ease) 0.12s;
-}
-
-.services-page .services-fp-item.is-active .services-fp-body-track,
-.services-page .services-fp-item:hover .services-fp-body-track,
-.services-page .services-fp-item:focus-visible .services-fp-body-track {
-  display: block;
-  opacity: 1;
+  position: absolute;
+  left: clamp(1rem, 3.125vw, 3rem);
+  bottom: clamp(2rem, 4vw, 3.5rem);
+  width: clamp(18rem, 24vw, 24rem);
+  min-width: clamp(18rem, 24vw, 24rem);
+  transform: translateX(calc(100% + clamp(4rem, 8vw, 8rem)));
+  transition: transform var(--services-pane-duration) var(--services-pane-ease);
+  will-change: transform;
 }
 
 .services-page .services-fp-body {
@@ -1223,35 +1222,19 @@ h6 {
   line-height: 1.65;
   font-weight: 500;
   color: color-mix(in srgb, var(--services-card-text) 68%, transparent);
-  transform: translateY(1rem);
-  transition: transform var(--services-pane-duration) var(--services-pane-ease);
-  will-change: transform;
-}
-
-.services-page .services-fp-item.is-active .services-fp-bottom,
-.services-page .services-fp-item:hover .services-fp-bottom,
-.services-page .services-fp-item:focus-visible .services-fp-bottom {
-  position: absolute;
-  inset: auto auto clamp(2rem, 4vw, 3.5rem) clamp(1rem, 3.125vw, 3rem);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: clamp(1.25rem, 2vw, 2rem);
-  width: min(24rem, calc(100% - clamp(2rem, 6.25vw, 6rem)));
-  height: auto;
 }
 
 .services-page .services-fp-item.is-active .services-fp-title,
 .services-page .services-fp-item:hover .services-fp-title,
 .services-page .services-fp-item:focus-visible .services-fp-title {
-  position: static;
-  width: auto;
+  left: clamp(1rem, 3.125vw, 3rem);
+  bottom: clamp(12rem, 16vw, 14rem);
   transform: rotate(0deg) scale(1);
 }
 
-.services-page .services-fp-item.is-active .services-fp-body,
-.services-page .services-fp-item:hover .services-fp-body,
-.services-page .services-fp-item:focus-visible .services-fp-body {
+.services-page .services-fp-item.is-active .services-fp-body-track,
+.services-page .services-fp-item:hover .services-fp-body-track,
+.services-page .services-fp-item:focus-visible .services-fp-body-track {
   transform: translateX(0);
 }
 
@@ -1419,6 +1402,7 @@ h6 {
     display: block;
     width: 100%;
     height: auto;
+    pointer-events: auto;
   }
 
   .services-page .services-fp-title {
@@ -1429,10 +1413,12 @@ h6 {
   }
 
   .services-page .services-fp-body-track {
+    position: static;
     display: block;
     width: 100%;
+    min-width: 0;
     max-width: none;
-    opacity: 1;
+    transform: none;
   }
 
   .services-page .services-fp-body {

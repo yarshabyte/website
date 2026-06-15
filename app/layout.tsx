@@ -28,7 +28,7 @@ export const metadata: Metadata = {
         url: "https://yarsabyte.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "YarsaByte — Web design & development in Nepal",
+        alt: "YarsaByte | Web design & development in Nepal",
       },
     ],
   },

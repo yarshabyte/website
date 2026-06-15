@@ -261,7 +261,7 @@ export function ServicesPageClient() {
             <div>
               <SectionLabel>What we do</SectionLabel>
               <p className="mt-6 max-w-md text-base leading-7 text-foreground/68 sm:text-lg">
-                At Yarsa Byte, we build digital systems for Nepali businesses —
+                At Yarsa Byte, we build digital systems for Nepali businesses
                 websites, portfolios, branding, and launch setup that look
                 credible and are easy to keep improving.
               </p>
@@ -338,7 +338,7 @@ export function ServicesPageClient() {
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-foreground/62">
               We understand how much your business matters. These are not just
-              promises — we focus on work that helps people trust you faster and
+              promises we focus on work that helps people trust you faster and
               take action sooner.
             </p>
           </div>

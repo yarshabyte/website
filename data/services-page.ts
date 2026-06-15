@@ -43,7 +43,7 @@ export const workflowSteps = [
     number: "04",
     title: ["LAUNCH", "MARKETING"],
     description:
-      "Launch is more than going live. We help you publish with the right setup — profiles, email, social assets, and content structure so people understand your offer quickly.",
+      "Launch is more than going live. We help you publish with the right setup profiles, email, social assets, and content structure so people understand your offer quickly.",
   },
   {
     number: "05",
@@ -55,7 +55,7 @@ export const workflowSteps = [
     number: "06",
     title: ["FUTURE", "EVOLUTION"],
     description:
-      "We plan for what comes next — new pages, campaigns, reels, or brand refreshes. The goal is a digital base you can keep building on as your business grows.",
+      "We plan for what comes next new pages, campaigns, reels, or brand refreshes. The goal is a digital base you can keep building on as your business grows.",
   },
 ] as const;
 

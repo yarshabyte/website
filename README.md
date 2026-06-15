@@ -49,42 +49,42 @@ Run scripts with pnpm (pnpm run dev), or npm (npm run dev).
 
 This section lists top-level folders and important files to help contributors locate code quickly.
 
-- app/ — Next.js app directory (routes, layouts, global styles)
-  - app/layout.tsx — Root layout (shared providers, metadata)
-  - app/page.tsx — Home page
-  - app/head.tsx / app/meta — Document head / metadata
-  - app/(routes)/* — Additional route folders and nested routes
-  - app/globals.css — Global CSS + Tailwind entry
+- app/  Next.js app directory (routes, layouts, global styles)
+  - app/layout.tsx  Root layout (shared providers, metadata)
+  - app/page.tsx  Home page
+  - app/head.tsx / app/meta  Document head / metadata
+  - app/(routes)/*  Additional route folders and nested routes
+  - app/globals.css  Global CSS + Tailwind entry
 
-- components/ — Reusable UI and animation components
-  - components/ui/ — Small primitives (Button, Icon, Link)
-  - components/layout/ — Header, Footer, Navigation
-  - components/three/ — React Three Fiber hero scene and shaders
+- components/  Reusable UI and animation components
+  - components/ui/  Small primitives (Button, Icon, Link)
+  - components/layout/  Header, Footer, Navigation
+  - components/three/  React Three Fiber hero scene and shaders
 
-- hooks/ — Custom React hooks
-  - hooks/use-lenis-scroll.ts — smooth scroll integration
-  - hooks/usePagePointer.ts — pointer tracking helpers
-  - hooks/useReducedMotion.ts — respects user reduced-motion preferences
+- hooks/  Custom React hooks
+  - hooks/use-lenis-scroll.ts  smooth scroll integration
+  - hooks/usePagePointer.ts  pointer tracking helpers
+  - hooks/useReducedMotion.ts  respects user reduced-motion preferences
 
-- data/ — Serialized content used by pages (hero, projects, copy)
-  - data/hero.ts, data/projects.ts — central content for pages
+- data/  Serialized content used by pages (hero, projects, copy)
+  - data/hero.ts, data/projects.ts  central content for pages
 
-- public/ — Static assets served directly (images, favicons, svgs, models)
+- public/  Static assets served directly (images, favicons, svgs, models)
   - public/work/, public/icons/, public/*.svg
 
 - styles/ and tailwind config
-  - tailwind.config.js, postcss.config.mjs — Tailwind/PostCSS setup
-  - app/globals.css — includes @tailwind base/components/utilities
+  - tailwind.config.js, postcss.config.mjs  Tailwind/PostCSS setup
+  - app/globals.css  includes @tailwind base/components/utilities
 
 - config & tooling files
-  - next.config.ts — Next.js configuration
-  - tsconfig.json — TypeScript configuration
-  - package.json, pnpm-lock.yaml / package-lock.json — dependencies & scripts
-  - eslint.config.mjs — lint rules
+  - next.config.ts  Next.js configuration
+  - tsconfig.json  TypeScript configuration
+  - package.json, pnpm-lock.yaml / package-lock.json  dependencies & scripts
+  - eslint.config.mjs  lint rules
 
 - misc
-  - scripts/ — project scripts or dev helpers (if present)
-  - .github/ or CI configs — deployment and workflow files
+  - scripts/  project scripts or dev helpers (if present)
+  - .github/ or CI configs  deployment and workflow files
 
 Guidance:
 - Place 3D scene components under components/three and keep scene-specific assets in public/ or data/.
