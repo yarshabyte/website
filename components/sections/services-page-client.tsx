@@ -301,7 +301,10 @@ export function ServicesPageClient() {
                     index === activePane && "is-active",
                     index > 0 && "is-stack",
                   )}
+                  tabIndex={0}
                   onMouseEnter={() => setActivePane(index)}
+                  onFocus={() => setActivePane(index)}
+                  onClick={() => setActivePane(index)}
                 >
                   <div className="services-fp-inner">
                     <p className="services-section-label services-fp-number">
