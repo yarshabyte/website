@@ -57,6 +57,7 @@ export function HeroSection() {
       <HeroCanvasShell />
 
       <div className="studio-container relative z-10 flex min-h-[calc(100svh-5rem)] flex-col pb-20 sm:min-h-[calc(100vh-4.5rem)] sm:pb-24">
+        
         <div className="relative z-20 flex flex-1 flex-col justify-end pb-6 pt-[44vh] sm:block sm:pb-0 sm:pt-0 lg:ml-auto lg:w-full lg:max-w-[88%]">
           {/* SEO-friendly H1 (keyword-rich) */}
           <h1 className="sr-only">Yarsa Byte | Creative approach to your business</h1>
@@ -86,7 +87,7 @@ export function HeroSection() {
           </motion.h2>
 
           <motion.h2
-            className="pointer-events-none relative z-20 hidden pt-[max(17.5vh,8rem)] text-right sm:block"
+            className="pointer-events-none relative z-20 hidden pt-[6vh] text-right sm:block"
             aria-label="Portfoo"
             initial="hidden"
             animate="visible"

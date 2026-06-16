@@ -23,7 +23,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { damp } from "@/lib/three-utils";
 
 // This texture is projected onto the blob surface, not sampled from page background.
-const BLOB_TEXTURE_URL = "/logo-icon.webp";
+const BLOB_TEXTURE_URL = "/logo-ico.webp";
 
 export function InteractiveBlob() {
   const groupRef = useRef<Group>(null);
@@ -32,9 +32,8 @@ export function InteractiveBlob() {
   const pointer = usePagePointer();
   const reduceMotion = useReducedMotion();
   const { viewport, size } = useThree();
-  const mobile = viewport.width / viewport.height < 0.78;
+  const mobile = size.width < 768;
   const restingScale = mobile ? 0.5 : 0.72;
-
   const texture = useMemo(() => {
     const configuredTexture = new TextureLoader().load(BLOB_TEXTURE_URL);
     configuredTexture.colorSpace = SRGBColorSpace;
@@ -182,13 +181,13 @@ export function InteractiveBlob() {
 
     const targetX = mobile ? viewport.width * 0.02 : -viewport.width * 0.255;
     const targetY = mobile ? viewport.height * 0.18 : -viewport.height * 0.11;
-    group.position.x = damp(group.position.x, targetX, 7, delta);
+    group.position.x = damp(group.position.x, targetX, 4, delta);
     group.position.y = damp(group.position.y, targetY, 7, delta);
     group.rotation.z = damp(group.rotation.z, -0.08, 4, delta);
     const pointerTiltX = reduceMotion ? 0 : -pointer.current.y * 0.08;
     const pointerTiltY = reduceMotion ? 0 : pointer.current.x * 0.10;
     group.rotation.x = damp(group.rotation.x, 0.12 + pointerTiltX, 4, delta);
-    group.rotation.y = damp(group.rotation.y, (mobile ? -0.12 : -0.34) + pointerTiltY, 4, delta);
+    group.rotation.y = damp(group.rotation.y, (mobile ? 0 : 0.1) + pointerTiltY, 4, delta);
 
     if (!reduceMotion) {
       camera.position.x = damp(camera.position.x, pointer.current.x * 0.62, 4, delta);

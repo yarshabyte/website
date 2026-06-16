@@ -228,7 +228,7 @@ export function PageWaveTransition() {
         viewBox={DESKTOP.viewBox}
         preserveAspectRatio="none"
       >
-        <path ref={backPathRef} d={DESKTOP.line} fill="var(--background)" />
+        <path ref={backPathRef} d={DESKTOP.line} fill="var(--menu-bg)" />
       </svg>
       <svg
         ref={frontSvgRef}
@@ -236,7 +236,7 @@ export function PageWaveTransition() {
         viewBox={DESKTOP.viewBox}
         preserveAspectRatio="none"
       >
-        <path ref={frontPathRef} d={DESKTOP.line} fill="var(--background)" />
+        <path ref={frontPathRef} d={DESKTOP.line} fill="var(--menu-bg)" />
       </svg>
     </div>
   );
