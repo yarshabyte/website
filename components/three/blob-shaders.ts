@@ -5,6 +5,7 @@ uniform float uFrequency;
 uniform float uAmplitude;
 
 varying vec2 vMatcapUv;
+varying vec2 vBlobUv;
 varying vec3 vEyeVector;
 varying vec3 vWorldNormal;
 
@@ -116,6 +117,7 @@ void main() {
     (reflection.z + 1.0) * (reflection.z + 1.0)
   );
   vMatcapUv = reflection.xy / matcapScale + 0.5;
+  vBlobUv = displaced.xy / 6.0 + 0.5;
 
   vec4 worldPosition = modelMatrix * vec4(displaced, 1.0);
   vEyeVector = normalize(worldPosition.xyz - cameraPosition);
@@ -134,6 +136,7 @@ uniform float uIor;
 uniform float uLightFactor;
 
 varying vec2 vMatcapUv;
+varying vec2 vBlobUv;
 varying vec3 vEyeVector;
 varying vec3 vWorldNormal;
 
@@ -152,15 +155,21 @@ float fresnel(vec3 eyeVector, vec3 worldNormal) {
 
 void main() {
   vec3 normal = normalize(vWorldNormal);
-  vec2 screenUv = gl_FragCoord.xy / uResolution;
   vec3 refracted = refract(normalize(vEyeVector), normal, 1.0 / uIor);
-  vec2 textureUv = coverUv(screenUv + refracted.xy * 0.2);
+  vec2 textureUv = clamp(vBlobUv + refracted.xy * 0.08, 0.0, 1.0);
   vec4 imageColor = texture2D(uTexture, textureUv);
+  float logoMask = smoothstep(
+    0.12,
+    0.34,
+    length(imageColor.rgb - vec3(0.96))
+  );
 
   float edge = clamp(fresnel(normalize(vEyeVector), normal), 0.0, 1.0);
   float matcapLight = smoothstep(0.05, 0.95, vMatcapUv.y) * 0.34 + 0.72;
   vec3 refractedColor = imageColor.rgb * matcapLight;
-  vec3 color = mix(refractedColor, uReflectionColor, edge * 0.72);
+  vec3 glassColor = mix(refractedColor, uReflectionColor, edge * 0.62);
+  vec3 logoColor = imageColor.rgb * (0.9 + matcapLight * 0.1);
+  vec3 color = mix(glassColor, logoColor, logoMask * 0.94);
   color *= uLightFactor;
 
   gl_FragColor = vec4(color, 0.98);

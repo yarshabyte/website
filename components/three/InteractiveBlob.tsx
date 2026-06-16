@@ -22,8 +22,8 @@ import { usePagePointer } from "@/hooks/usePagePointer";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { damp } from "@/lib/three-utils";
 
-// Replace this file to change the image refracted through the blob.
-const BLOB_TEXTURE_URL = "/blob/blob.webp";
+// This texture is projected onto the blob surface, not sampled from page background.
+const BLOB_TEXTURE_URL = "/logo-icon.webp";
 
 export function InteractiveBlob() {
   const groupRef = useRef<Group>(null);
@@ -33,7 +33,7 @@ export function InteractiveBlob() {
   const reduceMotion = useReducedMotion();
   const { viewport, size } = useThree();
   const mobile = viewport.width / viewport.height < 0.78;
-  const restingScale = mobile ? 0.68 : 0.72;
+  const restingScale = mobile ? 0.5 : 0.72;
 
   const texture = useMemo(() => {
     const configuredTexture = new TextureLoader().load(BLOB_TEXTURE_URL);
@@ -180,12 +180,15 @@ export function InteractiveBlob() {
 
     material.uniforms.uTime.value += delta;
 
-    const targetX = mobile ? 0 : -viewport.width * 0.255;
-    const targetY = mobile ? viewport.height * 0.1 : -viewport.height * 0.11;
+    const targetX = mobile ? viewport.width * 0.02 : -viewport.width * 0.255;
+    const targetY = mobile ? viewport.height * 0.18 : -viewport.height * 0.11;
     group.position.x = damp(group.position.x, targetX, 7, delta);
     group.position.y = damp(group.position.y, targetY, 7, delta);
     group.rotation.z = damp(group.rotation.z, -0.08, 4, delta);
-    group.rotation.y += delta * (reduceMotion ? 0.025 : 0.055);
+    const pointerTiltX = reduceMotion ? 0 : -pointer.current.y * 0.08;
+    const pointerTiltY = reduceMotion ? 0 : pointer.current.x * 0.10;
+    group.rotation.x = damp(group.rotation.x, 0.12 + pointerTiltX, 4, delta);
+    group.rotation.y = damp(group.rotation.y, (mobile ? -0.12 : -0.34) + pointerTiltY, 4, delta);
 
     if (!reduceMotion) {
       camera.position.x = damp(camera.position.x, pointer.current.x * 0.62, 4, delta);
@@ -199,7 +202,7 @@ export function InteractiveBlob() {
     <group
       ref={groupRef}
       scale={reduceMotion ? restingScale : 0.001}
-      rotation={[0.12, -0.34, -0.08]}
+      rotation={[0.12, mobile ? -0.12 : -0.34, -0.08]}
     >
       <mesh>
         <icosahedronGeometry args={[2.5, 6]} />

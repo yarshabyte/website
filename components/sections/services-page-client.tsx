@@ -39,6 +39,16 @@ function MiniMark() {
 export function ServicesPageClient() {
   const pageRef = useRef<HTMLElement>(null);
   const switchBtnRef = useRef<HTMLButtonElement>(null);
+  const workflowCardRef = useRef<HTMLElement>(null);
+  const workflowLockedRef = useRef(false);
+  const workflowPointerRef = useRef({
+    pointerId: -1,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+    dragging: false,
+  });
   const [activeWord, setActiveWord] = useState(0);
   const [activePane, setActivePane] = useState(0);
   const [workflowDirection, setWorkflowDirection] = useState<1 | -1>(1);
@@ -110,6 +120,50 @@ export function ServicesPageClient() {
     { scope: pageRef },
   );
 
+  useGSAP(
+    () => {
+      const card = workflowCardRef.current;
+
+      if (!card) {
+        workflowLockedRef.current = false;
+        return;
+      }
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      gsap.killTweensOf(card);
+
+      if (reduceMotion) {
+        gsap.set(card, { clearProps: "opacity,transform" });
+        workflowLockedRef.current = false;
+        return;
+      }
+
+      gsap.fromTo(
+        card,
+        {
+          autoAlpha: 0,
+          xPercent: workflowDirection === 1 ? 12 : -12,
+          scale: 0.985,
+        },
+        {
+          autoAlpha: 1,
+          xPercent: 0,
+          scale: 1,
+          duration: 0.52,
+          ease: "power3.out",
+          clearProps: "opacity,visibility,transform",
+          onComplete: () => {
+            workflowLockedRef.current = false;
+          },
+        },
+      );
+    },
+    { scope: pageRef, dependencies: [activePane, workflowDirection] },
+  );
+
   const cycleAdjective = () => {
     const next = (wordIndexRef.current + 1) % heroAdjectives.length;
     wordIndexRef.current = next;
@@ -132,11 +186,82 @@ export function ServicesPageClient() {
   };
 
   const changeWorkflowStep = (direction: 1 | -1) => {
+    if (workflowLockedRef.current) {
+      return;
+    }
+
+    workflowLockedRef.current = true;
     setWorkflowDirection(direction);
     setActivePane(
       (current) =>
         (current + direction + workflowSteps.length) % workflowSteps.length,
     );
+  };
+
+  const onWorkflowPointerDown = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    workflowPointerRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      dragging: true,
+    };
+
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Some browsers can reject capture for pointer streams already claimed by scrolling.
+    }
+  };
+
+  const onWorkflowPointerMove = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    const pointer = workflowPointerRef.current;
+
+    if (!pointer.dragging || pointer.pointerId !== event.pointerId) {
+      return;
+    }
+
+    pointer.lastX = event.clientX;
+    pointer.lastY = event.clientY;
+  };
+
+  const onWorkflowPointerUp = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    const pointer = workflowPointerRef.current;
+
+    if (!pointer.dragging || pointer.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = pointer.lastX - pointer.startX;
+    const deltaY = pointer.lastY - pointer.startY;
+    const isHorizontalSwipe =
+      Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15;
+
+    workflowPointerRef.current.dragging = false;
+    workflowPointerRef.current.pointerId = -1;
+
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+    } catch {
+      // Capture may already be released by the browser before pointerup/pointercancel.
+    }
+
+    if (isHorizontalSwipe) {
+      changeWorkflowStep(deltaX < 0 ? 1 : -1);
+    }
   };
 
   const activeWorkflowStep = workflowSteps[activePane];
@@ -282,13 +407,17 @@ export function ServicesPageClient() {
               ))}
             </div>
 
-            <div className="services-workflow-carousel">
+            <div
+              className="services-workflow-carousel"
+              onPointerDown={onWorkflowPointerDown}
+              onPointerMove={onWorkflowPointerMove}
+              onPointerUp={onWorkflowPointerUp}
+              onPointerCancel={onWorkflowPointerUp}
+            >
               <article
+                ref={workflowCardRef}
                 key={`${activeWorkflowStep.number}-${workflowDirection}`}
-                className={cn(
-                  "services-workflow-card",
-                  workflowDirection === 1 ? "from-next" : "from-previous",
-                )}
+                className="services-workflow-card"
                 aria-live="polite"
               >
                 <p className="services-section-label services-fp-number">
