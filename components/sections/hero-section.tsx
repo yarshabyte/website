@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { PhoneCall } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { HeroCanvasShell } from "@/components/hero/hero-canvas-shell";
 import { heroLatestProject, heroMission } from "@/data/hero";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -54,8 +53,6 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[100svh] overflow-hidden bg-transparent pt-[var(--header-height)] sm:min-h-screen">
-      <HeroCanvasShell />
-
       <div className="studio-container relative z-10 flex min-h-[calc(100svh-5rem)] flex-col pb-20 sm:min-h-[calc(100vh-4.5rem)] sm:pb-24">
         
         <div className="relative z-20 flex flex-1 flex-col justify-end pb-6 pt-[44vh] sm:block sm:pb-0 sm:pt-0 lg:ml-auto lg:w-full lg:max-w-[88%]">

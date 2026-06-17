@@ -5,6 +5,7 @@ import { PageWaveTransition } from "@/components/page-wave-transition";
 import { ScrollHexBackground } from "@/components/scroll-hex-background";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { SiteHeader } from "@/components/site-header";
+import { HeroCanvasShell } from "@/components/hero/hero-canvas-shell";
 
 import "./globals.css";
 
@@ -113,11 +114,12 @@ export default function RootLayout({
       <body className="min-h-full font-sans text-foreground">
         <PageLoader>
           <PageWaveTransition />
+          <HeroCanvasShell />
+          <SiteHeader />
           <div className="site-frame">
             <ScrollHexBackground />
             <div className="site-frame-content">
               <SmoothScrollProvider>
-                <SiteHeader />
                 {children}
               </SmoothScrollProvider>
             </div>

@@ -12,7 +12,8 @@ export function HeroCanvas() {
   }, []);
   return (
     <Canvas
-      className="h-full w-full touch-none"
+      className="h-full w-full"
+      style={{ pointerEvents: "none" }}
       camera={{ position: [0, 0, 15], fov: 30 }}
       gl={{
         alpha: true,

@@ -163,6 +163,7 @@ export function PageWaveTransition() {
           },
           0,
         )
+        .add(() => window.dispatchEvent(new Event("yarsa:blob-reset")), 0.6)
         .to(frontPath, {
           morphSVG: shapes.line,
           duration: 0.8,
@@ -209,7 +210,8 @@ export function PageWaveTransition() {
           },
           1.0,
         )
-        .add(revealHome, 0.9);
+        .add(revealHome, 0.9)
+        .add(() => window.dispatchEvent(new Event("yarsa:blob-enter")), 1.0);
 
       timelineRef.current = timeline;
     };

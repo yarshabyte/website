@@ -83,6 +83,8 @@ export function InteractiveBlob() {
       }
 
       hasEnteredRef.current = true;
+      const material = materialRef.current;
+
       gsap.to(group.scale, {
         x: restingScale,
         y: restingScale,
@@ -95,18 +97,67 @@ export function InteractiveBlob() {
         { y: group.rotation.y - 0.8 },
         { y: group.rotation.y, duration: 1.1, ease: "power4.out" },
       );
+
+      if (material && !reduceMotion) {
+        const { uAmplitude, uFrequency, uLightFactor } = material.uniforms;
+        gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor]);
+        gsap
+          .timeline()
+          .to(
+            uAmplitude,
+            { value: 8.4, duration: 0.35, ease: "power4.inOut", yoyo: true, repeat: 1 },
+            0,
+          )
+          .to(
+            uFrequency,
+            { value: 0.56, duration: 0.35, ease: "power4.inOut", yoyo: true, repeat: 1 },
+            0,
+          )
+          .to(
+            uLightFactor,
+            { value: 2.35, duration: 0.35, ease: "power4.inOut", yoyo: true, repeat: 1 },
+            0,
+          );
+      }
+    };
+
+    const reset = () => {
+      hasEnteredRef.current = false;
+      gsap.killTweensOf(group.scale);
+      gsap.killTweensOf(group.rotation);
+      const material = materialRef.current;
+      if (material) {
+        gsap.killTweensOf([
+          material.uniforms.uAmplitude,
+          material.uniforms.uFrequency,
+          material.uniforms.uLightFactor
+        ]);
+        material.uniforms.uAmplitude.value = 2.4;
+        material.uniforms.uFrequency.value = 0.55;
+        material.uniforms.uLightFactor.value = 1;
+      }
+      group.scale.set(0.001, 0.001, 0.001);
     };
 
     const fallback = window.setTimeout(enter, 1500);
     window.addEventListener("yarsa:blob-enter", enter);
+    window.addEventListener("yarsa:blob-reset", reset);
 
     return () => {
       window.clearTimeout(fallback);
       window.removeEventListener("yarsa:blob-enter", enter);
+      window.removeEventListener("yarsa:blob-reset", reset);
       gsap.killTweensOf(group.scale);
       gsap.killTweensOf(group.rotation);
+      if (materialRef.current) {
+         gsap.killTweensOf([
+           materialRef.current.uniforms.uAmplitude,
+           materialRef.current.uniforms.uFrequency,
+           materialRef.current.uniforms.uLightFactor
+         ]);
+      }
     };
-  }, [restingScale]);
+  }, [restingScale, reduceMotion]);
 
   useEffect(() => {
     const handlePulse = (event: Event) => {
