@@ -110,10 +110,15 @@ export function PageWaveTransition() {
       timelineRef.current?.kill();
       backSvg.setAttribute("viewBox", shapes.viewBox);
       frontSvg.setAttribute("viewBox", shapes.viewBox);
-      gsap.set(container, {
+
+      // Fade in the container to simulate the old content fading out
+      gsap.set(container, { pointerEvents: "auto" });
+      gsap.to(container, {
         autoAlpha: 1,
-        pointerEvents: "auto",
+        duration: 0.4,
+        ease: "power2.inOut",
       });
+
       gsap.set(backSvg, {
         yPercent: 0,
         rotation: 180,
@@ -128,81 +133,83 @@ export function PageWaveTransition() {
 
       const timeline = gsap.timeline({
         onComplete: () => {
-          resetOverlay();
+          // Fade out the container to simulate the new content fading in
+          gsap.to(container, {
+            autoAlpha: 0,
+            duration: 0.4,
+            ease: "power2.inOut",
+            onComplete: resetOverlay,
+          });
         },
         onInterrupt: () => {
           resetOverlay();
         },
       });
 
+      timeline.timeScale(1.2);
+
       timeline
         .to(frontPath, {
           morphSVG: shapes.wave,
-          duration: 0.72,
+          duration: 0.8,
           ease: "expo.in",
         }, 0)
         .to(
           frontSvg,
           {
             yPercent: 50,
-            duration: 0.72,
+            duration: 0.8,
             ease: "expo.in",
           },
           0,
         )
-        .add(revealHome, 0.48)
         .to(frontPath, {
           morphSVG: shapes.line,
-          duration: 0.72,
+          duration: 0.8,
           ease: "expo.out",
-        }, 0.72)
+        }, 0.8)
         .to(
           frontSvg,
           {
             yPercent: 100,
-            duration: 0.72,
+            duration: 0.8,
             ease: "expo.out",
           },
-          0.72,
+          0.8,
         )
         .to(
           backPath,
           {
-            delay: 0.08,
             morphSVG: shapes.wave,
-            duration: 0.72,
+            duration: 0.8,
             ease: "expo.in",
           },
-          0,
+          0.2,
         )
         .to(
           backSvg,
           {
             yPercent: 50,
-            duration: 0.72,
+            duration: 0.8,
             ease: "expo.in",
           },
-          0.08,
+          0.2,
         )
         .to(backPath, {
-          morphSVG: shapes.wave,
-          duration: 0.72,
-          ease: "expo.in",
-        }, 0.8)
+          morphSVG: shapes.full,
+          duration: 0.8,
+          ease: "expo.out",
+        }, 1.0)
         .to(
           backSvg,
           {
             yPercent: 100,
-            duration: 0.72,
-            ease: "expo.in",
+            duration: 0.8,
+            ease: "expo.out",
           },
-          0.8,
+          1.0,
         )
-        .to(backPath, {
-          morphSVG: shapes.line,
-          duration: 0.72,
-          ease: "expo.out",
-        }, 1.52);
+        .add(revealHome, 0.9);
 
       timelineRef.current = timeline;
     };
@@ -214,12 +221,12 @@ export function PageWaveTransition() {
       timelineRef.current?.kill();
       resetOverlay();
     };
-  }, [router]);
+  }, [router, pathname]);
 
   return (
     <div
       ref={containerRef}
-      className="pointer-events-none fixed inset-0 z-[950] invisible overflow-hidden opacity-0 lg:inset-3 lg:rounded-[1.45rem]"
+      className="pointer-events-none fixed inset-0 z-[950] invisible overflow-hidden opacity-0 lg:inset-3 lg:rounded-[1.45rem] bg-background"
       aria-hidden="true"
     >
       <svg
@@ -228,7 +235,7 @@ export function PageWaveTransition() {
         viewBox={DESKTOP.viewBox}
         preserveAspectRatio="none"
       >
-        <path ref={backPathRef} d={DESKTOP.line} fill="var(--menu-bg)" />
+        <path ref={backPathRef} d={DESKTOP.line} fill="var(--foreground)" />
       </svg>
       <svg
         ref={frontSvgRef}
@@ -236,8 +243,9 @@ export function PageWaveTransition() {
         viewBox={DESKTOP.viewBox}
         preserveAspectRatio="none"
       >
-        <path ref={frontPathRef} d={DESKTOP.line} fill="var(--menu-bg)" />
+        <path ref={frontPathRef} d={DESKTOP.line} fill="var(--foreground)" />
       </svg>
     </div>
   );
 }
+
