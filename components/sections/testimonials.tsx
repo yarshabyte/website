@@ -390,6 +390,28 @@ export function TestimonialsSection() {
       const onMouseMove = (event: MouseEvent) => {
         dragState.current.mouseX = event.clientX;
         dragState.current.mouseY = event.clientY;
+
+        if (!dragCursor.classList.contains("moving")) {
+          onMouseEnter(event);
+        }
+      };
+
+      const onScroll = () => {
+        if (
+          dragCursor.classList.contains("moving") &&
+          !dragState.current.dragging
+        ) {
+          const rect = slider.getBoundingClientRect();
+          const state = dragState.current;
+          const isInside =
+            state.mouseX >= rect.left &&
+            state.mouseX <= rect.right &&
+            state.mouseY >= rect.top &&
+            state.mouseY <= rect.bottom;
+          if (!isInside) {
+            onMouseLeave();
+          }
+        }
       };
 
       const onDragStart = (event: DragEvent) => {
@@ -406,6 +428,10 @@ export function TestimonialsSection() {
       slider.addEventListener("dragstart", onDragStart);
       window.addEventListener("pointerup", onWindowPointerUp);
       window.addEventListener("pointercancel", onWindowPointerUp);
+      window.addEventListener("scroll", onScroll, {
+        capture: true,
+        passive: true,
+      });
 
       return () => {
         cancelAnimationFrame(rafId);
@@ -420,6 +446,7 @@ export function TestimonialsSection() {
         slider.removeEventListener("dragstart", onDragStart);
         window.removeEventListener("pointerup", onWindowPointerUp);
         window.removeEventListener("pointercancel", onWindowPointerUp);
+        window.removeEventListener("scroll", onScroll, { capture: true });
         document.body.style.cursor = "";
         gsap.set(dragCursor, { clearProps: "x,y" });
       };
