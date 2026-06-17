@@ -123,44 +123,77 @@ export function AttitudeSection() {
 
         mm.add("(max-width: 1023px)", () => {
           const cardHeight = () => cards[0]?.offsetHeight ?? 320;
+          const cardCount = cards.length;
 
           section.style.setProperty("--attitude-color-start", "0%");
           section.style.setProperty("--attitude-color-end", "0%");
 
-          gsap.set(cards, {
+          // First card starts visible at its final position; rest start off-screen below
+          gsap.set(cards[0], {
             autoAlpha: 1,
-            yPercent: 145,
+            yPercent: 0,
             scale: 1,
-            zIndex: (index) => index + 1,
+            zIndex: 1,
             force3D: true,
             willChange: "transform",
           });
+
+          cards.slice(1).forEach((card, i) => {
+            gsap.set(card, {
+              autoAlpha: 1,
+              yPercent: 110,
+              scale: 1,
+              zIndex: i + 2,
+              force3D: true,
+              willChange: "transform",
+            });
+          });
+
+          // Each card animation takes 1 unit, with a 0.3 unit hold between cards.
+          // This creates smooth pacing: slide → hold → slide → hold → ...
+          const slidePhase = 1;
+          const holdPhase = 0.3;
+          const totalPerCard = slidePhase + holdPhase;
+          // Pin distance: generous enough so the last card never bounces on release
+          const pinEndDistance = () =>
+            cardHeight() * (cardCount + 1.5) + window.innerHeight * 0.15;
 
           const stackTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
               scroller: window,
               start: "top top",
-              end: () => `+=${cardHeight() * cards.length + 96}`,
+              end: () => `+=${pinEndDistance()}`,
               pin: true,
-              scrub: 0.18,
+              pinSpacing: true,
+              scrub: 0.6,
               anticipatePin: 1,
               invalidateOnRefresh: true,
             },
           });
 
-          stackTimeline.to(cards, {
-            yPercent: (index) => index * 15,
-            duration: 1,
-            stagger: 1,
-            ease: "none",
-          });
+          // Animate each subsequent card (1–4) sliding up into view one at a time
+          for (let i = 1; i < cardCount; i++) {
+            const startTime = (i - 1) * totalPerCard;
+            stackTimeline.to(
+              cards[i],
+              {
+                yPercent: 0,
+                duration: slidePhase,
+                ease: "power2.out",
+              },
+              startTime,
+            );
+          }
+
+          // Blank hold at the end so the last card sits comfortably before unpin
+          stackTimeline.to({}, { duration: holdPhase });
 
           return () => {
             stackTimeline.scrollTrigger?.kill();
             stackTimeline.kill();
             gsap.set(cards, {
-              clearProps: "transform,zIndex,willChange",
+              clearProps: "transform,zIndex,willChange,opacity,visibility",
             });
           };
         });
