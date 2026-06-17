@@ -161,7 +161,7 @@ export function AttitudeSection() {
           const stackTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
-              scroller: window,
+              scroller,
               start: "top top",
               end: () => `+=${pinEndDistance()}`,
               pin: true,
