@@ -83,7 +83,7 @@ export function AwardsSection() {
             awardTimeline?.kill();
 
             const sectionHeight = section.clientHeight;
-            const scrollDistance = Math.max(sectionHeight * 3.4, 2200);
+            const scrollDistance = Math.max(sectionHeight * 2.8, 2200);
 
             gsap.set(canvas, { autoAlpha: 0 });
 
@@ -148,11 +148,11 @@ export function AwardsSection() {
               .to(
                 letters,
                 {
-                  y: "10vh",
+                  y: 0,
                   scale: 1,
                   opacity: 1,
                   duration: 4,
-                  stagger: { amount: 2.2 },
+                  stagger: { amount: 2.8 },
                   ease: "power1.out",
                 },
                 0,
@@ -163,8 +163,8 @@ export function AwardsSection() {
                   y: (_index, target) => -((target as HTMLElement).offsetHeight + 220),
                   scale: 1,
                   rotate: (index) => books[index]?.endRotation ?? 0,
-                  duration: 5.2,
-                  stagger: { amount: 2 },
+                  duration: 3.5,
+                  stagger: { amount: 3.5 },
                   ease: "none",
                 },
                 0,
@@ -177,7 +177,7 @@ export function AwardsSection() {
                   duration: 1.4,
                   ease: "none",
                 },
-                3.7,
+                5,
               );
 
             ScrollTrigger.refresh();
@@ -225,7 +225,7 @@ export function AwardsSection() {
       >
         <div
           data-awards-title
-          className="absolute inset-x-0 top-[24vh] flex justify-center whitespace-nowrap text-[clamp(24rem,28.5vw,35rem)] leading-[0.8] text-foreground"
+          className="absolute inset-0 flex items-center justify-center whitespace-nowrap text-[clamp(24rem,39vw,35rem)] leading-[0.9] text-foreground"
           style={sectionWordStyle}
         >
           {awardLetters.map(({ character, zIndex }, index) => (

@@ -150,8 +150,6 @@ body {
   font-family: var(--brand-font);
   font-synthesis-weight: none;
   overflow-x: hidden;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   scrollbar-width: none;
 }

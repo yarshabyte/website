@@ -19,11 +19,10 @@ const fade = {
 };
 
 const heroDisplay =
-  "font-hero-display text-[clamp(7.5rem,20vw,26rem)] uppercase leading-[0.8] tracking-normal";
+  "font-hero-display text-[clamp(7.5rem,20vw,26rem)] uppercase leading-[0.8] tracking-[0.07em]";
 
 const mobileHeroDisplay =
-  "font-hero-display text-[clamp(6.5rem,30vw,9.5rem)] uppercase leading-[0.8] tracking-normal";
-
+  "font-hero-display text-[clamp(6.5rem,30vw,9.5rem)] uppercase leading-[0.8] tracking-[0.07em]";
 export function HeroSection() {
   const [isContactVisible, setIsContactVisible] = useState(false);
 
@@ -73,7 +72,7 @@ export function HeroSection() {
               className={`block text-left text-accent ${mobileHeroDisplay}`}
               variants={fade}
             >
-              Yarsa
+              Yarsha
             </motion.span>
             <motion.span
               className={`block text-left text-foreground ${mobileHeroDisplay}`}
@@ -97,7 +96,7 @@ export function HeroSection() {
               className={`relative z-20 block text-accent ${heroDisplay}`}
               variants={fade}
             >
-              Yarsa
+              Yarsha
             </motion.span>
             <motion.span
               className={`relative z-20 block text-foreground ${heroDisplay}`}

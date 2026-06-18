@@ -172,7 +172,7 @@ export function AttitudeSection() {
             track.scrollWidth +
             Math.max(200, scroller.clientWidth * 0.1);
           const pinDistance = () =>
-            Math.max(scroller.clientHeight * 3.4, track.scrollWidth * 0.82);
+            Math.max(scroller.clientHeight * 2.6, track.scrollWidth * 0.82);
 
           gsap.set(letters, {
             y: 0,
@@ -238,9 +238,10 @@ export function AttitudeSection() {
 
           const setColorSweep = (trackX: number) => {
             // Push the leading edge of the orange color ahead (left) of the first card
-            const leadOffset = window.innerWidth * 0.25;
+            // Reduced offset so it doesn't bleed onto the enlarged text before the card enters
+            const leadOffset = window.innerWidth * 0.08;
             // Keep the trailing edge of the orange color behind (right) of the last card
-            const trailOffset = window.innerWidth * 0.25;
+            const trailOffset = window.innerWidth * 0.15;
 
             const startPx = Math.max(0, Math.min(cachedHeadingWidth, trackX - leadOffset - cachedHeadingLeft));
             const endPx = Math.max(0, Math.min(cachedHeadingWidth, trackX + cachedTrackWidth + trailOffset - cachedHeadingLeft));
@@ -387,7 +388,7 @@ export function AttitudeSection() {
         <div className="relative">
           <h2
             data-attitude-heading
-            className="flex select-none items-end justify-center gap-[0.018em] whitespace-nowrap text-[31vw] leading-[0.8] lg:text-[clamp(20rem,23vw,28rem)]"
+            className="flex select-none items-end justify-center gap-[0.018em] whitespace-nowrap text-[30vw] leading-[0.8] "
             style={sectionWordStyle}
           >
             {attitudeLetters.map((letter, index) => (
