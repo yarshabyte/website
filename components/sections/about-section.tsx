@@ -39,64 +39,90 @@ export function AboutSection() {
       ).matches;
       if (reduceMotion) return;
 
-      const scroller = document.querySelector<HTMLElement>(".site-frame");
-      if (!scroller) return;
+      const siteFrame = document.querySelector<HTMLElement>(".site-frame");
 
-      const eyebrow = section.querySelector<HTMLElement>("[data-about-eyebrow]");
-      const words = gsap.utils.toArray<HTMLElement>("[data-about-word]");
+      let initialized = false;
 
-      if (eyebrow) {
-        gsap.set(eyebrow, { y: 30, opacity: 0 });
-        ScrollTrigger.create({
-          trigger: eyebrow,
-          scroller,
-          start: "top 92%",
-          onEnter: () => {
-            gsap.to(eyebrow, {
-              y: 0,
-              opacity: 1,
-              duration: 1,
-              ease: "expo.out",
-            });
-          },
-          onLeaveBack: () => {
-            gsap.to(eyebrow, {
-              y: 30,
-              opacity: 0,
-              duration: 1,
-              ease: "power4",
-            });
-          }
+      const initAboutAnimations = () => {
+        if (initialized) return;
+        initialized = true;
+
+        // On desktop with Lenis active, use .site-frame; on mobile use window
+        const isLenisActive = siteFrame?.dataset.lenisReady === "true";
+        const scroller: HTMLElement | Window = isLenisActive ? siteFrame! : window;
+
+        const eyebrow = section.querySelector<HTMLElement>("[data-about-eyebrow]");
+        const words = gsap.utils.toArray<HTMLElement>("[data-about-word]");
+
+        if (eyebrow) {
+          gsap.set(eyebrow, { y: 30, opacity: 0 });
+          ScrollTrigger.create({
+            trigger: eyebrow,
+            scroller,
+            start: "top 92%",
+            onEnter: () => {
+              gsap.to(eyebrow, {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: "expo.out",
+              });
+            },
+            onLeaveBack: () => {
+              gsap.to(eyebrow, {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                ease: "power4",
+              });
+            }
+          });
+        }
+
+        if (words.length > 0) {
+          gsap.set(words, { opacity: 0, y: "150%" });
+
+          ScrollTrigger.batch(words, {
+            scroller,
+            start: "top 100%",
+            onEnter: (batch) => {
+              gsap.to(batch, {
+                opacity: 1,
+                duration: 1,
+                y: "0%",
+                stagger: 0.03,
+                ease: "expo.out",
+              });
+            },
+            onLeaveBack: (batch) => {
+              gsap.to(batch, {
+                opacity: 0,
+                duration: 1,
+                y: "150%",
+                stagger: 0.03,
+                ease: "power4",
+              });
+            },
+          });
+        }
+      };
+
+      // Desktop with fine pointer: wait for Lenis to be ready
+      const needsLenis =
+        window.matchMedia("(min-width: 1024px)").matches &&
+        window.matchMedia("(pointer: fine)").matches;
+
+      if (!needsLenis || siteFrame?.dataset.lenisReady === "true") {
+        initAboutAnimations();
+      } else {
+        window.addEventListener("lenis:ready", initAboutAnimations, {
+          once: true,
         });
       }
 
-      if (words.length > 0) {
-        // Match buzworthy EXACT animation pattern for infinite scrolling iterations
-        gsap.set(words, { opacity: 0, y: "150%" });
-
-        ScrollTrigger.batch(words, {
-          scroller,
-          start: "top 100%",
-          onEnter: (batch) => {
-            gsap.to(batch, {
-              opacity: 1,
-              duration: 1,
-              y: "0%",
-              stagger: 0.03,
-              ease: "expo.out",
-            });
-          },
-          onLeaveBack: (batch) => {
-            gsap.to(batch, {
-              opacity: 0,
-              duration: 1,
-              y: "150%",
-              stagger: 0.03,
-              ease: "power4",
-            });
-          },
-        });
-      }
+      return () => {
+        window.removeEventListener("lenis:ready", initAboutAnimations);
+      };
     },
     { scope: sectionRef },
   );

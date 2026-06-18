@@ -67,92 +67,117 @@ export function WorkSection() {
       ).matches;
       if (reduceMotion) return;
 
-      const scroller = document.querySelector<HTMLElement>(".site-frame");
-      if (!scroller) return;
+      const siteFrame = document.querySelector<HTMLElement>(".site-frame");
 
-      const charSpans = gsap.utils.toArray<HTMLElement>("[data-work-char]");
-      
-      if (charSpans.length > 0) {
-        gsap.from(charSpans, {
-          y: "100%",
-          duration: 1,
-          stagger: 0.05, // fixed stagger amount
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: charSpans[0].closest("h2"),
-            scroller,
-            start: "top 88%",
-          },
+      let initialized = false;
+
+      const initWorkAnimations = () => {
+        if (initialized) return;
+        initialized = true;
+
+        const isLenisActive = siteFrame?.dataset.lenisReady === "true";
+        const scroller: HTMLElement | Window = isLenisActive ? siteFrame! : window;
+
+        const charSpans = gsap.utils.toArray<HTMLElement>("[data-work-char]");
+        
+        if (charSpans.length > 0) {
+          gsap.from(charSpans, {
+            y: "100%",
+            duration: 1,
+            stagger: 0.05,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: charSpans[0].closest("h2"),
+              scroller,
+              start: "top 88%",
+            },
+          });
+        }
+
+        const eyebrow = section.querySelector<HTMLElement>("[data-work-eyebrow]");
+        const desc = section.querySelector<HTMLElement>("[data-work-desc]");
+
+        [eyebrow, desc].filter(Boolean).forEach((el) => {
+          gsap.from(el!, {
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: el!,
+              scroller,
+              start: "top 92%",
+            },
+          });
+        });
+
+        const cards = gsap.utils.toArray<HTMLElement>("[data-work-card]");
+
+        cards.forEach((card) => {
+          const imageContainers = card.querySelectorAll<HTMLElement>("[data-work-image-reveal]");
+          const imageEls = card.querySelectorAll<HTMLElement>("[data-work-image]");
+          
+          if (imageContainers.length === 0) return;
+
+          const waveShape = getRandomWave();
+
+          gsap.fromTo(
+            imageContainers,
+            { clipPath: CLIP_HIDDEN },
+            {
+              clipPath: waveShape,
+              duration: 0.7,
+              ease: "power4.in",
+              scrollTrigger: {
+                trigger: card,
+                scroller,
+                start: "top 72%",
+              },
+              onComplete: () => {
+                gsap.to(imageContainers, {
+                  clipPath: CLIP_FULL,
+                  duration: 0.7,
+                  ease: "power4.out",
+                });
+              }
+            }
+          );
+
+          gsap.fromTo(
+            imageEls,
+            { y: -40, filter: "brightness(8)", scale: 1.1 },
+            {
+              y: 0,
+              filter: "brightness(1)",
+              scale: 1,
+              duration: 1.4,
+              ease: "power4.inOut",
+              scrollTrigger: {
+                trigger: card,
+                scroller,
+                start: "top 72%",
+              },
+            }
+          );
+        });
+      };
+
+      // Desktop with fine pointer: wait for Lenis to be ready
+      const needsLenis =
+        window.matchMedia("(min-width: 1024px)").matches &&
+        window.matchMedia("(pointer: fine)").matches;
+
+      if (!needsLenis || siteFrame?.dataset.lenisReady === "true") {
+        initWorkAnimations();
+      } else {
+        window.addEventListener("lenis:ready", initWorkAnimations, {
+          once: true,
         });
       }
 
-      const eyebrow = section.querySelector<HTMLElement>("[data-work-eyebrow]");
-      const desc = section.querySelector<HTMLElement>("[data-work-desc]");
-
-      [eyebrow, desc].filter(Boolean).forEach((el) => {
-        gsap.from(el!, {
-          y: 30,
-          opacity: 0,
-          duration: 1,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: el!,
-            scroller,
-            start: "top 92%",
-          },
-        });
-      });
-
-      const cards = gsap.utils.toArray<HTMLElement>("[data-work-card]");
-
-      cards.forEach((card) => {
-        const imageContainers = card.querySelectorAll<HTMLElement>("[data-work-image-reveal]");
-        const imageEls = card.querySelectorAll<HTMLElement>("[data-work-image]");
-        
-        if (imageContainers.length === 0) return;
-
-        const waveShape = getRandomWave();
-
-        // Animate both mobile and desktop image wrappers simultaneously
-        gsap.fromTo(
-          imageContainers,
-          { clipPath: CLIP_HIDDEN },
-          {
-            clipPath: waveShape,
-            duration: 0.7,
-            ease: "power4.in",
-            scrollTrigger: {
-              trigger: card,
-              scroller,
-              start: "top 72%",
-            },
-            onComplete: () => {
-              gsap.to(imageContainers, {
-                clipPath: CLIP_FULL,
-                duration: 0.7,
-                ease: "power4.out",
-              });
-            }
-          }
-        );
-
-        gsap.fromTo(
-          imageEls,
-          { y: -40, filter: "brightness(8)", scale: 1.1 },
-          {
-            y: 0,
-            filter: "brightness(1)",
-            scale: 1,
-            duration: 1.4,
-            ease: "power4.inOut",
-            scrollTrigger: {
-              trigger: card,
-              scroller,
-              start: "top 72%",
-            },
-          }
-        );
-      });
+      return () => {
+        window.removeEventListener("lenis:ready", initWorkAnimations);
+      };
     },
     { scope: sectionRef },
   );
