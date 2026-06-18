@@ -48,7 +48,7 @@ export function InteractiveBlob() {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uSpeed: { value: 0.09 },
+      uSpeed: { value: 9.18 },
       uFrequency: { value: 0.55 },
       uAmplitude: { value: 2.4 },
       uTexture: { value: texture },
@@ -235,10 +235,11 @@ export function InteractiveBlob() {
     group.position.x = damp(group.position.x, targetX, 4, delta);
     group.position.y = damp(group.position.y, targetY, 7, delta);
     group.rotation.z = damp(group.rotation.z, -0.08, 4, delta);
-    const pointerTiltX = reduceMotion ? 0 : -pointer.current.y * 0.08;
-    const pointerTiltY = reduceMotion ? 0 : pointer.current.x * 0.10;
-    group.rotation.x = damp(group.rotation.x, 0.12 + pointerTiltX, 4, delta);
-    group.rotation.y = damp(group.rotation.y, (mobile ? 0 : 0.1) + pointerTiltY, 4, delta);
+    const pointerTiltX = reduceMotion ? 0 : -pointer.current.y * (mobile ? 0.35 : 0.08);
+    const pointerTiltY = reduceMotion ? 0 : pointer.current.x * (mobile ? 0.45 : 0.10);
+    const rotDamping = mobile ? 8 : 4;
+    group.rotation.x = damp(group.rotation.x, 0.12 + pointerTiltX, rotDamping, delta);
+    group.rotation.y = damp(group.rotation.y, (mobile ? 0 : 0.1) + pointerTiltY, rotDamping, delta);
 
     if (!reduceMotion) {
       camera.position.x = damp(camera.position.x, pointer.current.x * 0.62, 4, delta);
@@ -255,7 +256,7 @@ export function InteractiveBlob() {
       rotation={[0.12, mobile ? -0.12 : -0.34, -0.08]}
     >
       <mesh>
-        <icosahedronGeometry args={[2.5, 6]} />
+        <icosahedronGeometry args={[2.5, 15]} />
         <shaderMaterial
           ref={materialRef}
           vertexShader={blobVertexShader}

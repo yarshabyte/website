@@ -133,6 +133,9 @@ export function PageWaveTransition() {
 
       const timeline = gsap.timeline({
         onComplete: () => {
+          // Fire blob enter right when the cover starts fading so
+          // the user sees the full scale-up entrance animation
+          window.dispatchEvent(new Event("yarsa:blob-enter"));
           // Fade out the container to simulate the new content fading in
           gsap.to(container, {
             autoAlpha: 0,
@@ -210,8 +213,7 @@ export function PageWaveTransition() {
           },
           1.0,
         )
-        .add(revealHome, 0.9)
-        .add(() => window.dispatchEvent(new Event("yarsa:blob-enter")), 1.0);
+        .add(revealHome, 0.9);
 
       timelineRef.current = timeline;
     };
@@ -223,7 +225,11 @@ export function PageWaveTransition() {
       timelineRef.current?.kill();
       resetOverlay();
     };
-  }, [router, pathname]);
+  // NOTE: `pathname` is intentionally excluded – the handler reads
+  // pathnameRef.current (synced separately) so the listener must NOT
+  // be torn down when the route changes mid-transition.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
 
   return (
     <div
