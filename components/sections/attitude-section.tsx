@@ -123,77 +123,44 @@ export function AttitudeSection() {
 
         mm.add("(max-width: 1023px)", () => {
           const cardHeight = () => cards[0]?.offsetHeight ?? 320;
-          const cardCount = cards.length;
 
           section.style.setProperty("--attitude-color-start", "0%");
           section.style.setProperty("--attitude-color-end", "0%");
 
-          // First card starts visible at its final position; rest start off-screen below
-          gsap.set(cards[0], {
+          gsap.set(cards, {
             autoAlpha: 1,
-            yPercent: 0,
+            yPercent: 145,
             scale: 1,
-            zIndex: 1,
+            zIndex: (index) => index + 1,
             force3D: true,
             willChange: "transform",
           });
 
-          cards.slice(1).forEach((card, i) => {
-            gsap.set(card, {
-              autoAlpha: 1,
-              yPercent: 110,
-              scale: 1,
-              zIndex: i + 2,
-              force3D: true,
-              willChange: "transform",
-            });
-          });
-
-          // Each card animation takes 1 unit, with a 0.3 unit hold between cards.
-          // This creates smooth pacing: slide → hold → slide → hold → ...
-          const slidePhase = 1;
-          const holdPhase = 0.3;
-          const totalPerCard = slidePhase + holdPhase;
-          // Pin distance: generous enough so the last card never bounces on release
-          const pinEndDistance = () =>
-            cardHeight() * (cardCount + 1.5) + window.innerHeight * 0.15;
-
           const stackTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
-              scroller,
+              scroller: window,
               start: "top top",
-              end: () => `+=${pinEndDistance()}`,
+              end: () => `+=${cardHeight() * cards.length}`,
               pin: true,
-              pinSpacing: true,
-              scrub: 0.6,
+              scrub: 0.18,
               anticipatePin: 1,
               invalidateOnRefresh: true,
             },
           });
 
-          // Animate each subsequent card (1–4) sliding up into view one at a time
-          for (let i = 1; i < cardCount; i++) {
-            const startTime = (i - 1) * totalPerCard;
-            stackTimeline.to(
-              cards[i],
-              {
-                yPercent: 0,
-                duration: slidePhase,
-                ease: "power2.out",
-              },
-              startTime,
-            );
-          }
-
-          // Blank hold at the end so the last card sits comfortably before unpin
-          stackTimeline.to({}, { duration: holdPhase });
+          stackTimeline.to(cards, {
+            yPercent: (index) => index * 18,
+            duration: 1,
+            stagger: 1,
+            ease: "none",
+          });
 
           return () => {
             stackTimeline.scrollTrigger?.kill();
             stackTimeline.kill();
             gsap.set(cards, {
-              clearProps: "transform,zIndex,willChange,opacity,visibility",
+              clearProps: "transform,zIndex,willChange",
             });
           };
         });
@@ -416,7 +383,7 @@ export function AttitudeSection() {
       ref={sectionRef}
       id="attitude"
       style={sectionStyle}
-      className="relative h-dvh touch-pan-y overflow-hidden bg-background px-5 text-foreground motion-reduce:h-auto motion-reduce:min-h-dvh motion-reduce:overflow-visible sm:px-8 lg:h-[calc(100vh-1.5rem)] lg:px-[var(--site-gutter)]"
+      className="relative h-dvh overflow-hidden bg-background px-5 text-foreground motion-reduce:h-auto motion-reduce:min-h-dvh motion-reduce:overflow-visible sm:px-8 lg:h-[calc(100vh-1.5rem)] lg:px-[var(--site-gutter)]"
     >
       <div
         className="pointer-events-none absolute inset-0 flex items-start justify-center overflow-hidden pt-[calc(var(--header-height)+1rem)] lg:items-center lg:pt-0"
@@ -456,10 +423,10 @@ export function AttitudeSection() {
          
         </div>
 
-        <div className="relative -mx-5 min-h-0 flex-1 touch-pan-y overflow-x-hidden overflow-y-visible px-5 pb-14 motion-reduce:overflow-visible sm:-mx-8 sm:px-8 sm:pb-16 lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-center lg:overflow-visible lg:px-0 lg:pb-0">
+        <div className="relative -mx-5 min-h-0 flex-1 overflow-hidden px-5 pb-6 motion-reduce:overflow-visible sm:-mx-8 sm:px-8 lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-center lg:overflow-visible lg:px-0 lg:pb-0">
           <div
             ref={trackRef}
-            className="relative h-full w-full max-lg:pb-[min(38vw,12rem)] pb-2 will-change-transform [transform:translateZ(0)] motion-reduce:flex motion-reduce:h-auto motion-reduce:flex-col motion-reduce:gap-4 motion-reduce:pb-0 lg:flex lg:h-[78%] lg:w-max lg:items-stretch lg:gap-[4.1666vw] lg:pb-0"
+            className="relative h-full w-full will-change-transform [transform:translateZ(0)] motion-reduce:flex motion-reduce:h-auto motion-reduce:flex-col motion-reduce:gap-4 lg:flex lg:h-[78%] lg:w-max lg:items-stretch lg:gap-[4.1666vw]"
           >
             {attitudeCards.map((card, index) => (
               <article
@@ -472,7 +439,7 @@ export function AttitudeSection() {
                     "--card-offset": desktopCardPositions[index].offset,
                   } as CSSProperties
                 }
-                className="pointer-events-none absolute inset-x-0 top-0 min-h-[20rem] w-full shrink-0 touch-pan-y select-none rounded-2xl border border-foreground/10 bg-background p-7 opacity-100 [-webkit-touch-callout:none] last:max-lg:border-b-foreground/25 last:max-lg:shadow-[inset_0_-1px_0_0_color-mix(in_srgb,var(--foreground)_22%,transparent)] motion-reduce:relative motion-reduce:inset-auto sm:min-h-[22rem] lg:pointer-events-auto lg:relative lg:inset-auto lg:min-h-[clamp(23rem,54vh,32rem)] lg:w-[clamp(24rem,29vw,35rem)] lg:select-auto lg:shadow-none lg:[align-self:var(--card-align)] lg:[top:var(--card-offset)] lg:p-[clamp(2rem,3.2vw,4rem)]"
+                className="absolute inset-x-0 top-0 min-h-[20rem] w-full shrink-0 rounded-2xl border border-foreground/10 bg-background p-7 opacity-100 last:border-foreground/20 motion-reduce:relative motion-reduce:inset-auto sm:min-h-[22rem] lg:relative lg:inset-auto lg:min-h-[clamp(23rem,54vh,32rem)] lg:w-[clamp(24rem,29vw,35rem)] lg:[align-self:var(--card-align)] lg:[top:var(--card-offset)] lg:p-[clamp(2rem,3.2vw,4rem)]"
               >
                 <div className="flex items-center gap-3">
                   <span className="grid size-4 place-items-center rounded-full border border-foreground/20">
