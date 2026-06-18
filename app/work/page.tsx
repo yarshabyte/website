@@ -3,17 +3,17 @@ import type { Metadata } from "next";
 import { WorkPageClient } from "@/components/sections/work-page-client";
 
 export const metadata: Metadata = {
-  title: "Work | Yarsa Byte",
+  title: "Work | Yarsha Byte",
   description:
-    "Explore Yarsa Byte work across websites, portfolios, digital launch systems, and campaign-ready creative.",
+    "Explore Yarsha Byte work across websites, portfolios, digital launch systems, and campaign-ready creative.",
   keywords: ["web design portfolio", "website projects", "case studies"],
-  alternates: { canonical: "https://yarsabyte.vercel.app/work" },
+  alternates: { canonical: "https://yarshabyte.vercel.app/work" },
   openGraph: {
-    title: "Work | YarsaByte Portfolio",
+    title: "Work | YarshaByte Portfolio",
     description:
-      "Explore YarsaByte work across websites, portfolios, and digital projects.",
-    url: "https://yarsabyte.vercel.app/work",
-    images: ["https://yarsabyte.vercel.app/og-work.png"],
+      "Explore YarshaByte work across websites, portfolios, and digital projects.",
+    url: "https://yarshabyte.vercel.app/work",
+    images: ["https://yarshabyte.vercel.app/og-work.png"],
   },
 };
 
@@ -22,8 +22,8 @@ export default function WorkPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
-      { "@type": "ListItem", position: 2, name: "Work", item: "https://yarsabyte.vercel.app/work" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarshabyte.vercel.app/" },
+      { "@type": "ListItem", position: 2, name: "Work", item: "https://yarshabyte.vercel.app/work" },
     ],
   };
 

@@ -56,7 +56,7 @@ export function HeroSection() {
         
         <div className="relative z-20 flex flex-1 flex-col justify-end pb-6 pt-[44vh] sm:block sm:pb-0 sm:pt-0 lg:ml-auto lg:w-full lg:max-w-[88%]">
           {/* SEO-friendly H1 (keyword-rich) */}
-          <h1 className="sr-only">Yarsa Byte | Creative approach to your business</h1>
+          <h1 className="sr-only">Yarsha Byte | Creative approach to your business</h1>
 
           <motion.h2
             className="pointer-events-none relative z-20 block sm:hidden"
@@ -158,7 +158,7 @@ export function HeroSection() {
           scale: isContactVisible ? 0.9 : 1,
         }}
         transition={{ duration: 0.3, ease }}
-        aria-label="Contact Yarsa Byte"
+        aria-label="Contact Yarsha Byte"
         aria-hidden={isContactVisible}
         tabIndex={isContactVisible ? -1 : undefined}
       >

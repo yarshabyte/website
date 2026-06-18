@@ -8,17 +8,17 @@ import { Container } from "@/components/ui/container";
 import { teamMembers } from "@/data/team";
 
 export const metadata: Metadata = {
-  title: "About Us | Yarsa Byte",
+  title: "About Us | Yarsha Byte",
   description:
     "A six-person digital team in Nepal unifying strategy, design, code, and motion.",
-  keywords: ["Yarsa Byte team", "about Yarsa Byte", "creative team Nepal"],
-  alternates: { canonical: "https://yarsabyte.vercel.app/about" },
+  keywords: ["Yarsha Byte team", "about Yarsha Byte", "creative team Nepal"],
+  alternates: { canonical: "https://yarshabyte.vercel.app/about" },
   openGraph: {
-    title: "About Yarsa Byte",
+    title: "About Yarsha Byte",
     description:
       "A six-person digital team in Nepal unifying strategy, design, code, and motion.",
-    url: "https://yarsabyte.vercel.app/about",
-    images: ["https://yarsabyte.vercel.app/og-image.png"],
+    url: "https://yarshabyte.vercel.app/about",
+    images: ["https://yarshabyte.vercel.app/og-image.png"],
   },
 };
 
@@ -54,8 +54,8 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
-      { "@type": "ListItem", position: 2, name: "About", item: "https://yarsabyte.vercel.app/about" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarshabyte.vercel.app/" },
+      { "@type": "ListItem", position: 2, name: "About", item: "https://yarshabyte.vercel.app/about" },
     ],
   };
 
@@ -77,7 +77,7 @@ export default function AboutPage() {
             {/* Left Column: Heading */}
             <div className="lg:col-span-7">
               <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent">
-                About Yarsa Byte
+                About Yarsha Byte
               </p>
               <h1 className="mt-4 font-display text-[clamp(2.5rem,6vw,6rem)] font-black uppercase leading-[0.9] tracking-tighter">
                 Six minds.

@@ -1,4 +1,4 @@
-# YarsaByte
+# YarshaByte
 
 A modern personal portfolio and demo site built with Next.js (app router), React and TypeScript showcasing 3D visuals and smooth interactions.
 
@@ -105,5 +105,5 @@ Recommended: deploy to Vercel for zero-config Next.js hosting.
 
 
 ## Author
-Team YarsaByte
+Team YarshaByte
 ---

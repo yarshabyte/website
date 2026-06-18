@@ -3,16 +3,16 @@ import type { Metadata } from "next";
 import { ContactPageClient } from "@/components/sections/contact-page-client";
 
 export const metadata: Metadata = {
-  title: "Contact | Yarsa Byte",
+  title: "Contact | Yarsha Byte",
   description:
-    "Start a project with Yarsa Byte for websites, portfolios, posters, reels, branding, and digital launch support.",
-  keywords: ["contact yarsabyte", "hire web designer nepal", "start project"],
-  alternates: { canonical: "https://yarsabyte.vercel.app/contact" },
+    "Start a project with Yarsha Byte for websites, portfolios, posters, reels, branding, and digital launch support.",
+  keywords: ["contact yarshabyte", "hire web designer nepal", "start project"],
+  alternates: { canonical: "https://yarshabyte.vercel.app/contact" },
   openGraph: {
-    title: "Contact | YarsaByte",
-    description: "Start a project with YarsaByte for web and digital services.",
-    url: "https://yarsabyte.vercel.app/contact",
-    images: ["https://yarsabyte.vercel.app/og-contact.png"],
+    title: "Contact | YarshaByte",
+    description: "Start a project with YarshaByte for web and digital services.",
+    url: "https://yarshabyte.vercel.app/contact",
+    images: ["https://yarshabyte.vercel.app/og-contact.png"],
   },
 };
 
@@ -32,8 +32,8 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
-      { "@type": "ListItem", position: 2, name: "Contact", item: "https://yarsabyte.vercel.app/contact" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarshabyte.vercel.app/" },
+      { "@type": "ListItem", position: 2, name: "Contact", item: "https://yarshabyte.vercel.app/contact" },
     ],
   };
 

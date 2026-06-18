@@ -288,7 +288,7 @@ export function ContactPageClient({
             transition={{ duration: 0.5, ease }}
             className="text-sm font-black uppercase tracking-[0.22em] text-accent"
           >
-            Yarsa Byte Contact
+            Yarsha Byte Contact
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 45 }}
@@ -311,11 +311,11 @@ export function ContactPageClient({
 
           <div className="mt-8 grid gap-3 text-sm font-semibold text-foreground/70">
             <a
-              href="mailto:yarsabyte@gmail.com"
+              href="mailto:yarshabyte@gmail.com"
               className="inline-flex items-center gap-3 transition hover:text-accent"
             >
               <Mail className="size-4" />
-              yarsabyte@gmail.com
+              yarshabyte@gmail.com
             </a>
             <a href="tel:+977" className="inline-flex items-center gap-3 transition hover:text-accent">
               <Phone className="size-4" />

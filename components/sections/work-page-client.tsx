@@ -53,7 +53,7 @@ export function WorkPageClient() {
         <Container className="relative z-10 flex min-h-[calc(100dvh-7rem)] flex-col pb-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">
-              Yarsa Byte Work
+              Yarsha Byte Work
             </p>
             <button
               type="button"

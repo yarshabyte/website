@@ -43,6 +43,6 @@ export const projectsIntro = {
   eyebrow: "Work",
   title: "Recent websites shaped for real people and businesses.",
   description:
-    "A small look at live work from Yarsa Byte, from inquiry-focused consultancy pages to personal portfolio systems.",
+    "A small look at live work from Yarsha Byte, from inquiry-focused consultancy pages to personal portfolio systems.",
 };
 

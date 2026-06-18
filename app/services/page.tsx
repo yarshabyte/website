@@ -3,20 +3,20 @@ import type { Metadata } from "next";
 import { ServicesPageClient } from "@/components/sections/services-page-client";
 
 export const metadata: Metadata = {
-  title: "Services | Yarsa Byte",
+  title: "Services | Yarsha Byte",
   description:
-    "Explore Yarsa Byte services for websites, portfolios, poster design, reels, branding, and digital setup for Nepali businesses.",
+    "Explore Yarsha Byte services for websites, portfolios, poster design, reels, branding, and digital setup for Nepali businesses.",
   keywords: [
     "web design services",
     "website development",
     "branding services",
   ],
-  alternates: { canonical: "https://yarsabyte.vercel.app/services" },
+  alternates: { canonical: "https://yarshabyte.vercel.app/services" },
   openGraph: {
-    title: "Services | YarsaByte",
+    title: "Services | YarshaByte",
     description: "Professional web and digital services for Nepali businesses.",
-    url: "https://yarsabyte.vercel.app/services",
-    images: ["https://yarsabyte.vercel.app/og-services.png"],
+    url: "https://yarshabyte.vercel.app/services",
+    images: ["https://yarshabyte.vercel.app/og-services.png"],
   },
 };
 
@@ -25,8 +25,8 @@ export default function ServicesPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
-      { "@type": "ListItem", position: 2, name: "Services", item: "https://yarsabyte.vercel.app/services" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarshabyte.vercel.app/" },
+      { "@type": "ListItem", position: 2, name: "Services", item: "https://yarshabyte.vercel.app/services" },
     ],
   };
 
@@ -36,7 +36,7 @@ export default function ServicesPage() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "What services does YarsaByte offer?",
+        name: "What services does YarshaByte offer?",
         acceptedAnswer: { "@type": "Answer", text: "Web design, development, branding, video editing and digital strategy." },
       },
       {

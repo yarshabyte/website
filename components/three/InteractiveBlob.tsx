@@ -140,13 +140,13 @@ export function InteractiveBlob() {
     };
 
     const fallback = window.setTimeout(enter, 1500);
-    window.addEventListener("yarsa:blob-enter", enter);
-    window.addEventListener("yarsa:blob-reset", reset);
+    window.addEventListener("yarsha:blob-enter", enter);
+    window.addEventListener("yarsha:blob-reset", reset);
 
     return () => {
       window.clearTimeout(fallback);
-      window.removeEventListener("yarsa:blob-enter", enter);
-      window.removeEventListener("yarsa:blob-reset", reset);
+      window.removeEventListener("yarsha:blob-enter", enter);
+      window.removeEventListener("yarsha:blob-reset", reset);
       gsap.killTweensOf(group.scale);
       gsap.killTweensOf(group.rotation);
       if (materialRef.current) {
@@ -216,8 +216,8 @@ export function InteractiveBlob() {
       });
     };
 
-    window.addEventListener("yarsa:blob-pulse", handlePulse);
-    return () => window.removeEventListener("yarsa:blob-pulse", handlePulse);
+    window.addEventListener("yarsha:blob-pulse", handlePulse);
+    return () => window.removeEventListener("yarsha:blob-pulse", handlePulse);
   }, [reduceMotion]);
 
   useFrame(({ camera }, delta) => {

@@ -1,4 +1,4 @@
-# Next.js 16 SEO Optimization Guide for YarsaByte
+# Next.js 16 SEO Optimization Guide for YarshaByte
 
 ## 🚀 Next.js Specific SEO Features
 
@@ -79,7 +79,7 @@ const archivoBlack = Archivo_Black({
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://yarsabyte.vercel.app';
+  const baseUrl = 'https://yarshabyte.vercel.app';
   
   const staticRoutes = [
     { url: '/', changeFreq: 'monthly', priority: 1.0 },
@@ -107,14 +107,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
 import { MetadataRoute } from 'next';
 
 export async function GET() {
-  const baseUrl = 'https://yarsabyte.vercel.app';
+  const baseUrl = 'https://yarshabyte.vercel.app';
   
   const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>YarsaByte Blog</title>
+    <title>YarshaByte Blog</title>
     <link>${baseUrl}</link>
-    <description>Latest from YarsaByte</description>
+    <description>Latest from YarshaByte</description>
     <language>en-us</language>
   </channel>
 </rss>`;
@@ -155,9 +155,9 @@ other: {
 
 // Social profiles
 profile: {
-  firstName: 'Yarsa',
+  firstName: 'Yarsha',
   lastName: 'Byte',
-  username: 'yarsabyte',
+  username: 'yarshabyte',
 },
 ```
 
@@ -254,9 +254,9 @@ export default {
 /work?sort=date&page=1 (use proper pagination)
 
 // For pagination, use proper canonicals:
-<link rel="canonical" href="https://yarsabyte.vercel.app/work" />
-<link rel="next" href="https://yarsabyte.vercel.app/work?page=2" />
-<link rel="prev" href="https://yarsabyte.vercel.app/work?page=1" />
+<link rel="canonical" href="https://yarshabyte.vercel.app/work" />
+<link rel="next" href="https://yarshabyte.vercel.app/work?page=2" />
+<link rel="prev" href="https://yarshabyte.vercel.app/work?page=1" />
 ```
 
 ---
@@ -391,8 +391,8 @@ Disallow: /private/
 Allow: /
 
 # Specify sitemap
-Sitemap: https://yarsabyte.vercel.app/sitemap.xml
-Sitemap: https://yarsabyte.vercel.app/app/sitemap.ts
+Sitemap: https://yarshabyte.vercel.app/sitemap.xml
+Sitemap: https://yarshabyte.vercel.app/app/sitemap.ts
 ```
 
 ---
@@ -439,6 +439,6 @@ Sitemap: https://yarsabyte.vercel.app/app/sitemap.ts
 ```bash
 # Command line audit
 npm install -g lighthouse
-lighthouse https://yarsabyte.vercel.app --view
+lighthouse https://yarshabyte.vercel.app --view
 ```
 

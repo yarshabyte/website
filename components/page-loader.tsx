@@ -22,7 +22,7 @@ export function PageLoader({ children }: PageLoaderProps) {
 
     if (prefersReducedMotion) {
       const reducedMotionTimer = window.setTimeout(() => setIsLoading(false), 0);
-      window.dispatchEvent(new CustomEvent("yarsa:blob-enter"));
+      window.dispatchEvent(new CustomEvent("yarsha:blob-enter"));
       return () => window.clearTimeout(reducedMotionTimer);
     }
 
@@ -47,7 +47,7 @@ export function PageLoader({ children }: PageLoaderProps) {
       }
 
       setIsExiting(true);
-      window.dispatchEvent(new CustomEvent("yarsa:blob-enter"));
+      window.dispatchEvent(new CustomEvent("yarsha:blob-enter"));
       window.setTimeout(() => {
         if (!cancelled) {
           setIsLoading(false);

@@ -1,3 +1,14 @@
+"use client";
+
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
+
 import {
   ArrowRight,
   ArrowUpRight,
@@ -59,9 +70,85 @@ function SocialIcon({
   );
 }
 
+function AnimatedContactTitle({ lines, className }: { lines: string[]; className?: string }) {
+  return (
+    <h2 className={className}>
+      {lines.map((line, li) => {
+        const words = line.trim().split(/\s+/);
+        return (
+          <span key={li} className="block">
+            {words.map((word, wi) => (
+              <span key={wi} className="inline-block">
+                <span className="inline-block overflow-hidden align-bottom leading-[0.88] pb-[0.05em] -mb-[0.05em]">
+                  {word.split("").map((char, ci) => (
+                    <span key={ci} data-contact-char className="inline-block will-change-transform">
+                      {char}
+                    </span>
+                  ))}
+                </span>
+                {wi < words.length - 1 && <span>&nbsp;</span>}
+              </span>
+            ))}
+          </span>
+        );
+      })}
+    </h2>
+  );
+}
+
 export function ContactSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const siteFrame = document.querySelector<HTMLElement>(".site-frame");
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      
+      const charSpans = gsap.utils.toArray<HTMLElement>("[data-contact-char]", section);
+      if (!reduceMotion && charSpans.length > 0) {
+        gsap.set(charSpans, { y: "100%" });
+      }
+
+      const initTitleAnimation = () => {
+        if (reduceMotion || charSpans.length === 0) return;
+        
+        const isLenisActive = siteFrame?.dataset.lenisReady === "true";
+        const scroller: HTMLElement | Window = isLenisActive ? siteFrame! : window;
+
+        gsap.to(charSpans, {
+          y: "0%",
+          duration: 1,
+          stagger: 0.05,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: charSpans[0].closest("h2"),
+            scroller,
+            start: "top 88%",
+          },
+        });
+      };
+
+      const waitsForLenis =
+        window.matchMedia("(min-width: 1024px)").matches &&
+        window.matchMedia("(pointer: fine)").matches;
+
+      if (!waitsForLenis || siteFrame?.dataset.lenisReady === "true") {
+        initTitleAnimation();
+      } else if (siteFrame) {
+        window.addEventListener("lenis:ready", initTitleAnimation, {
+          once: true,
+        });
+      }
+    },
+    { scope: sectionRef }
+  );
+
   return (
     <footer
+      ref={sectionRef}
       id="contact"
       className="relative overflow-hidden bg-foreground text-background"
     >
@@ -81,11 +168,10 @@ export function ContactSection() {
               <span className="size-1.5 rounded-full bg-accent" />
               Available for new projects
             </p>
-            <h2 className="mt-5 max-w-4xl font-display text-[clamp(2.5rem,5.5vw,5.25rem)] uppercase leading-[0.88] tracking-[-0.04em]">
-              Bring your
-              <br />
-              ideas to life
-            </h2>
+            <AnimatedContactTitle
+              lines={["Bring your", "ideas to life"]}
+              className="mt-5 max-w-4xl font-display text-[clamp(3.5rem,6.5vw,6.5rem)] uppercase leading-[0.88] tracking-[-0.04em]"
+            />
           </div>
 
           <Link
@@ -102,18 +188,18 @@ export function ContactSection() {
 
         <div className="grid gap-10 py-10 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.65fr_1.25fr_0.85fr] lg:gap-8 lg:py-12">
           <section>
-            <p className={smallLabelClass}>Yarsa Byte</p>
+            <p className={smallLabelClass}>Yarsha Byte</p>
             <p className="mt-4 max-w-sm text-base leading-7 text-background/68">
               Digital experiences, visual identities, and launch support for
               ambitious businesses in Nepal and beyond.
             </p>
             <div className="mt-6 grid gap-2.5 text-sm text-background/65">
               <a
-                href="mailto:yarsabyte@gmail.com"
+                href="mailto:yarshabyte@gmail.com"
                 className={`${footerLinkClass} inline-flex items-center gap-3`}
               >
                 <Mail className="size-4 text-accent" aria-hidden="true" />
-                yarsabyte@gmail.com
+                yarshabyte@gmail.com
               </a>
               <span className="inline-flex items-center gap-3">
                 <MapPin className="size-4 text-accent" aria-hidden="true" />
@@ -192,7 +278,7 @@ export function ContactSection() {
         </div>
 
         <div className="flex flex-col gap-4 border-t border-background/15 pt-6 text-xs font-medium text-background/42 sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} Yarsa Byte. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Yarsha Byte. All rights reserved.</p>
           <p>Designed and built in Nepal.</p>
         </div>
       </div>

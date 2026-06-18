@@ -67,7 +67,7 @@ export function SiteHeader() {
     }
 
     event.preventDefault();
-    window.dispatchEvent(new CustomEvent("yarsa:home-transition"));
+    window.dispatchEvent(new CustomEvent("yarsha:home-transition"));
   };
 
   return (
@@ -77,12 +77,12 @@ export function SiteHeader() {
           <Link
             href="/"
             className="pointer-events-auto absolute left-[4.1666vw] top-[4.1666vw] block"
-            aria-label="Yarsa Byte home"
+            aria-label="Yarsha Byte home"
             onClick={handleLogoClick}
           >
             <Image
               src="/logo-icon.webp"
-              alt="Yarsa Byte logo"
+              alt="Yarsha Byte logo"
               width={104}
               height={104}
               className="size-[3.125rem] shrink-0 rounded-md bg-white object-contain p-1 sm:size-[3.75rem] lg:size-[clamp(3.75rem,4.1666vw,6.5rem)]"

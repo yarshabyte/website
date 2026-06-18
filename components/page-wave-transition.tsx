@@ -99,7 +99,7 @@ export function PageWaveTransition() {
       };
 
       window.dispatchEvent(
-        new CustomEvent("yarsa:blob-pulse", { detail: { clockwise: true } }),
+        new CustomEvent("yarsha:blob-pulse", { detail: { clockwise: true } }),
       );
 
       if (reduceMotion) {
@@ -135,7 +135,7 @@ export function PageWaveTransition() {
         onComplete: () => {
           // Fire blob enter right when the cover starts fading so
           // the user sees the full scale-up entrance animation
-          window.dispatchEvent(new Event("yarsa:blob-enter"));
+          window.dispatchEvent(new Event("yarsha:blob-enter"));
           // Fade out the container to simulate the new content fading in
           gsap.to(container, {
             autoAlpha: 0,
@@ -166,7 +166,7 @@ export function PageWaveTransition() {
           },
           0,
         )
-        .add(() => window.dispatchEvent(new Event("yarsa:blob-reset")), 0.6)
+        .add(() => window.dispatchEvent(new Event("yarsha:blob-reset")), 0.6)
         .to(frontPath, {
           morphSVG: shapes.line,
           duration: 0.8,
@@ -218,10 +218,10 @@ export function PageWaveTransition() {
       timelineRef.current = timeline;
     };
 
-    window.addEventListener("yarsa:home-transition", handleTransition);
+    window.addEventListener("yarsha:home-transition", handleTransition);
 
     return () => {
-      window.removeEventListener("yarsa:home-transition", handleTransition);
+      window.removeEventListener("yarsha:home-transition", handleTransition);
       timelineRef.current?.kill();
       resetOverlay();
     };

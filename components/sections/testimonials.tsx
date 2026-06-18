@@ -85,10 +85,10 @@ function TestimonialCard({
         <Image
           src={`/profile/${image}`}
           alt={author}
-          width={64}
-          height={64}
+          width={80}
+          height={80}
           draggable={false}
-          className="pointer-events-none absolute left-0 top-[5px] size-16 select-none rounded-full object-cover [-webkit-user-drag:none]"
+          className="pointer-events-none p-2 absolute left-0 top-[5px] size-16 select-none rounded-full object-cover [-webkit-user-drag:none]"
         />
         <span>{message}</span>
       </p>
@@ -117,6 +117,9 @@ export function TestimonialsSection() {
     mouseY: 0,
     ballX: 0,
     ballY: 0,
+    lastTime: 0,
+    velocity: 0,
+    lastX: 0,
   });
 
   const clamp = (value: number, min: number, max: number) =>
@@ -152,7 +155,25 @@ export function TestimonialsSection() {
 
     resetSlideScale();
 
-    updateProgress();
+    const timeSinceLastMove = Date.now() - state.lastTime;
+    if (timeSinceLastMove < 100 && Math.abs(state.velocity) > 0.2) {
+      const amplitude = 300 * state.velocity;
+      const targetX = clamp(state.translate + amplitude, state.minX, 0);
+      
+      gsap.to(trackRef.current, {
+        x: targetX,
+        duration: 0.8,
+        ease: "power3.out",
+        onUpdate: () => {
+          if (trackRef.current) {
+            dragState.current.translate = gsap.getProperty(trackRef.current, "x") as number;
+            updateProgress();
+          }
+        }
+      });
+    } else {
+      updateProgress();
+    }
   };
 
   const updateProgress = () => {
@@ -197,33 +218,6 @@ export function TestimonialsSection() {
     const lastRect = lastSlide.getBoundingClientRect();
     const trackX = gsap.getProperty(track, "x") as number;
 
-    // #region agent log
-    fetch("http://127.0.0.1:7276/ingest/c9890c38-b7a2-45fd-8ec6-57a202cb4ca7", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "f74586",
-      },
-      body: JSON.stringify({
-        sessionId: "f74586",
-        runId: "last-slide-fix",
-        hypothesisId: "minX-calc",
-        location: "testimonials.tsx:measure",
-        message: "slider bounds",
-        data: {
-          slideWidth,
-          totalWidth,
-          minX,
-          sliderWidth: slider.clientWidth,
-          lastSlideRight: lastRect.right - sliderRect.left,
-          sliderRight: slider.clientWidth,
-          trackX,
-          lastVisibleGap: slider.clientWidth - (lastRect.right - sliderRect.left),
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
   };
 
   useGSAP(
@@ -332,33 +326,7 @@ export function TestimonialsSection() {
             cursorFrame % 45 === 0 &&
             dragCursor.classList.contains("moving")
           ) {
-            // #region agent log
-            fetch(
-              "http://127.0.0.1:7276/ingest/c9890c38-b7a2-45fd-8ec6-57a202cb4ca7",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-Debug-Session-Id": "f74586",
-                },
-                body: JSON.stringify({
-                  sessionId: "f74586",
-                  runId: "buzzworthy-cursor",
-                  hypothesisId: "react-rerender",
-                  location: "testimonials.tsx:cursorLoop",
-                  message: "gsap ball follow sample",
-                  data: {
-                    mouseX: state.mouseX,
-                    ballX: state.ballX,
-                    distX: distX,
-                    ballSpeed: BALL_SPEED,
-                    method: "gsap-dom",
-                  },
-                  timestamp: Date.now(),
-                }),
-              },
-            ).catch(() => {});
-            // #endregion
+           
           }
         }
 
@@ -378,6 +346,9 @@ export function TestimonialsSection() {
         dragState.current.startTranslate = dragState.current.translate;
         dragState.current.mouseX = event.clientX;
         dragState.current.mouseY = event.clientY;
+        dragState.current.lastTime = Date.now();
+        dragState.current.lastX = event.clientX;
+        dragState.current.velocity = 0;
 
         dragCursor.classList.add("is-on");
         gsap.to(dragBg, {
@@ -399,6 +370,14 @@ export function TestimonialsSection() {
           event.pointerId !== dragState.current.pointerId
         ) {
           return;
+        }
+
+        const now = Date.now();
+        const dt = now - dragState.current.lastTime;
+        if (dt > 0) {
+          dragState.current.velocity = (event.clientX - dragState.current.lastX) / dt;
+          dragState.current.lastTime = now;
+          dragState.current.lastX = event.clientX;
         }
 
         const delta = event.clientX - dragState.current.startX;

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Page Not Found | YarsaByte",
-  description: "The page you're looking for doesn't exist. Return to YarsaByte home.",
+  title: "Page Not Found | YarshaByte",
+  description: "The page you're looking for doesn't exist. Return to YarshaByte home.",
   robots: {
     index: false,
     follow: false,

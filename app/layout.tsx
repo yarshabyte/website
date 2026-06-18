@@ -11,36 +11,36 @@ import "./globals.css";
 
 export const metadata: Metadata = {
 
-  title: "YarsaByte | Creative approach to your business",
+  title: "YarshaByte | Creative approach to your business",
   description:
-    "YarsaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
-  metadataBase: new URL("https://yarsabyte.vercel.app"),
-  alternates: { canonical: "https://yarsabyte.vercel.app" },
+    "YarshaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
+  metadataBase: new URL("https://yarshabyte.vercel.app"),
+  alternates: { canonical: "https://yarshabyte.vercel.app" },
   openGraph: {
-    title: "Yarsa Byte | Creative approach to your business",
+    title: "Yarsha Byte | Creative approach to your business",
     description:
-      "YarsaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
-    siteName: "YarsaByte",
+      "YarshaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
+    siteName: "YarshaByte",
     locale: "en_US",
     type: "website",
-    url: "https://yarsabyte.vercel.app",
+    url: "https://yarshabyte.vercel.app",
     images: [
       {
-        url: "https://yarsabyte.vercel.app/og-image.png",
+        url: "https://yarshabyte.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "YarsaByte | Web design & development in Nepal",
+        alt: "YarshaByte | Web design & development in Nepal",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "YarsaByte | Creative approach to your business",
+    title: "YarshaByte | Creative approach to your business",
     description:
-      "YarsaByte helps Nepali businesses create websites, portfolios, branding, and digital setups for a professional online presence.",
-    images: ["https://yarsabyte.vercel.app/og-image.png"],
-    creator: "@yarsabyte",
-    site: "@yarsabyte",
+      "YarshaByte helps Nepali businesses create websites, portfolios, branding, and digital setups for a professional online presence.",
+    images: ["https://yarshabyte.vercel.app/og-image.png"],
+    creator: "@yarshabyte",
+    site: "@yarshabyte",
   },
 };
 
@@ -80,13 +80,13 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "YarsaByte",
-              url: "https://yarsabyte.vercel.app",
-              logo: "https://yarsabyte.vercel.app/logo.webp",
+              name: "YarshaByte",
+              url: "https://yarshabyte.vercel.app",
+              logo: "https://yarshabyte.vercel.app/logo.webp",
               sameAs: [
-                "https://www.facebook.com/yarsabyte",
-                "https://www.instagram.com/yarsabyte",
-                "https://www.linkedin.com/company/yarsabyte",
+                "https://www.facebook.com/yarshabyte",
+                "https://www.instagram.com/yarshabyte",
+                "https://www.linkedin.com/company/yarshabyte",
               ],
             }),
           }}
@@ -97,10 +97,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
-              name: "YarsaByte",
+              name: "YarshaByte",
               description:
                 "Web design, development, branding, and digital services in Nepal",
-              url: "https://yarsabyte.vercel.app",
+              url: "https://yarshabyte.vercel.app",
               telephone: "+977-1234567890",
               address: {
                 "@type": "PostalAddress",

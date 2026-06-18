@@ -8,14 +8,14 @@ import { TestimonialsSection } from "@/components/sections/testimonials";
 import { WorkSection } from "@/components/sections/work-section";
 
 export const metadata: Metadata = {
-  title: "Yarsa Byte | Creative approach to your business",
+  title: "Yarsha Byte | Creative approach to your business",
   description:
-    "YarsaByte helps Nepali businesses create websites, portfolios, and digital presences with web design, branding, and development services.",
+    "YarshaByte helps Nepali businesses create websites, portfolios, and digital presences with web design, branding, and development services.",
   keywords: ["web design Nepal", "Business growth", "digital agency Nepal"],
-  alternates: { canonical: "https://yarsabyte.vercel.app/" },
+  alternates: { canonical: "https://yarshabyte.vercel.app/" },
   openGraph: {
-    url: "https://yarsabyte.vercel.app/",
-    images: ["https://yarsabyte.vercel.app/og-image.png"],
+    url: "https://yarshabyte.vercel.app/",
+    images: ["https://yarshabyte.vercel.app/og-image.png"],
   },
 };
 
@@ -24,7 +24,7 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarsabyte.vercel.app/" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://yarshabyte.vercel.app/" },
     ],
   };
 

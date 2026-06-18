@@ -1,4 +1,4 @@
-# 🚀 YarsaByte SEO Quick Reference Card
+# 🚀 YarshaByte SEO Quick Reference Card
 
 ## TODAY'S ACTIONS (30 minutes)
 
@@ -11,7 +11,7 @@
 
 ### Update These Values in lib/seo-schema.ts
 - [ ] Phone: `"+977-1234567890"`
-- [ ] Email: `"contact@yarsabyte.vercel.app"`
+- [ ] Email: `"contact@yarshabyte.vercel.app"`
 - [ ] Address: `"Kathmandu, Nepal"`
 - [ ] Social URLs: Facebook, Instagram, LinkedIn
 
@@ -91,7 +91,7 @@ Use templates from `PAGES_SEO_IMPROVED.tsx`:
 
 ### Title Tag (50-60 chars)
 ```
-YarsaByte | Web Design & Development Nepal
+YarshaByte | Web Design & Development Nepal
 ```
 
 ### Meta Description (150-160 chars)
@@ -245,7 +245,7 @@ Professional Web Design & Development Services in Nepal
 ## URGENT REMINDERS
 
 ⚠️ **MUST DO FIRST:**
-- [ ] Update domain name in schema (yarsabyte.vercel.app)
+- [ ] Update domain name in schema (yarshabyte.vercel.app)
 - [ ] Add actual phone number
 - [ ] Add actual email address
 - [ ] Create OG images (or use placeholder)

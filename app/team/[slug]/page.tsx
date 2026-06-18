@@ -23,14 +23,14 @@ export async function generateMetadata({
   const member = teamMembers.find((item) => item.slug === slug);
 
   if (!member) {
-    return { title: "Team Member Not Found | Yarsa Byte" };
+    return { title: "Team Member Not Found | Yarsha Byte" };
   }
 
   return {
-    title: `${member.name} | Yarsa Byte Team`,
+    title: `${member.name} | Yarsha Byte Team`,
     description: member.intro,
     alternates: {
-      canonical: `https://yarsabyte.vercel.app/team/${member.slug}`,
+      canonical: `https://yarshabyte.vercel.app/team/${member.slug}`,
     },
   };
 }

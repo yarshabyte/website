@@ -63,7 +63,7 @@ Long-tail:
 ### On-Page Optimization
 ```
 ✓ Title Tags: 50-60 characters, keyword at start
-  Example: "Web Design Nepal | YarsaByte Digital Services"
+  Example: "Web Design Nepal | YarshaByte Digital Services"
 
 ✓ Meta Descriptions: 150-160 characters, compelling CTA
   Example: "Professional web design & development for Nepali businesses. 
@@ -149,7 +149,7 @@ Long-tail:
 
 ---
 
-## 📈 Content Strategy for YarsaByte
+## 📈 Content Strategy for YarshaByte
 
 ### Homepage Strategy
 - Hero section with clear value proposition

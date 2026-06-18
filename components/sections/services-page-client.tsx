@@ -271,7 +271,7 @@ export function ServicesPageClient() {
       <main ref={pageRef} className="services-page bg-background text-foreground">
         <div className="services-breadcrumb">
           <Link href="/" className="opacity-70 transition hover:opacity-100">
-            Yarsa Byte
+            Yarsha Byte
           </Link>
           <span className="opacity-45" aria-hidden="true">/</span>
           <span>Services</span>
@@ -325,7 +325,7 @@ export function ServicesPageClient() {
             </h1>
 
             <p className="services-hero-intro">
-              At Yarsa Byte, we build digital systems for Nepali businesses:
+              At Yarsha Byte, we build digital systems for Nepali businesses:
               websites, portfolios, branding, and launch setup that look
               credible and are easy to keep improving.
             </p>
@@ -345,7 +345,7 @@ export function ServicesPageClient() {
             <div>
               <SectionLabel>What we do</SectionLabel>
               <p className="services-block-description mt-6 max-w-md text-base leading-7 text-foreground/68 sm:text-lg">
-                At Yarsa Byte, we build digital systems for Nepali businesses
+                At Yarsha Byte, we build digital systems for Nepali businesses
                 websites, portfolios, branding, and launch setup that look
                 credible and are easy to keep improving.
               </p>
