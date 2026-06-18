@@ -19,10 +19,10 @@ const fade = {
 };
 
 const heroDisplay =
-  "font-hero-display text-[clamp(5.625rem,15.27vw,21.25rem)] uppercase leading-[0.8] tracking-normal";
+  "font-hero-display text-[clamp(7.5rem,20vw,26rem)] uppercase leading-[0.8] tracking-normal";
 
 const mobileHeroDisplay =
-  "font-hero-display text-[clamp(5.625rem,22vw,7.5rem)] uppercase leading-[0.8] tracking-normal";
+  "font-hero-display text-[clamp(6.5rem,30vw,9.5rem)] uppercase leading-[0.8] tracking-normal";
 
 export function HeroSection() {
   const [isContactVisible, setIsContactVisible] = useState(false);
@@ -83,7 +83,7 @@ export function HeroSection() {
             </motion.span>
           </motion.h2>
 
-          <motion.h2
+          <motion.h1
             className="pointer-events-none relative z-20 hidden pt-[6vh] text-right sm:block"
             aria-label="Portfoo"
             initial="hidden"
@@ -105,7 +105,7 @@ export function HeroSection() {
             >
               Byte
             </motion.span>
-          </motion.h2>
+          </motion.h1>
 
           <motion.div
             className="pointer-events-auto relative z-10 mt-7 flex justify-start sm:mt-12 sm:justify-end lg:mt-14"
@@ -147,8 +147,8 @@ export function HeroSection() {
       </div>
 
       <motion.a
-        href="#contact"
-        className={`fixed bottom-4 right-4 z-40 grid size-14 place-items-center rounded-full bg-accent text-foreground shadow-none hover:scale-105 sm:bottom-6 sm:right-6 sm:size-12 lg:bottom-8 lg:right-[calc((100vw-var(--site-content-width))/2)] lg:size-14 ${
+        href="/contact"
+        className={`fixed bottom-4 right-4 z-40 grid size-14 place-items-center rounded-full bg-accent text-foreground shadow-none hover:scale-105 sm:bottom-6 sm:right-6 sm:size-12 lg:bottom-8 lg:right-12 lg:size-14 ${
           isContactVisible
             ? "pointer-events-none invisible"
             : "visible"

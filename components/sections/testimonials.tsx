@@ -4,6 +4,11 @@ import Image from "next/image";
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 import { testimonials } from "@/data/testimonials";
 import { cn } from "@/lib/utils";
@@ -32,6 +37,27 @@ function MiniMark({ className }: { className?: string }) {
       )}
       aria-hidden="true"
     />
+  );
+}
+
+function AnimatedTestimonialTitle({ text, className }: { text: string; className?: string }) {
+  const words = text.trim().split(/\s+/);
+  return (
+    <h2 className={className}>
+      {words.map((word, wi) => (
+        <span key={wi} className="inline-block">
+          <span className="inline-block overflow-hidden align-bottom leading-[0.88] pb-[0.05em] -mb-[0.05em]">
+            {word.split("").map((char, ci) => (
+              <span key={ci} data-testimonial-char className="inline-block will-change-transform">
+                {char}
+              </span>
+            ))}
+          </span>
+          {wi < words.length - 1 && <span>&nbsp;</span>}
+        </span>
+      ))}
+      <MiniMark className="ml-[0.08em] translate-y-[-0.12em]" />
+    </h2>
   );
 }
 
@@ -210,6 +236,45 @@ export function TestimonialsSection() {
 
       if (!section || !slider || !track || !dragCursor || !dragBg) {
         return;
+      }
+
+      const siteFrame = document.querySelector<HTMLElement>(".site-frame");
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      
+      const charSpans = gsap.utils.toArray<HTMLElement>("[data-testimonial-char]");
+      if (!reduceMotion && charSpans.length > 0) {
+        gsap.set(charSpans, { y: "100%" });
+      }
+
+      const initTitleAnimation = () => {
+        if (reduceMotion || charSpans.length === 0) return;
+        
+        const isLenisActive = siteFrame?.dataset.lenisReady === "true";
+        const scroller: HTMLElement | Window = isLenisActive ? siteFrame! : window;
+
+        gsap.to(charSpans, {
+          y: "0%",
+          duration: 1,
+          stagger: 0.05,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: charSpans[0].closest("h2"),
+            scroller,
+            start: "top 88%",
+          },
+        });
+      };
+
+      const waitsForLenis =
+        window.matchMedia("(min-width: 1024px)").matches &&
+        window.matchMedia("(pointer: fine)").matches;
+
+      if (!waitsForLenis || siteFrame?.dataset.lenisReady === "true") {
+        initTitleAnimation();
+      } else if (siteFrame) {
+        window.addEventListener("lenis:ready", initTitleAnimation, {
+          once: true,
+        });
       }
 
       measure();
@@ -493,10 +558,10 @@ export function TestimonialsSection() {
 
       <header className="mx-auto grid max-w-[104rem] gap-8 px-5 sm:px-8 lg:grid-cols-[0.42fr_0.58fr] lg:items-end lg:gap-10 lg:px-0">
         <DotLabel>Testimonials</DotLabel>
-        <h2 className="font-display text-[clamp(2.8rem,6.8vw,7.5rem)] uppercase leading-[0.86] tracking-[-0.04em] text-foreground">
-          We keep our promise
-          <MiniMark className="ml-[0.08em] translate-y-[-0.12em]" />
-        </h2>
+        <AnimatedTestimonialTitle
+          text="We keep our promise"
+          className="font-display text-[clamp(2.8rem,6.8vw,7.5rem)] uppercase leading-[0.86] tracking-[-0.04em] text-foreground"
+        />
       </header>
 
       <div

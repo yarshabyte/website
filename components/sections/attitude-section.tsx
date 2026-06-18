@@ -225,37 +225,34 @@ export function AttitudeSection() {
             willChange: "transform",
           });
 
-          let colorDisplacement = 0;
+          let cachedHeadingLeft = 0;
+          let cachedHeadingWidth = 0;
+          let cachedTrackWidth = 0;
 
-          const setColorSweep = (displacement: number) => {
-            const headingWidth = heading.getBoundingClientRect().width;
-            colorDisplacement = Math.max(0, displacement);
-            const clampedDisplacement = Math.max(
-              0,
-              Math.min(headingWidth * 2, colorDisplacement),
-            );
-            const colorStart = Math.max(
-              0,
-              headingWidth - clampedDisplacement,
-            );
-            const colorEnd =
-              clampedDisplacement <= headingWidth
-                ? headingWidth
-                : Math.max(0, headingWidth * 2 - clampedDisplacement);
+          const updateCachedBounds = () => {
+            const hBounds = heading.getBoundingClientRect();
+            cachedHeadingLeft = hBounds.left;
+            cachedHeadingWidth = hBounds.width;
+            cachedTrackWidth = track.scrollWidth;
+          };
 
-            section.style.setProperty(
-              "--attitude-color-start",
-              `${colorStart}px`,
-            );
-            section.style.setProperty(
-              "--attitude-color-end",
-              `${colorEnd}px`,
-            );
+          const setColorSweep = (trackX: number) => {
+            // Push the leading edge of the orange color ahead (left) of the first card
+            const leadOffset = window.innerWidth * 0.25;
+            // Keep the trailing edge of the orange color behind (right) of the last card
+            const trailOffset = window.innerWidth * 0.25;
+
+            const startPx = Math.max(0, Math.min(cachedHeadingWidth, trackX - leadOffset - cachedHeadingLeft));
+            const endPx = Math.max(0, Math.min(cachedHeadingWidth, trackX + cachedTrackWidth + trailOffset - cachedHeadingLeft));
+
+            section.style.setProperty("--attitude-color-start", `${startPx}px`);
+            section.style.setProperty("--attitude-color-end", `${endPx}px`);
           };
 
           const glyphResizeObserver = new ResizeObserver(() => {
             syncGlyphGradients();
-            setColorSweep(colorDisplacement);
+            updateCachedBounds();
+            setColorSweep(Number(gsap.getProperty(track, "x")));
           });
 
           glyphResizeObserver.observe(heading);
@@ -275,9 +272,9 @@ export function AttitudeSection() {
             scaleFrame = requestAnimationFrame(updateCardScale);
           };
 
-          setColorSweep(0);
+          updateCachedBounds();
+          setColorSweep(Number(gsap.getProperty(track, "x")));
           scaleFrame = requestAnimationFrame(updateCardScale);
-          let colorTrackStartX = Number(gsap.getProperty(track, "x"));
 
           const timeline = gsap.timeline({
             scrollTrigger: {
@@ -290,10 +287,10 @@ export function AttitudeSection() {
               anticipatePin: 1,
               invalidateOnRefresh: true,
               onLeave: () => {
-                setColorSweep(horizontalTravel());
+                setColorSweep(introOffset() - horizontalTravel());
               },
               onLeaveBack: () => {
-                setColorSweep(0);
+                setColorSweep(introOffset());
               },
             },
           });
@@ -312,8 +309,8 @@ export function AttitudeSection() {
             .addLabel("travel")
             .call(
               () => {
-                colorTrackStartX = Number(gsap.getProperty(track, "x"));
-                setColorSweep(0);
+                updateCachedBounds();
+                setColorSweep(Number(gsap.getProperty(track, "x")));
               },
               undefined,
               "travel",
@@ -325,9 +322,7 @@ export function AttitudeSection() {
                 ease: "none",
                 duration: TRAVEL_DURATION,
                 onUpdate() {
-                  const currentTrackX = Number(gsap.getProperty(track, "x"));
-
-                  setColorSweep(colorTrackStartX - currentTrackX);
+                  setColorSweep(Number(gsap.getProperty(track, "x")));
                 },
               },
               "travel",
