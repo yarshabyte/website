@@ -81,11 +81,12 @@ export function SiteHeader() {
             onClick={handleLogoClick}
           >
             <Image
-              src="/logo-icon.webp"
+              src="/ico-bg.png"
+              
               alt="Yarsha Byte logo"
               width={104}
               height={104}
-              className="size-[3.125rem] shrink-0 rounded-md bg-white object-contain p-1 sm:size-[3.75rem] lg:size-[clamp(3.75rem,4.1666vw,6.5rem)]"
+              className="size-[4rem] shrink-0 object-contain sm:size-[5.5rem] lg:size-[clamp(4.5rem,6.5vw,7.5rem)]"
               priority
               unoptimized
             />
