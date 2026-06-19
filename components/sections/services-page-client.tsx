@@ -61,10 +61,12 @@ export function ServicesPageClient() {
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
+      
+      const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
 
       let switchCleanup: (() => void) | undefined;
 
-      if (switchBtn && !reduceMotion) {
+      if (switchBtn && !reduceMotion && hasFinePointer) {
         const circles = gsap.utils.toArray<HTMLElement>(
           ".services-button-switch i",
           switchBtn,
