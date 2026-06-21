@@ -239,6 +239,7 @@ export function InteractiveBlob({
         return;
       }
 
+      
       const clockwise =
         (event as CustomEvent<{ clockwise?: boolean }>).detail?.clockwise ??
         false;
