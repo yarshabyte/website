@@ -151,6 +151,8 @@ void main() {
 
 export const blobFragmentShader = /* glsl */ `
 uniform sampler2D uTexture;
+uniform sampler2D uNextTexture;
+uniform float uMixTexture;
 uniform vec2 uResolution;
 uniform vec2 uTextureSize;
 uniform vec3 uReflectionColor;
@@ -179,7 +181,9 @@ void main() {
   vec3 normal = normalize(vWorldNormal);
   vec3 refracted = refract(normalize(vEyeVector), normal, 1.0 / uIor);
   vec2 textureUv = clamp(vBlobUv + refracted.xy * 0.08, 0.0, 1.0);
-  vec4 imageColor = texture2D(uTexture, textureUv);
+  vec4 imageColor1 = texture2D(uTexture, textureUv);
+  vec4 imageColor2 = texture2D(uNextTexture, textureUv);
+  vec4 imageColor = mix(imageColor1, imageColor2, uMixTexture);
   float logoMask = smoothstep(
     0.12,
     0.34,

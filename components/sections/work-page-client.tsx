@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Grid2X2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Grip, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Canvas } from "@react-three/fiber";
 import Link from "next/link";
@@ -15,6 +15,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export function WorkPageClient() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isGridOpen, setIsGridOpen] = useState(false);
   const [direction, setDirection] = useState(1);
 
@@ -85,47 +86,54 @@ export function WorkPageClient() {
     }
   };
 
+  const displayIndex = isGridOpen && hoveredIndex !== null ? hoveredIndex : activeIndex;
+  const displayProject = projects[displayIndex];
+
   const blobImageUrl =
-    typeof activeProject.thumbnail === "string"
-      ? activeProject.thumbnail
-      : (activeProject.thumbnail as any)?.src || "";
+    typeof displayProject.thumbnail === "string"
+      ? displayProject.thumbnail
+      : (displayProject.thumbnail as any)?.src || "";
 
   return (
     <main 
-      className={`relative bg-background ${!isGridOpen ? "fixed inset-0 overflow-hidden touch-none z-50" : "min-h-dvh"}`}
-      data-lenis-prevent={!isGridOpen ? "true" : undefined}
+      className={`relative bg-background ${!isGridOpen ? "fixed inset-0 overflow-hidden touch-none z-50" : "fixed inset-0 overflow-hidden touch-none z-50"}`}
+      data-lenis-prevent="true"
     >
-      <AnimatePresence mode="wait">
-        {!isGridOpen ? (
-          <motion.div
-            key="slider"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="relative flex h-dvh w-full flex-col justify-between px-6 py-8 md:px-12 md:py-12 overflow-hidden"
+      {/* Slider stays permanently mounted so the 3D Canvas never reloads! */}
+      <motion.div
+        className="fixed inset-0 z-10 flex h-dvh w-full flex-col justify-between px-6 py-8 md:px-12 md:py-12 overflow-hidden"
+      >
+        {/* 3D BLOB CANVAS - Positioned between image (z-10) and text (z-30) */}
+        <div className="pointer-events-none fixed inset-0 z-20">
+          <Canvas
+            className="h-full w-full"
+            camera={{ position: [0, 0, 15], fov: 30 }}
+            gl={{
+              alpha: true,
+              antialias: false,
+              powerPreference: "high-performance",
+            }}
+            dpr={[1, 1.15]}
+            frameloop="always"
           >
-            {/* 3D BLOB CANVAS - Positioned between image (z-10) and text (z-30) */}
-            <div className="pointer-events-none absolute inset-0 z-20 hidden md:block">
-              <Canvas
-                className="h-full w-full"
-                camera={{ position: [0, 0, 15], fov: 30 }}
-                gl={{
-                  alpha: true,
-                  antialias: false,
-                  powerPreference: "high-performance",
-                }}
-                dpr={[1, 1.15]}
-                frameloop="always"
-              >
-                <InteractiveBlob 
-                  textureUrl={blobImageUrl} 
-                  reflectionColor={(activeProject as any).color || "#edece2"}
-                  targetXDesktop={0}
-                  targetYDesktop={0}
-                />
-              </Canvas>
-            </div>
+            <InteractiveBlob 
+              textureUrl={blobImageUrl} 
+              reflectionColor={(displayProject as any).color || "#edece2"}
+              targetXDesktop={0}
+              targetYDesktop={isGridOpen ? 0.35 : 0}
+              targetYMobile={isGridOpen ? 0.45 : 0.18}
+              startVisible={true}
+            />
+          </Canvas>
+        </div>
+
+        {/* Fading Content Wrapper */}
+        <motion.div 
+          className="flex flex-col flex-1"
+          animate={{ opacity: isGridOpen ? 0 : 1 }}
+          transition={{ duration: 0.5, ease }}
+          style={{ pointerEvents: isGridOpen ? "none" : "auto" }}
+        >
 
             {/* Header Removed as requested */}
 
@@ -216,78 +224,101 @@ export function WorkPageClient() {
                 <span>{String(count).padStart(3, "0")}</span>
               </div>
 
-              <div className="absolute left-1/2 -translate-x-1/2">
-                <button
-                  type="button"
-                  onClick={() => setIsGridOpen(true)}
-                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-foreground/10 px-5 text-xs font-mono font-bold uppercase tracking-[0.15em] transition hover:border-foreground hover:text-foreground bg-background/50 backdrop-blur-md text-foreground/50"
-                >
-                  <Grid2X2 className="size-3" />
-                  All Projects
-                </button>
-              </div>
+              {/* Persistent button handles the toggle now */}
               
               {/* Spacer for flex-between alignment */}
               <div className="w-20" />
             </div>
           </motion.div>
-        ) : (
+        </motion.div>
+
+      {/* Grid overlays on top! */}
+      <AnimatePresence>
+        {isGridOpen && (
           <motion.div
             key="grid"
-            initial={{ opacity: 0, y: "10%" }}
-            animate={{ opacity: 1, y: "0%" }}
-            exit={{ opacity: 0, y: "10%" }}
-            transition={{ duration: 0.6, ease }}
-            className="relative z-30 min-h-dvh bg-background px-6 py-12 md:px-12"
+            initial={{ opacity: 0, scale: 0.85, y: "5%" }}
+            animate={{ opacity: 1, scale: 1, y: "0%" }}
+            exit={{ opacity: 0, scale: 0.85, y: "5%" }}
+            transition={{ duration: 0.5, ease }}
+            style={{ transformOrigin: "bottom center" }}
+            className="fixed inset-0 z-30 flex flex-col items-center justify-end pb-32"
           >
-            <div className="flex items-center justify-between border-b border-foreground/10 pb-8">
-              <h2 className="text-[clamp(2rem,5vw,4rem)] font-black uppercase leading-[0.9] text-foreground">
-                All Projects
-              </h2>
-              <button
-                type="button"
-                onClick={() => setIsGridOpen(false)}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-foreground/10 px-5 text-xs font-black uppercase tracking-[0.15em] transition hover:border-accent hover:text-accent"
-              >
-                <X className="size-3" />
-                Close
-              </button>
-            </div>
-
-            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Carousel Row */}
+            <div className="flex w-full max-w-[90rem] overflow-x-auto px-12 py-4 gap-4 sm:gap-6 items-center justify-start sm:justify-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {projects.map((project, index) => (
                 <div
                   key={project.title}
-                  className="group block cursor-pointer"
+                  className={`group relative aspect-[4/3] w-32 sm:w-40 shrink-0 cursor-pointer overflow-hidden rounded-xl bg-foreground/5 transition-all duration-400 ease-out ${
+                    hoveredIndex === index || (hoveredIndex === null && activeIndex === index)
+                      ? "ring-2 ring-foreground/20 scale-110 shadow-xl"
+                      : "opacity-60 hover:opacity-100 hover:scale-100 scale-95"
+                  }`}
                   onClick={() => {
                     setActiveIndex(index);
                     setIsGridOpen(false);
+                    setHoveredIndex(null);
                   }}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-foreground/5">
-                    <Image
-                      src={project.thumbnail}
-                      alt={project.title}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  </div>
-                  <div className="mt-4 flex items-center justify-between">
-                    <h3 className="font-display text-2xl font-black uppercase tracking-tight text-foreground">
-                      {project.title}
-                    </h3>
-                    <ArrowUpRight className="size-5 text-foreground/40 transition group-hover:text-accent" />
-                  </div>
-                  <p className="mt-1 text-xs font-bold uppercase tracking-[0.1em] text-foreground/50">
-                    {project.tags.slice(0, 3).join(", ")}
-                  </p>
+                  <Image
+                    src={project.thumbnail}
+                    alt={project.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="160px"
+                  />
                 </div>
               ))}
+            </div>
+
+            {/* Display Title */}
+            <div className="mt-8 flex h-20 items-center justify-center text-center">
+              <h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-black uppercase leading-none text-foreground tracking-tight">
+                {displayProject.title}
+              </h2>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Persistent Toggle Button */}
+      <div className="fixed bottom-6 md:bottom-8 left-1/2 z-[60] -translate-x-1/2">
+        <button
+          type="button"
+          onClick={() => setIsGridOpen(!isGridOpen)}
+          className="relative inline-flex h-12 items-center justify-center rounded-full border border-foreground/10 px-6 text-xs font-mono font-bold uppercase tracking-[0.15em] transition-colors hover:border-foreground hover:text-background hover:bg-foreground bg-background/80 backdrop-blur-md text-foreground shadow-lg overflow-hidden w-40"
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            {isGridOpen ? (
+              <motion.div
+                key="close"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex items-center justify-center gap-2"
+              >
+                <X className="size-4" />
+                Close
+              </motion.div>
+            ) : (
+              <motion.div
+                key="open"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex items-center justify-center gap-2"
+              >
+                <Grip className="size-4" />
+                Projects
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </button>
+      </div>
     </main>
   );
 }

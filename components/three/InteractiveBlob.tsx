@@ -29,6 +29,7 @@ export interface InteractiveBlobProps {
   targetXDesktop?: number;
   targetYMobile?: number;
   targetYDesktop?: number;
+  startVisible?: boolean;
 }
 
 export function InteractiveBlob({
@@ -38,10 +39,11 @@ export function InteractiveBlob({
   targetXDesktop = -0.255,
   targetYMobile = 0.18,
   targetYDesktop = -0.11,
+  startVisible = false,
 }: InteractiveBlobProps) {
   const groupRef = useRef<Group>(null);
   const materialRef = useRef<ShaderMaterial>(null);
-  const hasEnteredRef = useRef(false);
+  const hasEnteredRef = useRef(startVisible);
   const pointer = usePagePointer();
   const reduceMotion = useReducedMotion();
   const { viewport, size } = useThree();
@@ -58,6 +60,8 @@ export function InteractiveBlob({
     return configuredTexture;
   });
 
+  const currentTextureRef = useRef(texture);
+
   useEffect(() => {
     new TextureLoader().load(textureUrl, (loadedTexture) => {
       loadedTexture.colorSpace = SRGBColorSpace;
@@ -65,9 +69,28 @@ export function InteractiveBlob({
       loadedTexture.wrapT = ClampToEdgeWrapping;
       loadedTexture.minFilter = LinearFilter;
       loadedTexture.magFilter = LinearFilter;
-      setTexture(loadedTexture);
-      if (materialRef.current) {
-        materialRef.current.uniforms.uTexture.value = loadedTexture;
+      
+      const material = materialRef.current;
+      if (material) {
+        material.uniforms.uTexture.value = currentTextureRef.current;
+        material.uniforms.uNextTexture.value = loadedTexture;
+        material.uniforms.uMixTexture.value = 0;
+
+        gsap.killTweensOf(material.uniforms.uMixTexture);
+        gsap.to(material.uniforms.uMixTexture, {
+          value: 1,
+          duration: 0.6,
+          ease: "power2.inOut",
+          onComplete: () => {
+            currentTextureRef.current = loadedTexture;
+            setTexture(loadedTexture);
+            material.uniforms.uTexture.value = loadedTexture;
+            material.uniforms.uMixTexture.value = 0;
+          }
+        });
+      } else {
+        currentTextureRef.current = loadedTexture;
+        setTexture(loadedTexture);
       }
     });
   }, [textureUrl]);
@@ -93,6 +116,8 @@ export function InteractiveBlob({
       uFrequency: { value: 0.55 },
       uAmplitude: { value: 2.4 },
       uTexture: { value: texture },
+      uNextTexture: { value: texture },
+      uMixTexture: { value: 0 },
       uResolution: { value: new Vector2(size.width, size.height) },
       uTextureSize: {
         value: new Vector2(
@@ -115,7 +140,7 @@ export function InteractiveBlob({
   useEffect(() => {
     const group = groupRef.current;
 
-    if (!group) {
+    if (!group || startVisible) {
       return;
     }
 
@@ -294,7 +319,7 @@ export function InteractiveBlob({
   return (
     <group
       ref={groupRef}
-      scale={reduceMotion ? restingScale : 0.001}
+      scale={startVisible || reduceMotion ? restingScale : 0.001}
       rotation={[0.12, mobile ? -0.12 : -0.34, -0.08]}
     >
       <mesh>
