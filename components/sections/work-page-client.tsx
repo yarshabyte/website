@@ -13,6 +13,53 @@ import { suppressThreeClockWarning } from "@/lib/suppress-three-clock-warning";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
+const parentVariants = {
+  enter: { opacity: 1 },
+  center: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+  exit: { opacity: 1, transition: { staggerChildren: 0.04 } }
+};
+
+const childVariants = {
+  enter: (direction: number) => ({
+    y: direction > 0 ? "100%" : "-100%",
+    opacity: 0,
+    rotateX: direction > 0 ? -45 : 45,
+  }),
+  center: {
+    y: "0%",
+    opacity: 1,
+    rotateX: 0,
+    transition: { type: "spring", damping: 25, stiffness: 200 }
+  },
+  exit: (direction: number) => ({
+    y: direction > 0 ? "-100%" : "100%",
+    opacity: 0,
+    rotateX: direction > 0 ? 45 : -45,
+    transition: { type: "spring", damping: 25, stiffness: 200 }
+  })
+};
+
+const variants = {
+  enter: (direction: number) => {
+    return {
+      y: direction > 0 ? 100 : -100,
+      opacity: 0
+    };
+  },
+  center: {
+    zIndex: 1,
+    y: 0,
+    opacity: 1
+  },
+  exit: (direction: number) => {
+    return {
+      zIndex: 0,
+      y: direction < 0 ? 100 : -100,
+      opacity: 0
+    };
+  }
+};
+
 export function WorkPageClient() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -65,27 +112,6 @@ export function WorkPageClient() {
     };
   }, [isGridOpen, move]);
 
-  const variants = {
-    enter: (direction: number) => {
-      return {
-        y: direction > 0 ? 100 : -100,
-        opacity: 0
-      };
-    },
-    center: {
-      zIndex: 1,
-      y: 0,
-      opacity: 1
-    },
-    exit: (direction: number) => {
-      return {
-        zIndex: 0,
-        y: direction < 0 ? 100 : -100,
-        opacity: 0
-      };
-    }
-  };
-
   const displayIndex = isGridOpen && hoveredIndex !== null ? hoveredIndex : activeIndex;
   const displayProject = projects[displayIndex];
 
@@ -135,8 +161,6 @@ export function WorkPageClient() {
           style={{ pointerEvents: isGridOpen ? "none" : "auto" }}
         >
 
-            {/* Header Removed as requested */}
-
             {/* Main Slider Content */}
             <div className="flex flex-1 items-center justify-center pt-10 pb-20">
               <div className="grid w-full max-w-[90rem] grid-cols-1 items-center gap-10 md:grid-cols-12 relative">
@@ -172,42 +196,62 @@ export function WorkPageClient() {
                 </div>
 
                 {/* Right Side: Info Side */}
-                <div className="relative z-30 flex w-full flex-col items-start justify-center md:col-span-5 lg:col-span-4 md:col-start-8 lg:col-start-9">
-                  <AnimatePresence mode="wait">
+                <div className="relative z-30 flex w-full flex-col self-stretch py-2 md:py-4 md:col-span-5 lg:col-span-4 md:col-start-8 lg:col-start-9">
+                  <AnimatePresence mode="popLayout" custom={direction}>
                     <motion.div
                       key={activeIndex}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.4, ease }}
-                      className="flex w-full items-center justify-between gap-4 sm:gap-6"
+                      custom={direction}
+                      variants={parentVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      className="flex flex-col w-full h-full"
                     >
-                      <h2 className="font-display text-[clamp(2rem,4vw,4.5rem)] font-black uppercase leading-[0.9] text-foreground tracking-tight break-words flex-1">
-                        {activeProject.title}
-                      </h2>
-                      <Link 
-                        href={activeProject.href || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="grid size-10 sm:size-12 shrink-0 place-items-center rounded-full border border-foreground/10 bg-background/50 backdrop-blur-md text-foreground transition hover:scale-110 hover:bg-foreground hover:text-background shadow-lg"
-                      >
-                        <ArrowUpRight className="size-4 sm:size-5" />
-                      </Link>
-                    </motion.div>
-                  </AnimatePresence>
+                      {/* Title & Arrow */}
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="flex w-fit items-center gap-4 sm:gap-6">
+                          <h2 className="font-display text-[clamp(2rem,4vw,4.5rem)] font-black uppercase leading-[0.9] text-foreground tracking-tight flex flex-wrap gap-x-[0.25em] w-fit shrink">
+                            {activeProject.title.split(" ").map((word, i) => (
+                              <span key={i} className="overflow-hidden inline-block pb-2 -mb-2">
+                                <motion.span 
+                                  variants={childVariants} 
+                                  custom={direction} 
+                                  className="inline-block origin-bottom"
+                                >
+                                  {word}
+                                </motion.span>
+                              </span>
+                            ))}
+                          </h2>
+                          <span className="overflow-hidden inline-flex items-center shrink-0 pb-2 -mb-2">
+                            <motion.span variants={childVariants} custom={direction} className="inline-block origin-bottom">
+                              <Link 
+                                href={activeProject.href || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex size-10 sm:size-12 shrink-0 place-items-center justify-center rounded-full border border-foreground/10 bg-background/50 backdrop-blur-md text-foreground transition hover:scale-110 hover:bg-foreground hover:text-background shadow-lg"
+                              >
+                                <ArrowUpRight className="size-4 sm:size-5" />
+                              </Link>
+                            </motion.span>
+                          </span>
+                        </div>
+                      </div>
 
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeIndex + "tags"}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.4, delay: 0.1, ease }}
-                      className="mt-8 sm:mt-12 flex flex-col gap-2 text-[10px] sm:text-xs font-mono sm:font-bold uppercase tracking-[0.15em] text-foreground/50"
-                    >
-                      {activeProject.tags.slice(0, 4).map((tag, i) => (
-                        <span key={i}>{tag}</span>
-                      ))}
+                      {/* Tags block */}
+                      <div className="flex-none flex flex-col gap-2 text-[10px] sm:text-xs font-mono sm:font-bold uppercase tracking-[0.15em] text-foreground/50">
+                        {activeProject.tags.slice(0, 4).map((tag, i) => (
+                          <div key={i} className="overflow-hidden pb-1 -mb-1">
+                            <motion.span 
+                              variants={childVariants} 
+                              custom={direction} 
+                              className="inline-block origin-bottom"
+                            >
+                              {tag}
+                            </motion.span>
+                          </div>
+                        ))}
+                      </div>
                     </motion.div>
                   </AnimatePresence>
                 </div>
