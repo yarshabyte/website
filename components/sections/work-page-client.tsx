@@ -28,6 +28,9 @@ export function WorkPageClient() {
   const move = useCallback((dir: 1 | -1) => {
     setDirection(dir);
     setActiveIndex((current) => (current + dir + count) % count);
+    window.dispatchEvent(new CustomEvent("yarsha:blob-pulse", { 
+      detail: { clockwise: dir > 0 } 
+    }));
   }, [count]);
 
   useEffect(() => {
@@ -37,6 +40,7 @@ export function WorkPageClient() {
     let timeoutId: NodeJS.Timeout;
 
     const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
       if (isAnimating) return;
       if (Math.abs(e.deltaY) < 25) return; // Threshold to prevent tiny accidental scrolls
 
@@ -53,7 +57,7 @@ export function WorkPageClient() {
       }, 1000);
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: false });
     return () => {
       window.removeEventListener("wheel", handleWheel);
       clearTimeout(timeoutId);
@@ -87,29 +91,10 @@ export function WorkPageClient() {
       : (activeProject.thumbnail as any)?.src || "";
 
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-background">
-      {/* 3D BLOB CANVAS - Positioned between image (z-10) and text (z-30) */}
-      <div className="pointer-events-none absolute inset-0 z-20 hidden md:block">
-        <Canvas
-          className="h-full w-full"
-          camera={{ position: [0, 0, 15], fov: 30 }}
-          gl={{
-            alpha: true,
-            antialias: false,
-            powerPreference: "high-performance",
-          }}
-          dpr={[1, 1.15]}
-          frameloop="always"
-        >
-          <InteractiveBlob 
-            textureUrl={blobImageUrl} 
-            reflectionColor={activeProject.color || "#edece2"}
-            targetXDesktop={0}
-            targetYDesktop={0}
-          />
-        </Canvas>
-      </div>
-
+    <main 
+      className={`relative bg-background ${!isGridOpen ? "fixed inset-0 overflow-hidden touch-none z-50" : "min-h-dvh"}`}
+      data-lenis-prevent={!isGridOpen ? "true" : undefined}
+    >
       <AnimatePresence mode="wait">
         {!isGridOpen ? (
           <motion.div
@@ -118,14 +103,31 @@ export function WorkPageClient() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease }}
-            className="relative z-30 flex min-h-dvh flex-col justify-between px-6 py-8 md:px-12 md:py-12"
+            className="relative flex h-dvh w-full flex-col justify-between px-6 py-8 md:px-12 md:py-12 overflow-hidden"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-foreground">
-                YARSHA BYTE &nbsp;&bull;&nbsp; WORK
-              </p>
+            {/* 3D BLOB CANVAS - Positioned between image (z-10) and text (z-30) */}
+            <div className="pointer-events-none absolute inset-0 z-20 hidden md:block">
+              <Canvas
+                className="h-full w-full"
+                camera={{ position: [0, 0, 15], fov: 30 }}
+                gl={{
+                  alpha: true,
+                  antialias: false,
+                  powerPreference: "high-performance",
+                }}
+                dpr={[1, 1.15]}
+                frameloop="always"
+              >
+                <InteractiveBlob 
+                  textureUrl={blobImageUrl} 
+                  reflectionColor={(activeProject as any).color || "#edece2"}
+                  targetXDesktop={0}
+                  targetYDesktop={0}
+                />
+              </Canvas>
             </div>
+
+            {/* Header Removed as requested */}
 
             {/* Main Slider Content */}
             <div className="flex flex-1 items-center justify-center pt-10 pb-20">
@@ -162,7 +164,7 @@ export function WorkPageClient() {
                 </div>
 
                 {/* Right Side: Info Side */}
-                <div className="relative z-30 flex w-full flex-col items-start justify-center md:col-span-5 lg:col-span-4 md:col-start-8 lg:col-start-8">
+                <div className="relative z-30 flex w-full flex-col items-start justify-center md:col-span-5 lg:col-span-4 md:col-start-8 lg:col-start-9">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeIndex}
@@ -170,9 +172,9 @@ export function WorkPageClient() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.4, ease }}
-                      className="flex flex-wrap items-center gap-4 sm:gap-6"
+                      className="flex w-full items-center justify-between gap-4 sm:gap-6"
                     >
-                      <h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-black uppercase leading-[0.9] text-foreground tracking-tight break-words">
+                      <h2 className="font-display text-[clamp(2rem,4vw,4.5rem)] font-black uppercase leading-[0.9] text-foreground tracking-tight break-words flex-1">
                         {activeProject.title}
                       </h2>
                       <Link 

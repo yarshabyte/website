@@ -252,8 +252,8 @@ export function InteractiveBlob({
           0,
         );
       gsap.to(group.rotation, {
-        y: group.rotation.y + (clockwise ? -2 : 2),
-        duration: 0.8,
+        y: group.rotation.y + (clockwise ? -1.5 : 1.5),
+        duration: 0.6,
         ease: "power4.out",
       });
     };
