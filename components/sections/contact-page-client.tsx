@@ -143,18 +143,39 @@ function AnimatedTitle({ text, className, showDot = false, as: Tag = "h1", waitF
 }
 
 function OptionButton({ active, children, onClick }: { active: boolean; children: string; onClick: () => void }) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleMouseEnter = () => {
+    gsap.to(buttonRef.current, {
+      scale: 1.03,
+      duration: 0.3,
+      ease: "power2.out"
+    });
+  };
+
+  const handleMouseLeave = () => {
+    gsap.to(buttonRef.current, {
+      scale: 1,
+      duration: 0.6,
+      ease: "elastic.out(1, 0.4)"
+    });
+  };
+
   return (
     <button 
+      ref={buttonRef}
       type="button"
       onClick={onClick} 
-      className={`group relative flex min-h-14 items-center justify-center rounded-full border px-10 text-xs font-bold uppercase tracking-[0.14em] transition ${
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`group relative flex min-h-14 items-center justify-center rounded-full px-10 text-xs font-bold uppercase tracking-[0.14em] transition-colors will-change-transform ${
         active 
-          ? "border-accent/60 bg-accent/10 text-accent" 
-          : "border-foreground/10 bg-foreground/[0.04] text-foreground hover:border-accent/60 hover:text-accent"
+          ? "bg-accent/10 text-accent" 
+          : "bg-foreground/[0.04] text-foreground hover:text-accent"
       }`}
     >
       {active && (
-        <span className="absolute left-4 flex size-4 items-center justify-center rounded-full border border-accent">
+        <span className="absolute left-4 flex size-4 items-center justify-center rounded-full">
           <span className="size-1.5 rounded-full bg-accent" />
         </span>
       )}
@@ -190,7 +211,9 @@ export function ContactPageClient({}: ContactPageClientProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const projectTypes = useMemo(
-    () => services.map((service) => service.title.replace("Website Design & Development", "Full Website").replace("Poster & Graphic Design", "Poster Design").replace("Branding & Digital Identity", "Brand Identity")),
+    () => services
+      .map((service) => service.title.replace("Website Design & Development", "Full Website").replace("Poster & Graphic Design", "Poster Design").replace("Branding & Digital Identity", "Brand Identity"))
+      .filter((title) => title !== "Digital Setup"),
     [],
   );
 
@@ -283,7 +306,7 @@ export function ContactPageClient({}: ContactPageClientProps) {
       <div className="service-grid-surface absolute inset-0 opacity-20" aria-hidden="true" />
 
       <Container className="relative z-10 flex flex-col h-full gap-4 lg:gap-8 pb-4">
-        <section className="shrink-0 w-full">
+        <section className="shrink-0 w-full hidden sm:block">
           <AnimatedTitle
             text="LET'S TALK"
             showDot={true}
@@ -293,7 +316,7 @@ export function ContactPageClient({}: ContactPageClientProps) {
         </section>
 
         {/* Multi-step Contact Section */}
-        <section className="flex flex-1 w-full flex-col items-center justify-center relative pb-12">
+        <section className="flex flex-1 w-full flex-col items-center justify-center relative pb-24 sm:pb-32">
           <AnimatePresence mode="wait">
             {sent ? (
               <motion.div
@@ -334,24 +357,14 @@ export function ContactPageClient({}: ContactPageClientProps) {
                 className="flex w-full flex-col items-center"
               >
                 <div className="relative flex w-full max-w-4xl items-center justify-center">
-                  {step > 0 && (
-                    <button 
-                      onClick={() => setStep(step - 1)}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-foreground/50 transition hover:text-accent max-sm:hidden"
-                    >
-                      <ArrowLeft className="size-4" />
-                      Back
-                    </button>
-                  )}
-                  <AnimatedTitle 
-                    as="h2"
-                    text={currentStepData.title}
-                    className="font-display text-center text-[clamp(2rem,5vw,4.5rem)] uppercase leading-none tracking-tight text-foreground"
-                  />
+                  {/* Upper back button removed to prevent duplicates */}
+                  <h2 className="font-display text-center text-[clamp(2rem,5vw,4.5rem)] uppercase leading-none tracking-tight text-foreground">
+                    {currentStepData.title}
+                  </h2>
                 </div>
                 
                 {step < 4 ? (
-                  <div className="mt-12 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                  <div className="mt-12 flex flex-wrap items-center justify-center gap-5 sm:gap-8">
                     {currentStepData.options.map((option) => (
                       <OptionButton 
                         key={option}
@@ -445,34 +458,56 @@ export function ContactPageClient({}: ContactPageClientProps) {
               </motion.div>
             )}
           </AnimatePresence>
+        </section>
 
-          {/* Progress Bar */}
+        {/* Footer Controls (Back Button & Progress Bar) */}
           {!sent && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex w-full max-w-[240px] items-center justify-center gap-4 text-[10px] font-mono sm:font-bold uppercase tracking-[0.15em] text-foreground/50">
-              <span>{String(step + 1).padStart(2, '0')}</span>
-              <div 
-                className="relative h-[2px] flex-1 bg-foreground/10 rounded-full cursor-pointer"
-                onClick={(e) => {
-                  // Allow jumping to previous steps by clicking the progress bar
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = e.clientX - rect.left;
-                  const ratio = x / rect.width;
-                  const targetStep = Math.floor(ratio * 5);
-                  if (targetStep < step) setStep(targetStep);
-                }}
-              >
-                <motion.div 
-                  className="absolute left-0 top-0 bottom-0 bg-accent rounded-full"
-                  animate={{ width: `${((step + 1) / 5) * 100}%` }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <div className="absolute right-0 top-1/2 h-2.5 w-2.5 -translate-y-1/2 translate-x-1/2 rounded-full border-[1.5px] border-foreground bg-background" />
-                </motion.div>
+            <div className="absolute bottom-0 sm:bottom-2 left-0 w-full flex items-center justify-between px-4 sm:px-6">
+              {/* Left: Back Button container to ensure spacing */}
+              <div className="w-14 sm:w-16 shrink-0">
+                {step > 0 && (
+                  <button 
+                    onClick={() => setStep(s => s - 1)}
+                    className="flex size-14 sm:size-16 items-center justify-center rounded-full border border-foreground/20 text-foreground transition-colors hover:border-accent hover:text-accent"
+                    aria-label="Go back"
+                  >
+                    <svg viewBox="0 0 24 24" className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" strokeWidth="1.2">
+                      <path d="M8 8L3 12L8 16Z" strokeLinejoin="round" />
+                      <path d="M8 12H16" />
+                      <path d="M16 12L17.5 9.5H20.5L22 12L20.5 14.5H17.5Z" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                )}
               </div>
-              <span>05</span>
+
+              {/* Center: Progress Bar */}
+              <div className="flex w-full max-w-[160px] sm:max-w-[240px] items-center justify-center gap-3 sm:gap-4 text-[10px] font-mono sm:font-bold uppercase tracking-[0.15em] text-foreground/50">
+                <span>{String(step + 1).padStart(2, '0')}</span>
+                <div 
+                  className="relative h-[2px] flex-1 bg-foreground/10 rounded-full cursor-pointer"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const ratio = x / rect.width;
+                    const targetStep = Math.floor(ratio * 5);
+                    if (targetStep < step) setStep(targetStep);
+                  }}
+                >
+                  <motion.div 
+                    className="absolute left-0 top-0 bottom-0 bg-accent rounded-full"
+                    animate={{ width: `${((step + 1) / 5) * 100}%` }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="absolute right-0 top-1/2 h-2.5 w-2.5 -translate-y-1/2 translate-x-1/2 rounded-full border-[1.5px] border-foreground bg-background" />
+                  </motion.div>
+                </div>
+                <span>05</span>
+              </div>
+
+              {/* Right: Invisible spacer to perfectly center the progress bar */}
+              <div className="w-14 sm:w-16 shrink-0" aria-hidden="true" />
             </div>
           )}
-        </section>
       </Container>
     </main>
   );
