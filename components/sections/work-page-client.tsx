@@ -120,8 +120,8 @@ export function WorkPageClient() {
               textureUrl={blobImageUrl} 
               reflectionColor={(displayProject as any).color || "#edece2"}
               targetXDesktop={0}
-              targetYDesktop={isGridOpen ? 0.35 : 0}
-              targetYMobile={isGridOpen ? 0.45 : 0.18}
+              targetYDesktop={isGridOpen ? 0.20 : 0}
+              targetYMobile={isGridOpen ? 0.24 : 0.18}
               startVisible={true}
             />
           </Canvas>
@@ -242,17 +242,19 @@ export function WorkPageClient() {
             exit={{ opacity: 0, scale: 0.85, y: "5%" }}
             transition={{ duration: 0.5, ease }}
             style={{ transformOrigin: "bottom center" }}
-            className="fixed inset-0 z-30 flex flex-col items-center justify-end pb-32"
+            className="fixed inset-0 z-30 flex flex-col items-center justify-end pb-24"
           >
             {/* Carousel Row */}
             <div className="flex w-full max-w-[90rem] overflow-x-auto px-12 py-4 gap-4 sm:gap-6 items-center justify-start sm:justify-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {projects.map((project, index) => (
+              {projects.map((project, index) => {
+                const isActive = hoveredIndex === index || (hoveredIndex === null && activeIndex === index);
+                return (
                 <div
                   key={project.title}
-                  className={`group relative aspect-[4/3] w-32 sm:w-40 shrink-0 cursor-pointer overflow-hidden rounded-xl bg-foreground/5 transition-all duration-400 ease-out ${
-                    hoveredIndex === index || (hoveredIndex === null && activeIndex === index)
-                      ? "ring-2 ring-foreground/20 scale-110 shadow-xl"
-                      : "opacity-60 hover:opacity-100 hover:scale-100 scale-95"
+                  className={`group relative aspect-[4/3] w-28 sm:w-36 md:w-40 shrink-0 cursor-pointer overflow-hidden rounded-xl bg-foreground/5 transition-all duration-400 ease-out ${
+                    isActive
+                      ? "ring-2 ring-foreground/20 scale-110 shadow-xl z-20"
+                      : "opacity-60 hover:opacity-100 hover:scale-100 scale-95 z-10"
                   }`}
                   onClick={() => {
                     setActiveIndex(index);
@@ -267,17 +269,24 @@ export function WorkPageClient() {
                     alt={project.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="160px"
+                    sizes="(max-width: 768px) 160px, 320px"
                   />
                 </div>
-              ))}
+              );
+              })}
             </div>
 
-            {/* Display Title */}
-            <div className="mt-8 flex h-20 items-center justify-center text-center">
-              <h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-black uppercase leading-none text-foreground tracking-tight">
+            {/* Project Title Display */}
+            <div className="mt-8 px-6 text-center">
+              <motion.h2
+                key={displayProject.title}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease }}
+                className="text-4xl sm:text-5xl md:text-7xl font-bold uppercase tracking-tighter text-foreground"
+              >
                 {displayProject.title}
-              </h2>
+              </motion.h2>
             </div>
           </motion.div>
         )}

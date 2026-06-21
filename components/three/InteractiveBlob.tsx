@@ -79,7 +79,7 @@ export function InteractiveBlob({
         gsap.killTweensOf(material.uniforms.uMixTexture);
         gsap.to(material.uniforms.uMixTexture, {
           value: 1,
-          duration: 0.6,
+          duration: 0.7,
           ease: "power2.inOut",
           onComplete: () => {
             currentTextureRef.current = loadedTexture;
@@ -88,6 +88,19 @@ export function InteractiveBlob({
             material.uniforms.uMixTexture.value = 0;
           }
         });
+
+        // Visually pulse and squish the blob during the texture swap
+        if (!reduceMotion) {
+          const { uAmplitude, uFrequency, uLightFactor } = material.uniforms;
+          gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor]);
+          gsap.timeline()
+            .to(uAmplitude, { value: 7.2, duration: 0.35, ease: "power4.inOut" }, 0)
+            .to(uAmplitude, { value: 2.4, duration: 0.35, ease: "power4.inOut" }, 0.35)
+            .to(uFrequency, { value: 0.56, duration: 0.35, ease: "power4.inOut" }, 0)
+            .to(uFrequency, { value: 0.55, duration: 0.35, ease: "power4.inOut" }, 0.35)
+            .to(uLightFactor, { value: 1.8, duration: 0.35, ease: "power4.inOut" }, 0)
+            .to(uLightFactor, { value: 1.0, duration: 0.35, ease: "power4.inOut" }, 0.35);
+        }
       } else {
         currentTextureRef.current = loadedTexture;
         setTexture(loadedTexture);
@@ -170,21 +183,12 @@ export function InteractiveBlob({
         gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor]);
         gsap
           .timeline()
-          .to(
-            uAmplitude,
-            { value: 8.4, duration: 0.35, ease: "power4.inOut", yoyo: true, repeat: 1 },
-            0,
-          )
-          .to(
-            uFrequency,
-            { value: 0.56, duration: 0.35, ease: "power4.inOut", yoyo: true, repeat: 1 },
-            0,
-          )
-          .to(
-            uLightFactor,
-            { value: 2.35, duration: 0.35, ease: "power4.inOut", yoyo: true, repeat: 1 },
-            0,
-          );
+          .to(uAmplitude, { value: 8.4, duration: 0.35, ease: "power4.inOut" }, 0)
+          .to(uAmplitude, { value: 2.4, duration: 0.35, ease: "power4.inOut" }, 0.35)
+          .to(uFrequency, { value: 0.56, duration: 0.35, ease: "power4.inOut" }, 0)
+          .to(uFrequency, { value: 0.55, duration: 0.35, ease: "power4.inOut" }, 0.35)
+          .to(uLightFactor, { value: 2.35, duration: 0.35, ease: "power4.inOut" }, 0)
+          .to(uLightFactor, { value: 1.0, duration: 0.35, ease: "power4.inOut" }, 0.35);
       }
     };
 
@@ -243,39 +247,12 @@ export function InteractiveBlob({
       gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor, group.rotation]);
       gsap
         .timeline()
-        .to(
-          uAmplitude,
-          {
-            value: 8.4,
-            duration: 0.35,
-            ease: "power4.inOut",
-            yoyo: true,
-            repeat: 1,
-          },
-          0,
-        )
-        .to(
-          uFrequency,
-          {
-            value: 0.56,
-            duration: 0.35,
-            ease: "power4.inOut",
-            yoyo: true,
-            repeat: 1,
-          },
-          0,
-        )
-        .to(
-          uLightFactor,
-          {
-            value: 2.35,
-            duration: 0.35,
-            ease: "power4.inOut",
-            yoyo: true,
-            repeat: 1,
-          },
-          0,
-        );
+        .to(uAmplitude, { value: 8.4, duration: 0.35, ease: "power4.inOut" }, 0)
+        .to(uAmplitude, { value: 2.4, duration: 0.35, ease: "power4.inOut" }, 0.35)
+        .to(uFrequency, { value: 0.56, duration: 0.35, ease: "power4.inOut" }, 0)
+        .to(uFrequency, { value: 0.55, duration: 0.35, ease: "power4.inOut" }, 0.35)
+        .to(uLightFactor, { value: 2.35, duration: 0.35, ease: "power4.inOut" }, 0)
+        .to(uLightFactor, { value: 1.0, duration: 0.35, ease: "power4.inOut" }, 0.35);
       gsap.to(group.rotation, {
         y: group.rotation.y + (clockwise ? -1.5 : 1.5),
         duration: 0.6,
