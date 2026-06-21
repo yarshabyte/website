@@ -1,46 +1,127 @@
 "use client";
 
-import { FormEvent, useMemo, useState, useRef } from "react";
-import { ArrowLeft, ArrowRight, Check, Mail, Phone, Sparkles } from "lucide-react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowLeft, Check, Sparkles } from "lucide-react";
+
+import { budgetRanges, referralSources } from "@/data/contact-options";
+import { services } from "@/data/services";
+import { Container } from "@/components/ui/container";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
 }
 
-import {
-  budgetRanges,
-  contactIntents,
-  referralSources,
-} from "@/data/contact-options";
-import { services } from "@/data/services";
-import { cn } from "@/lib/utils";
-import { Container } from "@/components/ui/container";
+function AnimatedTitle({ text, className, showDot = false, as: Tag = "h1", waitForLenis = false }: { text: string; className?: string; showDot?: boolean, as?: any, waitForLenis?: boolean }) {
+  const containerRef = useRef<HTMLElement>(null);
 
-const ease = [0.22, 1, 0.36, 1] as const;
+  useGSAP(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
 
-type FormState = {
-  intent: string;
-  projectType: string;
-  budget: string;
-  source: string;
-  name: string;
-  email: string;
-  message: string;
-};
+    const charSpans = gsap.utils.toArray<HTMLElement>("[data-page-char]", containerRef.current);
+    if (charSpans.length === 0) return;
 
-function AnimatedTitle({ text, className, children }: { text: string; className?: string; children?: React.ReactNode }) {
+    // Immediately hide the text before the browser paints to prevent FOUC
+    gsap.set(charSpans, { y: "100%" });
+
+    const siteFrame = document.querySelector<HTMLElement>(".site-frame");
+    let initialized = false;
+
+    let failsafeTimer: number | null = null;
+    let blobDelayTimer: number | null = null;
+    let isAnimating = false;
+    const playAnimation = () => {
+      if (failsafeTimer) {
+        window.clearTimeout(failsafeTimer);
+        failsafeTimer = null;
+      }
+      if (blobDelayTimer) {
+        window.clearTimeout(blobDelayTimer);
+        blobDelayTimer = null;
+      }
+      if (isAnimating) return;
+      isAnimating = true;
+      gsap.fromTo(charSpans, 
+        { y: "100%" },
+        {
+          y: "0%",
+          duration: 1,
+          stagger: 0.05,
+          ease: "expo.out",
+          onComplete: () => {
+            isAnimating = false;
+          }
+        }
+      );
+    };
+
+    const handleBlobEnter = () => {
+      blobDelayTimer = window.setTimeout(playAnimation, 400); 
+    };
+
+    const initTitleAnimation = () => {
+      if (initialized) return;
+      initialized = true;
+
+      const globalLoader = document.querySelector('div[aria-label="Loading Yarsha Byte"]');
+      const isGlobalLoaderActive = globalLoader && globalLoader.getAttribute("aria-hidden") !== "true";
+
+      const waveLoader = document.querySelector('.z-\\[950\\]') as HTMLElement | null;
+      const isWaveLoaderActive = waveLoader && window.getComputedStyle(waveLoader).opacity !== "0";
+
+      const siteMenu = document.getElementById("site-menu");
+      const isMenuClosing = siteMenu && window.getComputedStyle(siteMenu).visibility !== "hidden";
+
+      if (isGlobalLoaderActive || isWaveLoaderActive) {
+        window.addEventListener("yarsha:blob-enter", handleBlobEnter, { once: true });
+
+        // Failsafe in case the event was missed
+        failsafeTimer = window.setTimeout(playAnimation, 2000);
+      } else if (isMenuClosing) {
+        // The global yarsha:menu-closed listener will trigger it. Adding a failsafe:
+        failsafeTimer = window.setTimeout(playAnimation, 2000);
+      } else {
+        playAnimation();
+      }
+    };
+
+    if (waitForLenis) {
+      const waitsForLenis = window.matchMedia("(min-width: 1024px)").matches && window.matchMedia("(pointer: fine)").matches;
+      if (!waitsForLenis || siteFrame?.dataset.lenisReady === "true") {
+        initTitleAnimation();
+      } else if (siteFrame) {
+        window.addEventListener("lenis:ready", initTitleAnimation, { once: true });
+      } else {
+        initTitleAnimation();
+      }
+    } else {
+      initTitleAnimation();
+    }
+
+    // Replay animation if already on this page and the menu closes!
+    window.addEventListener("yarsha:menu-closed", playAnimation);
+
+    return () => {
+      window.removeEventListener("yarsha:menu-closed", playAnimation);
+      window.removeEventListener("yarsha:blob-enter", handleBlobEnter);
+      window.removeEventListener("lenis:ready", initTitleAnimation);
+      if (failsafeTimer) window.clearTimeout(failsafeTimer);
+      if (blobDelayTimer) window.clearTimeout(blobDelayTimer);
+    };
+  }, { scope: containerRef, dependencies: [text] });
+
   const words = text.split(" ");
   return (
-    <h1 className={className}>
+    <Tag ref={containerRef} className={className}>
       {words.map((word, wi) => (
         <span key={wi} className="inline-block">
           <span className="inline-block overflow-hidden align-bottom leading-[0.88] pb-[0.05em] -mb-[0.05em]">
             {word.split("").map((char, ci) => (
-              <span key={ci} data-page-char className="inline-block will-change-transform">
+              <span key={`${wi}-${ci}`} data-page-char className="inline-block will-change-transform">
                 {char}
               </span>
             ))}
@@ -48,148 +129,91 @@ function AnimatedTitle({ text, className, children }: { text: string; className?
           {wi < words.length - 1 && <span>&nbsp;</span>}
         </span>
       ))}
-      {children}
-    </h1>
+      {showDot && (
+        <span className="inline-block overflow-hidden align-bottom leading-[0.88] pb-[0.05em] -mb-[0.05em]">
+          <span data-page-char className="relative inline-block h-[0.88em] w-[0.24em] will-change-transform">
+            <span 
+              className="absolute bottom-0 left-0 ml-[0.08em] inline-block size-[0.16em] min-h-4 min-w-4 translate-y-[-0.04em] bg-accent [clip-path:polygon(25%_6%,75%_6%,100%_50%,75%_94%,25%_94%,0_50%)]"
+            />
+          </span>
+        </span>
+      )}
+    </Tag>
   );
 }
 
-type Service = (typeof services)[number];
-
-function getProjectType(title: string) {
-  return title
-    .replace("Website Design & Development", "Full Website")
-    .replace("Poster & Graphic Design", "Poster Design")
-    .replace("Branding & Digital Identity", "Brand Identity");
-}
-
-function getServiceIntent(service: Service) {
-  if (service.slug === "portfolio") return "Build my portfolio";
-  if (service.slug === "graphics" || service.slug === "video")
-    return "Design campaign assets";
-  if (service.slug === "setup") return "Need launch support";
-  return "Start a project";
-}
-
-function createInitialForm(service?: Service): FormState {
-  if (service) {
-    return {
-      intent: getServiceIntent(service),
-      projectType: getProjectType(service.title),
-      budget: "",
-      source: "",
-      name: "",
-      email: "",
-      message: `I'd like to start a ${service.title} project. ${service.outcome} Key deliverables: ${service.deliverables.join(", ")}.`,
-    };
-  }
-
-  return {
-    intent: contactIntents[0],
-    projectType: "Full Website",
-    budget: budgetRanges[1],
-    source: referralSources[0],
-    name: "",
-    email: "",
-    message: "",
-  };
-}
-
-function OptionButton({
-  active,
-  children,
-  onClick,
-}: {
-  active: boolean;
-  children: string;
-  onClick: () => void;
-}) {
+function OptionButton({ active, children, onClick }: { active: boolean; children: string; onClick: () => void }) {
   return (
-    <button
+    <button 
       type="button"
-      onClick={onClick}
-      className={cn(
-        "group relative min-h-14 overflow-hidden border px-4 text-left text-xs font-black uppercase tracking-[0.12em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
-        active
-          ? "border-accent bg-accent text-background"
-          : "border-foreground/10 bg-foreground/[0.04] text-foreground/74 hover:border-accent/60 hover:text-foreground",
-      )}
+      onClick={onClick} 
+      className={`group relative flex min-h-14 items-center justify-center rounded-full border px-10 text-xs font-bold uppercase tracking-[0.14em] transition ${
+        active 
+          ? "border-accent/60 bg-accent/10 text-accent" 
+          : "border-foreground/10 bg-foreground/[0.04] text-foreground hover:border-accent/60 hover:text-accent"
+      }`}
     >
-      <span className="relative z-10 flex items-center justify-between gap-4">
-        {children}
-        <AnimatePresence>
-          {active && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-            >
-              <Check className="size-4" aria-hidden="true" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </span>
+      {active && (
+        <span className="absolute left-4 flex size-4 items-center justify-center rounded-full border border-accent">
+          <span className="size-1.5 rounded-full bg-accent" />
+        </span>
+      )}
+      {children}
     </button>
   );
 }
+
+type FormState = {
+  intent: string;
+  projectType: string;
+  budget: string;
+  source: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  deadline: string;
+  message: string;
+};
 
 type ContactPageClientProps = {
   prefilledServiceSlug?: string;
 };
 
-export function ContactPageClient({
-  prefilledServiceSlug,
-}: ContactPageClientProps) {
+export function ContactPageClient({}: ContactPageClientProps) {
   const mainRef = useRef<HTMLElement>(null);
-  const prefilledService = useMemo(
-    () => services.find((service) => service.slug === prefilledServiceSlug),
-    [prefilledServiceSlug],
-  );
-  const [step, setStep] = useState(prefilledService ? 2 : 0);
-  const [sent, setSent] = useState(false);
-  const [form, setForm] = useState<FormState>(() =>
-    createInitialForm(prefilledService),
-  );
   const reduceMotion = useReducedMotion();
 
-  useGSAP(() => {
-    if (reduceMotion) return;
-    const charSpans = gsap.utils.toArray<HTMLElement>("[data-page-char]");
-    if (charSpans.length === 0) return;
-    
-    gsap.set(charSpans, { y: "100%" });
-
-    const siteFrame = document.querySelector<HTMLElement>(".site-frame");
-    const initTitleAnimation = () => {
-      const isLenisActive = siteFrame?.dataset.lenisReady === "true";
-      const scroller = isLenisActive ? siteFrame! : window;
-
-      gsap.to(charSpans, {
-        y: "0%",
-        duration: 1,
-        stagger: 0.05,
-        ease: "expo.out",
-        scrollTrigger: {
-          trigger: charSpans[0].closest("h1"),
-          scroller,
-          start: "top 88%",
-        },
-      });
-    };
-
-    const waitsForLenis = window.matchMedia("(min-width: 1024px)").matches && window.matchMedia("(pointer: fine)").matches;
-    if (!waitsForLenis || siteFrame?.dataset.lenisReady === "true") {
-      initTitleAnimation();
-    } else if (siteFrame) {
-      window.addEventListener("lenis:ready", initTitleAnimation, { once: true });
-    }
-  }, { scope: mainRef });
-
+  const [step, setStep] = useState(0);
+  const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const projectTypes = useMemo(
-    () => services.map((service) => getProjectType(service.title)),
+    () => services.map((service) => service.title.replace("Website Design & Development", "Full Website").replace("Poster & Graphic Design", "Poster Design").replace("Branding & Digital Identity", "Brand Identity")),
     [],
   );
 
+  const [form, setForm] = useState<FormState>({
+    intent: "",
+    projectType: "",
+    budget: "",
+    source: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    company: "",
+    deadline: "",
+    message: "",
+  });
+
   const handleOptionSelect = (field: keyof FormState, value: string) => {
+    if (value === "Drop us an email") {
+      window.location.href = "mailto:yarshabyte@gmail.com";
+      return;
+    }
+    
     setForm((current) => ({ ...current, [field]: value }));
     setTimeout(() => {
       if (step < 4) {
@@ -198,176 +222,78 @@ export function ContactPageClient({
     }, 350);
   };
 
-  const steps = [
-    {
-      eyebrow: "01 / Intent",
-      title: "How can we help?",
-      content: (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {contactIntents.map((intent) => (
-            <OptionButton
-              key={intent}
-              active={form.intent === intent}
-              onClick={() => handleOptionSelect("intent", intent)}
-            >
-              {intent}
-            </OptionButton>
-          ))}
-        </div>
-      ),
-    },
-    {
-      eyebrow: "02 / Scope",
-      title: "What are we making?",
-      content: (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {projectTypes.map((projectType) => (
-            <OptionButton
-              key={projectType}
-              active={form.projectType === projectType}
-              onClick={() => handleOptionSelect("projectType", projectType)}
-            >
-              {projectType}
-            </OptionButton>
-          ))}
-        </div>
-      ),
-    },
-    {
-      eyebrow: "03 / Budget",
-      title: "Pick a budget range.",
-      content: (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {budgetRanges.map((budget) => (
-            <OptionButton
-              key={budget}
-              active={form.budget === budget}
-              onClick={() => handleOptionSelect("budget", budget)}
-            >
-              {budget}
-            </OptionButton>
-          ))}
-        </div>
-      ),
-    },
-    {
-      eyebrow: "04 / Source",
-      title: "How did you find us?",
-      content: (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {referralSources.map((source) => (
-            <OptionButton
-              key={source}
-              active={form.source === source}
-              onClick={() => handleOptionSelect("source", source)}
-            >
-              {source}
-            </OptionButton>
-          ))}
-        </div>
-      ),
-    },
-    {
-      eyebrow: "05 / Details",
-      title: "Ready to create magic?",
-      content: (
-        <div className="grid gap-4">
-          <label className="grid gap-2">
-            <span className="text-xs font-black uppercase tracking-[0.18em] text-foreground/58">
-              Your name
-            </span>
-            <input
-              value={form.name}
-              autoFocus
-              onChange={(e) => setForm((curr) => ({ ...curr, name: e.target.value }))}
-              className="min-h-14 border border-foreground/10 bg-foreground/[0.04] px-4 text-base text-foreground outline-none transition placeholder:text-foreground/34 focus:border-accent"
-              placeholder="Name"
-              required
-            />
-          </label>
-          <label className="grid gap-2">
-            <span className="text-xs font-black uppercase tracking-[0.18em] text-foreground/58">
-              Email
-            </span>
-            <input
-              value={form.email}
-              onChange={(e) => setForm((curr) => ({ ...curr, email: e.target.value }))}
-              className="min-h-14 border border-foreground/10 bg-foreground/[0.04] px-4 text-base text-foreground outline-none transition placeholder:text-foreground/34 focus:border-accent"
-              placeholder="hello@example.com"
-              type="email"
-              required
-            />
-          </label>
-          <label className="grid gap-2">
-            <span className="text-xs font-black uppercase tracking-[0.18em] text-foreground/58">
-              Project note
-            </span>
-            <textarea
-              value={form.message}
-              onChange={(e) => setForm((curr) => ({ ...curr, message: e.target.value }))}
-              className="min-h-32 resize-none border border-foreground/10 bg-foreground/[0.04] px-4 py-3 text-base leading-7 text-foreground outline-none transition placeholder:text-foreground/34 focus:border-accent"
-              placeholder="Tell us what you want to launch."
-            />
-          </label>
-        </div>
-      ),
-    },
-  ];
+  const submitEmail = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
 
-  const currentStep = steps[step];
-  const progress = ((step + 1) / steps.length) * 100;
-
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (step < steps.length - 1) {
-      setStep((current) => current + 1);
-      return;
+      if (response.ok) {
+        setSent(true);
+      } else {
+        alert('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setSent(true);
   };
 
+
+
+  const steps = [
+    {
+      title: "How can we help?",
+      field: "intent" as keyof FormState,
+      options: ["Start a project", "Drop us an email"],
+    },
+    {
+      title: "What are we making?",
+      field: "projectType" as keyof FormState,
+      options: projectTypes,
+    },
+    {
+      title: "Budget Range",
+      field: "budget" as keyof FormState,
+      options: budgetRanges,
+    },
+    {
+      title: "How did you hear about us?",
+      field: "source" as keyof FormState,
+      options: referralSources,
+    },
+    {
+      title: "Ready to create magic?",
+      field: "details" as keyof FormState,
+      options: [],
+    }
+  ];
+
+  const currentStepData = steps[step];
+
   return (
-    <main ref={mainRef} className="page-hero-spacing relative min-h-dvh overflow-hidden">
+    <main ref={mainRef} className="page-hero-spacing relative h-[calc(100dvh-4rem)] md:h-[calc(100dvh-7rem)] overflow-hidden">
       <div className="service-grid-surface absolute inset-0 opacity-20" aria-hidden="true" />
 
-
-      <Container className="relative z-10 grid min-h-[calc(100dvh-7rem)] gap-10 pb-12 pt-16 lg:grid-cols-[0.43fr_0.57fr] lg:items-start">
-        <section className="self-start mt-4 lg:mt-8">
-          
+      <Container className="relative z-10 flex flex-col h-full gap-4 lg:gap-8 pb-4">
+        <section className="shrink-0 w-full">
           <AnimatedTitle
-            text="Let's talk"
-            className="mt-6 text-[clamp(4rem,11vw,10.5rem)] font-black uppercase leading-[0.82] text-foreground"
-          >
-            <span className="inline-block overflow-hidden align-bottom leading-[0.88] pb-[0.05em] -mb-[0.05em]">
-              <span className="ml-[0.08em] inline-block size-[0.16em] min-h-4 min-w-4 translate-y-[-0.04em] bg-accent [clip-path:polygon(25%_6%,75%_6%,100%_50%,75%_94%,25%_94%,0_50%)] will-change-transform" data-page-char />
-            </span>
-          </AnimatedTitle>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.58, delay: 0.16, ease }}
-            className="mt-6 max-w-md text-base leading-8 text-foreground/66"
-          >
-            Tell us what you want to build. The form moves step by step so the
-            brief stays quick, clear, and actually useful.
-          </motion.p>
-
-          <div className="mt-8 grid gap-3 text-sm font-semibold text-foreground/70">
-            <a
-              href="mailto:yarshabyte@gmail.com"
-              className="inline-flex items-center gap-3 transition hover:text-accent"
-            >
-              <Mail className="size-4" />
-              yarshabyte@gmail.com
-            </a>
-            <a href="tel:+977" className="inline-flex items-center gap-3 transition hover:text-accent">
-              <Phone className="size-4" />
-              Butwal, Nepal
-            </a>
-          </div>
+            text="LET'S TALK"
+            showDot={true}
+            waitForLenis={true}
+            className="font-display text-[clamp(6rem,15vw,30rem)] font-black uppercase leading-[0.75] tracking-[-0.02em] text-foreground break-words"
+          />
         </section>
 
-        <section className="self-start mt-4 lg:mt-8 w-full">
+        {/* Multi-step Contact Section */}
+        <section className="flex flex-1 w-full flex-col items-center justify-center relative pb-12">
           <AnimatePresence mode="wait">
             {sent ? (
               <motion.div
@@ -375,102 +301,177 @@ export function ContactPageClient({
                 initial={{ opacity: 0, y: 30, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.58, ease }}
-                className="border border-accent/45 bg-accent p-6 text-background sm:p-8 w-full"
+                transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+                className="flex w-full max-w-2xl flex-col items-center text-center"
               >
-                <div className="grid size-16 place-items-center rounded-full bg-background text-accent">
+                <div className="grid size-16 place-items-center rounded-full bg-accent/10 text-accent">
                   <Check className="size-8" />
                 </div>
-                <h2 className="mt-8 font-display text-[clamp(3rem,7vw,6rem)] uppercase leading-[0.86]">
-                  Brief received.
+                <h2 className="mt-8 font-display text-[clamp(2.5rem,5vw,4.5rem)] uppercase leading-none tracking-tight text-foreground text-center">
+                  Message Sent!
                 </h2>
-                <p className="mt-5 max-w-2xl text-base font-semibold leading-8 text-background/74">
-                  Thanks for the message. We&apos;ll review the scope and get back
-                  with a clear next step.
+                <p className="mt-5 text-base font-semibold leading-8 text-foreground/70 max-w-lg text-center">
+                  Thanks for reaching out! We've received your brief and will get back to you with next steps shortly.
                 </p>
                 <button
                   type="button"
                   onClick={() => {
                     setSent(false);
-                    setStep(prefilledService ? 2 : 0);
-                    setForm(createInitialForm(prefilledService));
+                    setStep(0);
                   }}
-                  className="mt-8 inline-flex min-h-12 items-center gap-2 border border-background/20 px-5 text-sm font-black uppercase tracking-[0.14em] transition hover:bg-background hover:text-accent"
+                  className="mt-8 group relative flex min-h-14 items-center justify-center gap-3 rounded-full border border-foreground/10 px-8 text-xs font-bold uppercase tracking-[0.14em] text-foreground transition hover:border-accent/60 hover:text-accent"
                 >
                   Start again
                 </button>
               </motion.div>
             ) : (
-              <motion.form
-                key="form"
-                onSubmit={submit}
-                initial={{ opacity: 0, y: 30 }}
+              <motion.div
+                key={`step-${step}`}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.62, delay: 0.08, ease }}
-                className="grid min-h-[43rem] w-full grid-rows-[auto_auto_1fr_auto] border border-foreground/10 bg-background/78 p-5 shadow-[0_28px_100px_rgba(0,0,0,0.22)] backdrop-blur sm:min-h-[46rem] sm:p-8"
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="flex w-full flex-col items-center"
               >
-                <div className="flex items-center justify-between gap-5">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-accent">
-                      {currentStep.eyebrow}
-                    </p>
-                    <h2 className="mt-3 font-display text-[clamp(2.2rem,5vw,5.2rem)] uppercase leading-[0.9] text-foreground">
-                      {currentStep.title}
-                    </h2>
-                  </div>
-                  <span className="font-display text-4xl text-foreground/18">
-                    {String(step + 1).padStart(2, "0")}
-                  </span>
-                </div>
-
-                <div className="mt-5 h-1 overflow-hidden bg-foreground/10">
-                  <motion.div
-                    className="h-full bg-accent"
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.38, ease }}
+                <div className="relative flex w-full max-w-4xl items-center justify-center">
+                  {step > 0 && (
+                    <button 
+                      onClick={() => setStep(step - 1)}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-foreground/50 transition hover:text-accent max-sm:hidden"
+                    >
+                      <ArrowLeft className="size-4" />
+                      Back
+                    </button>
+                  )}
+                  <AnimatedTitle 
+                    as="h2"
+                    text={currentStepData.title}
+                    className="font-display text-center text-[clamp(2rem,5vw,4.5rem)] uppercase leading-none tracking-tight text-foreground"
                   />
                 </div>
-
-                <div className="min-h-0">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={step}
-                      initial={{ opacity: 0, x: 28, filter: "blur(8px)" }}
-                      animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, x: -22, filter: "blur(8px)" }}
-                      transition={{ duration: 0.38, ease }}
-                      className="mt-8"
-                    >
-                      {currentStep.content}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-
-                <div className="mt-8 flex w-full items-center justify-between gap-3 self-end border-t border-foreground/10 pt-6">
-                  <button
-                    type="button"
-                    onClick={() => setStep((current) => Math.max(0, current - 1))}
-                    disabled={step === 0}
-                    className="inline-flex min-h-12 items-center gap-2 border border-foreground/10 px-5 text-sm font-black uppercase tracking-[0.14em] text-foreground/72 transition hover:border-sky hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+                
+                {step < 4 ? (
+                  <div className="mt-12 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                    {currentStepData.options.map((option) => (
+                      <OptionButton 
+                        key={option}
+                        active={form[currentStepData.field] === option}
+                        onClick={() => handleOptionSelect(currentStepData.field, option)}
+                      >
+                        {option}
+                      </OptionButton>
+                    ))}
+                  </div>
+                ) : (
+                  <form 
+                    onSubmit={submitEmail}
+                    className="mt-12 w-full max-w-4xl grid gap-6"
                   >
-                    <ArrowLeft className="size-4" />
-                    Back
-                  </button>
-                  <button
-                    type="submit"
-                    className="inline-flex min-h-12 items-center gap-2 bg-accent px-5 text-sm font-black uppercase tracking-[0.14em] text-background transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                  >
-                    {step === steps.length - 1 ? "Send brief" : "Next"}
-                    {step === steps.length - 1 ? (
-                      <Sparkles className="size-4" />
-                    ) : (
-                      <ArrowRight className="size-4" />
-                    )}
-                  </button>
-                </div>
-              </motion.form>
+                    {/* Selected Options Badges */}
+                    <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+                      {form.projectType && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-foreground/70">{form.projectType}</span>}
+                      {form.budget && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-foreground/70">{form.budget}</span>}
+                      {form.source && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-foreground/70">{form.source}</span>}
+                    </div>
+
+                    <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
+                      <input 
+                        type="text" 
+                        value={form.firstName} 
+                        onChange={e => setForm(c => ({...c, firstName: e.target.value}))} 
+                        placeholder="First Name *" 
+                        required
+                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                      />
+                      <input 
+                        type="text" 
+                        value={form.lastName} 
+                        onChange={e => setForm(c => ({...c, lastName: e.target.value}))} 
+                        placeholder="Last Name *" 
+                        required
+                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                      />
+                      <input 
+                        type="tel" 
+                        value={form.phone} 
+                        onChange={e => setForm(c => ({...c, phone: e.target.value}))} 
+                        placeholder="Phone [optional]" 
+                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                      />
+                      <input 
+                        type="email" 
+                        value={form.email} 
+                        onChange={e => setForm(c => ({...c, email: e.target.value}))} 
+                        placeholder="Email *" 
+                        required
+                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                      />
+                      <input 
+                        type="text" 
+                        value={form.company} 
+                        onChange={e => setForm(c => ({...c, company: e.target.value}))} 
+                        placeholder="Company *" 
+                        required
+                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                      />
+                      <input 
+                        type="text" 
+                        value={form.deadline} 
+                        onChange={e => setForm(c => ({...c, deadline: e.target.value}))} 
+                        placeholder="Deadline in weeks *" 
+                        required
+                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                      />
+                    </div>
+                    
+                    <div className="grid gap-6 md:grid-cols-[1fr_auto] items-end">
+                      <textarea 
+                        value={form.message} 
+                        onChange={e => setForm(c => ({...c, message: e.target.value}))} 
+                        placeholder="Your message here..." 
+                        required
+                        className="min-h-40 w-full rounded-lg border border-foreground/10 bg-foreground/[0.02] p-6 text-sm text-foreground outline-none transition focus:border-accent resize-none placeholder:text-foreground/30" 
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={isSubmitting}
+                        className="group flex size-32 sm:size-40 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-black uppercase tracking-[0.14em] text-background transition hover:scale-105 mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isSubmitting ? "Sending..." : "Submit"}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Progress Bar */}
+          {!sent && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex w-full max-w-[240px] items-center justify-center gap-4 text-[10px] font-mono sm:font-bold uppercase tracking-[0.15em] text-foreground/50">
+              <span>{String(step + 1).padStart(2, '0')}</span>
+              <div 
+                className="relative h-[2px] flex-1 bg-foreground/10 rounded-full cursor-pointer"
+                onClick={(e) => {
+                  // Allow jumping to previous steps by clicking the progress bar
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const ratio = x / rect.width;
+                  const targetStep = Math.floor(ratio * 5);
+                  if (targetStep < step) setStep(targetStep);
+                }}
+              >
+                <motion.div 
+                  className="absolute left-0 top-0 bottom-0 bg-accent rounded-full"
+                  animate={{ width: `${((step + 1) / 5) * 100}%` }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="absolute right-0 top-1/2 h-2.5 w-2.5 -translate-y-1/2 translate-x-1/2 rounded-full border-[1.5px] border-foreground bg-background" />
+                </motion.div>
+              </div>
+              <span>05</span>
+            </div>
+          )}
         </section>
       </Container>
     </main>

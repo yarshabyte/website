@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Grip, X } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 import { Canvas } from "@react-three/fiber";
 import Link from "next/link";
 
@@ -19,7 +19,7 @@ const parentVariants = {
   exit: { opacity: 1, transition: { staggerChildren: 0.04 } }
 };
 
-const childVariants = {
+const childVariants: Variants = {
   enter: (direction: number) => ({
     y: direction > 0 ? "100%" : "-100%",
     opacity: 0,

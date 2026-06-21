@@ -224,6 +224,7 @@ export function FullscreenMenu({ open, onClose }: FullscreenMenuProps) {
     const timeline = gsap.timeline({
       onComplete: () => {
         gsap.set(root, { autoAlpha: 0, pointerEvents: "none" });
+        window.dispatchEvent(new Event("yarsha:menu-closed"));
       },
     });
     animationRef.current = timeline;
