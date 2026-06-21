@@ -1,272 +1,288 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Grid2X2, List } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState, useCallback } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Grid2X2, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Canvas } from "@react-three/fiber";
+import Link from "next/link";
 
 import { projects } from "@/data/projects";
-import { services } from "@/data/services";
-import { cn } from "@/lib/utils";
-import { ContactSection } from "@/components/sections/contact-section";
-import { Container } from "@/components/ui/container";
-import { PremiumButton } from "@/components/ui/premium-button";
+import { InteractiveBlob } from "@/components/three/InteractiveBlob";
+import { suppressThreeClockWarning } from "@/lib/suppress-three-clock-warning";
 
 const ease = [0.22, 1, 0.36, 1] as const;
-
-const projectTags = Array.from(
-  new Set(projects.flatMap((project) => project.tags).concat(["Motion", "Launch"])),
-);
 
 export function WorkPageClient() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isGridOpen, setIsGridOpen] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const [direction, setDirection] = useState(1);
 
-  const activeProject = projects[activeIndex] ?? projects[0];
   const count = projects.length;
+  const activeProject = projects[activeIndex] ?? projects[0];
 
-  const activeServices = useMemo(
-    () =>
-      services
-        .slice(0, 4)
-        .map((service) => service.title.replace("Website Design & Development", "Website Design")),
-    [],
-  );
+  useEffect(() => {
+    suppressThreeClockWarning();
+  }, []);
 
-  const move = (direction: 1 | -1) => {
-    setActiveIndex((current) => (current + direction + count) % count);
+  const move = useCallback((dir: 1 | -1) => {
+    setDirection(dir);
+    setActiveIndex((current) => (current + dir + count) % count);
+  }, [count]);
+
+  useEffect(() => {
+    if (isGridOpen) return;
+
+    let isAnimating = false;
+    let timeoutId: NodeJS.Timeout;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (isAnimating) return;
+      if (Math.abs(e.deltaY) < 25) return; // Threshold to prevent tiny accidental scrolls
+
+      isAnimating = true;
+      if (e.deltaY > 0) {
+        move(1);
+      } else {
+        move(-1);
+      }
+
+      // Wait 1 second before allowing another scroll, to match transition duration
+      timeoutId = setTimeout(() => {
+        isAnimating = false;
+      }, 1000);
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      clearTimeout(timeoutId);
+    };
+  }, [isGridOpen, move]);
+
+  const variants = {
+    enter: (direction: number) => {
+      return {
+        y: direction > 0 ? 100 : -100,
+        opacity: 0
+      };
+    },
+    center: {
+      zIndex: 1,
+      y: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => {
+      return {
+        zIndex: 0,
+        y: direction < 0 ? 100 : -100,
+        opacity: 0
+      };
+    }
   };
 
+  const blobImageUrl =
+    typeof activeProject.thumbnail === "string"
+      ? activeProject.thumbnail
+      : typeof activeProject.thumbnail === "object" && "src" in activeProject.thumbnail
+      ? activeProject.thumbnail.src
+      : "";
+
   return (
-    <>
-    <main className="overflow-hidden">
-      <section className="page-hero-spacing relative min-h-dvh overflow-hidden">
-        <div className="service-grid-surface absolute inset-0 opacity-20" aria-hidden="true" />
-        <motion.div
-          className="absolute inset-y-0 right-0 w-[45vw] bg-accent/10 blur-3xl"
-          animate={reduceMotion ? undefined : { x: [30, -20, 30], opacity: [0.3, 0.58, 0.3] }}
-          transition={reduceMotion ? undefined : { duration: 7, repeat: Infinity, ease: "easeInOut" }}
-          aria-hidden="true"
-        />
+    <main className="relative min-h-dvh overflow-hidden bg-background">
+      {/* 3D BLOB CANVAS - Positioned behind/around the content */}
+      <div className="pointer-events-none absolute inset-0 z-10 hidden md:block">
+        <Canvas
+          className="h-full w-full"
+          camera={{ position: [0, 0, 15], fov: 30 }}
+          gl={{
+            alpha: true,
+            antialias: false,
+            powerPreference: "high-performance",
+          }}
+          dpr={[1, 1.15]}
+          frameloop="always"
+        >
+          <InteractiveBlob 
+            textureUrl={blobImageUrl} 
+            reflectionColor={activeProject.color || "#edece2"}
+            targetXDesktop={0}
+            targetYDesktop={0}
+          />
+        </Canvas>
+      </div>
 
-        <Container className="relative z-10 flex min-h-[calc(100dvh-7rem)] flex-col pb-10">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">
-              Yarsha Byte Work
-            </p>
-            <button
-              type="button"
-              onClick={() => setIsGridOpen((current) => !current)}
-              className="inline-flex min-h-11 items-center gap-2 border border-foreground/10 bg-foreground/[0.04] px-4 text-sm font-bold uppercase text-foreground/76 transition hover:border-accent/50 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-            >
-              {isGridOpen ? <List className="size-4" /> : <Grid2X2 className="size-4" />}
-              {isGridOpen ? "Close grid" : "All projects"}
-            </button>
-          </div>
+      <AnimatePresence mode="wait">
+        {!isGridOpen ? (
+          <motion.div
+            key="slider"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="relative z-20 flex min-h-dvh flex-col justify-between px-6 py-8 md:px-12 md:py-12"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-foreground">
+                YARSHA BYTE &nbsp;&bull;&nbsp; WORK
+              </p>
+            </div>
 
-          <div className="grid flex-1 gap-8 py-8 lg:grid-cols-[0.42fr_0.58fr] lg:items-center">
-            <div>
-              <motion.h1
-                initial={{ opacity: 0, y: 44 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.72, ease }}
-                className="text-[clamp(4.2rem,12vw,12rem)] font-black uppercase leading-[0.82] text-foreground"
-              >
-                Work
-                <span className="ml-[0.08em] inline-block size-[0.16em] min-h-4 min-w-4 translate-y-[-0.04em] bg-accent [clip-path:polygon(25%_6%,75%_6%,100%_50%,75%_94%,25%_94%,0_50%)]" />
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.58, delay: 0.12, ease }}
-                className="mt-6 max-w-md text-base leading-8 text-foreground/66"
-              >
-                A fast-moving reel of websites, portfolios, and launch systems
-                built for real businesses and personal brands.
-              </motion.p>
+            {/* Main Slider Content */}
+            <div className="flex flex-1 items-center justify-center pt-10">
+              <div className="grid w-full max-w-7xl grid-cols-1 items-center gap-10 md:grid-cols-[0.5fr_0.5fr]">
+                {/* Image Side */}
+                <div className="relative aspect-[4/3] w-full max-w-xl overflow-hidden rounded-3xl md:aspect-[4/3] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
+                  <AnimatePresence initial={false} custom={direction}>
+                    <motion.div
+                      key={activeIndex}
+                      custom={direction}
+                      variants={variants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        y: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={activeProject.thumbnail}
+                        alt={activeProject.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        priority
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
 
-              <div className="mt-9 flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => move(-1)}
-                  className="grid size-12 place-items-center rounded-full border border-foreground/10 bg-foreground/[0.04] transition hover:border-accent hover:bg-accent hover:text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                  aria-label="Previous project"
-                >
-                  <ArrowLeft className="size-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => move(1)}
-                  className="grid size-12 place-items-center rounded-full border border-foreground/10 bg-foreground/[0.04] transition hover:border-accent hover:bg-accent hover:text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                  aria-label="Next project"
-                >
-                  <ArrowRight className="size-5" />
-                </button>
-                <span className="ml-2 font-display text-3xl text-foreground/84">
-                  {String(activeIndex + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-                </span>
+                {/* Info Side */}
+                <div className="relative z-30 flex flex-col items-start justify-center md:pl-10">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeIndex}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.4, ease }}
+                      className="flex items-center gap-6"
+                    >
+                      <h2 className="font-display text-[clamp(2.5rem,6vw,5.5rem)] font-black uppercase leading-[0.9] text-foreground whitespace-nowrap">
+                        {activeProject.title}
+                      </h2>
+                      <Link 
+                        href={`/work/${activeProject.slug}`}
+                        className="grid size-12 shrink-0 place-items-center rounded-full border border-foreground/10 bg-accent text-background transition hover:scale-110 shadow-lg"
+                      >
+                        <ArrowUpRight className="size-5" />
+                      </Link>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeIndex + "tags"}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.4, delay: 0.1, ease }}
+                      className="mt-12 flex flex-col gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] text-foreground/50"
+                    >
+                      {activeProject.tags.slice(0, 4).map((tag, i) => (
+                        <span key={i}>{tag}</span>
+                      ))}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 
-            <div className="relative">
-              <AnimatePresence mode="wait">
-                <motion.article
-                  key={activeProject.title}
-                  initial={{ opacity: 0, x: 70, rotate: 2, filter: "blur(16px)" }}
-                  animate={{ opacity: 1, x: 0, rotate: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, x: -50, rotate: -2, filter: "blur(16px)" }}
-                  transition={{ duration: 0.62, ease }}
-                  className="group relative overflow-hidden border border-foreground/10 bg-foreground/[0.045]"
-                >
-                  <a
-                    href={activeProject.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                  >
-                    <div className="relative aspect-[1.02/1] min-h-[22rem] overflow-hidden">
-                      <Image
-                        src={activeProject.thumbnail}
-                        alt={`${activeProject.title} website preview`}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 58vw"
-                        className="object-cover object-top transition duration-[900ms] group-hover:scale-105"
-                        priority
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/12 to-transparent" />
-                    </div>
-                    <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8">
-                      <div className="flex flex-wrap gap-2">
-                        {activeProject.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="border border-foreground/18 bg-background/72 px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-foreground backdrop-blur"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="mt-5 flex items-end justify-between gap-5">
-                        <div>
-                          <p className="text-xs font-black uppercase tracking-[0.2em] text-accent">
-                            {activeProject.category} / {activeProject.year}
-                          </p>
-                          <h2 className="mt-3 max-w-lg text-[clamp(1.6rem,2.8vw,3.1rem)] font-black uppercase leading-[0.92] text-foreground text-balance">
-                            {activeProject.title}
-                          </h2>
-                        </div>
-                        <span className="grid size-14 shrink-0 place-items-center rounded-full bg-accent text-background transition group-hover:scale-110">
-                          <ArrowUpRight className="size-6" />
-                        </span>
-                      </div>
-                    </div>
-                  </a>
-                </motion.article>
-              </AnimatePresence>
-            </div>
-          </div>
-        </Container>
-      </section>
+            {/* Footer Navigation */}
+            <div className="mt-10 flex items-center justify-between md:mt-0 relative z-30">
+              <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest text-foreground/50">
+                <span className="text-foreground">
+                  {String(activeIndex + 1).padStart(3, "0")}
+                </span>
+                <span>/</span>
+                <span>{String(count).padStart(3, "0")}</span>
+              </div>
 
-      <AnimatePresence>
-        {isGridOpen ? (
-          <motion.section
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.56, ease }}
-            className="overflow-hidden border-y border-foreground/10 bg-foreground/[0.035]"
-          >
-            <Container className="grid gap-4 py-8 md:grid-cols-2">
-              {projects.map((project, index) => (
+              <div className="absolute left-1/2 -translate-x-1/2">
                 <button
-                  key={project.title}
                   type="button"
+                  onClick={() => setIsGridOpen(true)}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-foreground/10 px-5 text-xs font-black uppercase tracking-[0.15em] transition hover:border-accent hover:text-accent bg-background/50 backdrop-blur-md"
+                >
+                  <Grid2X2 className="size-3" />
+                  All Projects
+                </button>
+              </div>
+              
+              {/* Spacer for flex-between alignment */}
+              <div className="w-20" />
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="grid"
+            initial={{ opacity: 0, y: "10%" }}
+            animate={{ opacity: 1, y: "0%" }}
+            exit={{ opacity: 0, y: "10%" }}
+            transition={{ duration: 0.6, ease }}
+            className="relative z-30 min-h-dvh bg-background px-6 py-12 md:px-12"
+          >
+            <div className="flex items-center justify-between border-b border-foreground/10 pb-8">
+              <h2 className="text-[clamp(2rem,5vw,4rem)] font-black uppercase leading-[0.9] text-foreground">
+                All Projects
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsGridOpen(false)}
+                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-foreground/10 px-5 text-xs font-black uppercase tracking-[0.15em] transition hover:border-accent hover:text-accent"
+              >
+                <X className="size-3" />
+                Close
+              </button>
+            </div>
+
+            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project, index) => (
+                <div
+                  key={project.slug}
+                  className="group block cursor-pointer"
                   onClick={() => {
                     setActiveIndex(index);
                     setIsGridOpen(false);
                   }}
-                  className={cn(
-                    "group grid gap-4 border p-4 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:grid-cols-[9rem_1fr]",
-                    index === activeIndex
-                      ? "border-accent bg-accent text-background"
-                      : "border-foreground/10 bg-background/58 hover:border-accent/55",
-                  )}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-foreground/8">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-foreground/5">
                     <Image
                       src={project.thumbnail}
-                      alt=""
+                      alt={project.title}
                       fill
-                      sizes="9rem"
-                      className="object-cover object-top transition group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   </div>
-                  <span className="self-center">
-                    <span className="block text-xs font-black uppercase tracking-[0.18em] opacity-65">
-                      00{index + 1} / {project.category}
-                    </span>
-                    <span className="mt-2 block font-display text-3xl uppercase leading-none">
+                  <div className="mt-4 flex items-center justify-between">
+                    <h3 className="font-display text-2xl font-black uppercase tracking-tight text-foreground">
                       {project.title}
-                    </span>
-                  </span>
-                </button>
+                    </h3>
+                    <ArrowUpRight className="size-5 text-foreground/40 transition group-hover:text-accent" />
+                  </div>
+                  <p className="mt-1 text-xs font-bold uppercase tracking-[0.1em] text-foreground/50">
+                    {project.tags.slice(0, 3).join(", ")}
+                  </p>
+                </div>
               ))}
-            </Container>
-          </motion.section>
-        ) : null}
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
-
-      <section className="relative overflow-hidden border-b border-foreground/10 py-8">
-        <motion.div
-          className="flex w-max gap-5 whitespace-nowrap text-[clamp(2rem,6vw,6.5rem)] font-black uppercase leading-none text-foreground/15"
-          animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
-          transition={reduceMotion ? undefined : { duration: 16, repeat: Infinity, ease: "linear" }}
-          aria-hidden="true"
-        >
-          {[...projectTags, ...projectTags, ...projectTags].map((tag, index) => (
-            <span key={`${tag}-${index}`}>{tag} /</span>
-          ))}
-        </motion.div>
-      </section>
-
-      <section className="section-spacing">
-        <Container>
-          <div className="grid gap-10 lg:grid-cols-[0.42fr_0.58fr] lg:items-start">
-            <div className="sticky top-24">
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-sky">
-                Capabilities
-              </p>
-              <h2 className="mt-4 text-[clamp(2.8rem,6vw,6rem)] font-black uppercase leading-[0.86]">
-                Built like case studies, shipped like products.
-              </h2>
-            </div>
-            <div className="grid gap-3">
-              {activeServices.map((service, index) => (
-                <motion.div
-                  key={service}
-                  initial={{ opacity: 0, x: 32 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-10% 0px" }}
-                  transition={{ duration: 0.52, delay: index * 0.05, ease }}
-                  className="group flex min-h-24 items-center justify-between gap-5 border border-foreground/10 bg-foreground/[0.035] p-5 transition hover:border-accent hover:bg-accent hover:text-background"
-                >
-                  <span className="font-display text-3xl uppercase leading-none">
-                    {service}
-                  </span>
-                  <span className="font-display text-5xl text-current/20">0{index + 1}</span>
-                </motion.div>
-              ))}
-              <PremiumButton href="/contact" className="mt-4 w-full sm:w-max">
-                Talk about a project
-              </PremiumButton>
-            </div>
-          </div>
-        </Container>
-      </section>
     </main>
-    <ContactSection />
-    </>
   );
 }

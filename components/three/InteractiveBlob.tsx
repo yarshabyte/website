@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import {
@@ -22,10 +22,23 @@ import { usePagePointer } from "@/hooks/usePagePointer";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { damp } from "@/lib/three-utils";
 
-// This texture is projected onto the blob surface, not sampled from page background.
-const BLOB_TEXTURE_URL = "/logo-ico.webp";
+export interface InteractiveBlobProps {
+  textureUrl?: string;
+  reflectionColor?: string;
+  targetXMobile?: number;
+  targetXDesktop?: number;
+  targetYMobile?: number;
+  targetYDesktop?: number;
+}
 
-export function InteractiveBlob() {
+export function InteractiveBlob({
+  textureUrl = "/logo-ico.webp",
+  reflectionColor = "#edece2",
+  targetXMobile = 0.02,
+  targetXDesktop = -0.255,
+  targetYMobile = 0.18,
+  targetYDesktop = -0.11,
+}: InteractiveBlobProps) {
   const groupRef = useRef<Group>(null);
   const materialRef = useRef<ShaderMaterial>(null);
   const hasEnteredRef = useRef(false);
@@ -34,15 +47,43 @@ export function InteractiveBlob() {
   const { viewport, size } = useThree();
   const mobile = size.width < 768;
   const restingScale = mobile ? 0.5 : 0.72;
-  const texture = useMemo(() => {
-    const configuredTexture = new TextureLoader().load(BLOB_TEXTURE_URL);
+
+  const [texture, setTexture] = useState(() => {
+    const configuredTexture = new TextureLoader().load(textureUrl);
     configuredTexture.colorSpace = SRGBColorSpace;
     configuredTexture.wrapS = ClampToEdgeWrapping;
     configuredTexture.wrapT = ClampToEdgeWrapping;
     configuredTexture.minFilter = LinearFilter;
     configuredTexture.magFilter = LinearFilter;
     return configuredTexture;
-  }, []);
+  });
+
+  useEffect(() => {
+    new TextureLoader().load(textureUrl, (loadedTexture) => {
+      loadedTexture.colorSpace = SRGBColorSpace;
+      loadedTexture.wrapS = ClampToEdgeWrapping;
+      loadedTexture.wrapT = ClampToEdgeWrapping;
+      loadedTexture.minFilter = LinearFilter;
+      loadedTexture.magFilter = LinearFilter;
+      setTexture(loadedTexture);
+      if (materialRef.current) {
+        materialRef.current.uniforms.uTexture.value = loadedTexture;
+      }
+    });
+  }, [textureUrl]);
+
+  useEffect(() => {
+    if (materialRef.current) {
+      const targetColor = new Color(reflectionColor);
+      gsap.to(materialRef.current.uniforms.uReflectionColor.value, {
+        r: targetColor.r,
+        g: targetColor.g,
+        b: targetColor.b,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+    }
+  }, [reflectionColor]);
 
   const textureImage = texture.image as HTMLImageElement | undefined;
   const uniforms = useMemo(
@@ -59,11 +100,12 @@ export function InteractiveBlob() {
           textureImage?.naturalHeight || textureImage?.height || 1,
         ),
       },
-      uReflectionColor: { value: new Color("#edece2") },
+      uReflectionColor: { value: new Color(reflectionColor) },
       uIor: { value: 1.03 },
       uLightFactor: { value: 1 },
     }),
-    [size.height, size.width, texture, textureImage],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [size.height, size.width]
   );
 
   useEffect(() => {
@@ -230,8 +272,8 @@ export function InteractiveBlob() {
 
     material.uniforms.uTime.value += delta;
 
-    const targetX = mobile ? viewport.width * 0.02 : -viewport.width * 0.255;
-    const targetY = mobile ? viewport.height * 0.18 : -viewport.height * 0.11;
+    const targetX = mobile ? viewport.width * targetXMobile : viewport.width * targetXDesktop;
+    const targetY = mobile ? viewport.height * targetYMobile : viewport.height * targetYDesktop;
     group.position.x = damp(group.position.x, targetX, 4, delta);
     group.position.y = damp(group.position.y, targetY, 7, delta);
     group.rotation.z = damp(group.rotation.z, -0.08, 4, delta);

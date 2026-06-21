@@ -1,8 +1,15 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState, useRef } from "react";
 import { ArrowLeft, ArrowRight, Check, Mail, Phone, Sparkles } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 import {
   budgetRanges,
@@ -24,6 +31,27 @@ type FormState = {
   email: string;
   message: string;
 };
+
+function AnimatedTitle({ text, className, children }: { text: string; className?: string; children?: React.ReactNode }) {
+  const words = text.split(" ");
+  return (
+    <h1 className={className}>
+      {words.map((word, wi) => (
+        <span key={wi} className="inline-block">
+          <span className="inline-block overflow-hidden align-bottom leading-[0.88] pb-[0.05em] -mb-[0.05em]">
+            {word.split("").map((char, ci) => (
+              <span key={ci} data-page-char className="inline-block will-change-transform">
+                {char}
+              </span>
+            ))}
+          </span>
+          {wi < words.length - 1 && <span>&nbsp;</span>}
+        </span>
+      ))}
+      {children}
+    </h1>
+  );
+}
 
 type Service = (typeof services)[number];
 
@@ -111,6 +139,7 @@ type ContactPageClientProps = {
 export function ContactPageClient({
   prefilledServiceSlug,
 }: ContactPageClientProps) {
+  const mainRef = useRef<HTMLElement>(null);
   const prefilledService = useMemo(
     () => services.find((service) => service.slug === prefilledServiceSlug),
     [prefilledServiceSlug],
@@ -121,6 +150,39 @@ export function ContactPageClient({
     createInitialForm(prefilledService),
   );
   const reduceMotion = useReducedMotion();
+
+  useGSAP(() => {
+    if (reduceMotion) return;
+    const charSpans = gsap.utils.toArray<HTMLElement>("[data-page-char]");
+    if (charSpans.length === 0) return;
+    
+    gsap.set(charSpans, { y: "100%" });
+
+    const siteFrame = document.querySelector<HTMLElement>(".site-frame");
+    const initTitleAnimation = () => {
+      const isLenisActive = siteFrame?.dataset.lenisReady === "true";
+      const scroller = isLenisActive ? siteFrame! : window;
+
+      gsap.to(charSpans, {
+        y: "0%",
+        duration: 1,
+        stagger: 0.05,
+        ease: "expo.out",
+        scrollTrigger: {
+          trigger: charSpans[0].closest("h1"),
+          scroller,
+          start: "top 88%",
+        },
+      });
+    };
+
+    const waitsForLenis = window.matchMedia("(min-width: 1024px)").matches && window.matchMedia("(pointer: fine)").matches;
+    if (!waitsForLenis || siteFrame?.dataset.lenisReady === "true") {
+      initTitleAnimation();
+    } else if (siteFrame) {
+      window.addEventListener("lenis:ready", initTitleAnimation, { once: true });
+    }
+  }, { scope: mainRef });
 
   const projectTypes = useMemo(
     () => services.map((service) => getProjectType(service.title)),
@@ -265,40 +327,21 @@ export function ContactPageClient({
   };
 
   return (
-    <main className="page-hero-spacing relative min-h-dvh overflow-hidden">
+    <main ref={mainRef} className="page-hero-spacing relative min-h-dvh overflow-hidden">
       <div className="service-grid-surface absolute inset-0 opacity-20" aria-hidden="true" />
-      <motion.div
-        className="absolute left-[-20%] top-32 h-16 w-[150%] -rotate-3 border-y border-foreground/10 bg-accent text-background"
-        animate={reduceMotion ? undefined : { x: ["0%", "-12%"] }}
-        transition={reduceMotion ? undefined : { duration: 12, repeat: Infinity, ease: "linear" }}
-        aria-hidden="true"
-      >
-        <div className="flex h-full items-center gap-8 whitespace-nowrap text-xl font-black uppercase">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <span key={index}>Start / Scope / Build / Launch</span>
-          ))}
-        </div>
-      </motion.div>
+
 
       <Container className="relative z-10 grid min-h-[calc(100dvh-7rem)] gap-10 pb-12 pt-16 lg:grid-cols-[0.43fr_0.57fr] lg:items-start">
-        <section className="self-start mt-12 lg:mt-24">
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="text-sm font-black uppercase tracking-[0.22em] text-accent"
-          >
-            Yarsha Byte Contact
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 45 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.72, delay: 0.08, ease }}
+        <section className="self-start mt-4 lg:mt-8">
+          
+          <AnimatedTitle
+            text="Let's talk"
             className="mt-6 text-[clamp(4rem,11vw,10.5rem)] font-black uppercase leading-[0.82] text-foreground"
           >
-            Let&apos;s talk
-            <span className="ml-[0.08em] inline-block size-[0.16em] min-h-4 min-w-4 translate-y-[-0.04em] bg-accent [clip-path:polygon(25%_6%,75%_6%,100%_50%,75%_94%,25%_94%,0_50%)]" />
-          </motion.h1>
+            <span className="inline-block overflow-hidden align-bottom leading-[0.88] pb-[0.05em] -mb-[0.05em]">
+              <span className="ml-[0.08em] inline-block size-[0.16em] min-h-4 min-w-4 translate-y-[-0.04em] bg-accent [clip-path:polygon(25%_6%,75%_6%,100%_50%,75%_94%,25%_94%,0_50%)] will-change-transform" data-page-char />
+            </span>
+          </AnimatedTitle>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -324,7 +367,7 @@ export function ContactPageClient({
           </div>
         </section>
 
-        <section className="self-start mt-12 lg:mt-24 w-full">
+        <section className="self-start mt-4 lg:mt-8 w-full">
           <AnimatePresence mode="wait">
             {sent ? (
               <motion.div
