@@ -44,6 +44,7 @@ export function InteractiveBlob({
   const groupRef = useRef<Group>(null);
   const materialRef = useRef<ShaderMaterial>(null);
   const spinOffset = useRef(0);
+  const isFirstLoad = useRef(true);
   const hasEnteredRef = useRef(startVisible);
   const pointer = usePagePointer();
   const reduceMotion = useReducedMotion();
@@ -52,13 +53,9 @@ export function InteractiveBlob({
   const restingScale = mobile ? 0.5 : 0.72;
 
   const [texture, setTexture] = useState(() => {
-    const configuredTexture = new TextureLoader().load(textureUrl);
-    configuredTexture.colorSpace = SRGBColorSpace;
-    configuredTexture.wrapS = ClampToEdgeWrapping;
-    configuredTexture.wrapT = ClampToEdgeWrapping;
-    configuredTexture.minFilter = LinearFilter;
-    configuredTexture.magFilter = LinearFilter;
-    return configuredTexture;
+    // Start with a blank texture to avoid duplicate network requests. 
+    // The useEffect below will handle loading the actual texture immediately on mount.
+    return new TextureLoader().load("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");
   });
 
   const currentTextureRef = useRef(texture);
@@ -73,22 +70,29 @@ export function InteractiveBlob({
       
       const material = materialRef.current;
       if (material) {
-        material.uniforms.uTexture.value = currentTextureRef.current;
         material.uniforms.uNextTexture.value = loadedTexture;
-        material.uniforms.uMixTexture.value = 0;
 
-        gsap.killTweensOf(material.uniforms.uMixTexture);
-        gsap.to(material.uniforms.uMixTexture, {
-          value: 1,
-          duration: 0.6,
-          ease: "power2.inOut",
-          onComplete: () => {
-            currentTextureRef.current = loadedTexture;
-            setTexture(loadedTexture);
-            material.uniforms.uTexture.value = loadedTexture;
-            material.uniforms.uMixTexture.value = 0;
-          }
-        });
+        if (isFirstLoad.current) {
+          isFirstLoad.current = false;
+          currentTextureRef.current = loadedTexture;
+          setTexture(loadedTexture);
+          material.uniforms.uTexture.value = loadedTexture;
+          material.uniforms.uMixTexture.value = 0;
+        } else {
+          material.uniforms.uMixTexture.value = 0;
+          gsap.killTweensOf(material.uniforms.uMixTexture);
+          gsap.to(material.uniforms.uMixTexture, {
+            value: 1,
+            duration: 0.6,
+            ease: "power2.inOut",
+            onComplete: () => {
+              currentTextureRef.current = loadedTexture;
+              setTexture(loadedTexture);
+              material.uniforms.uTexture.value = loadedTexture;
+              material.uniforms.uMixTexture.value = 0;
+            }
+          });
+        }
       } else {
         currentTextureRef.current = loadedTexture;
         setTexture(loadedTexture);
@@ -258,8 +262,35 @@ export function InteractiveBlob({
       });
     };
 
+    const handleJiggle = () => {
+      const group = groupRef.current;
+      const material = materialRef.current;
+
+      if (!group || !material || reduceMotion) return;
+
+      const { uAmplitude, uFrequency, uLightFactor } = material.uniforms;
+
+      gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor]);
+
+      const durationIn = 0.3;
+      const durationOut = 0.5;
+
+      gsap
+        .timeline()
+        .to(uAmplitude, { value: 3.5, duration: durationIn, ease: "power2.out" }, 0)
+        .to(uAmplitude, { value: 2.4, duration: durationOut, ease: "power2.inOut" }, durationIn)
+        .to(uFrequency, { value: 0.6, duration: durationIn, ease: "power2.out" }, 0)
+        .to(uFrequency, { value: 0.55, duration: durationOut, ease: "power2.inOut" }, durationIn)
+        .to(uLightFactor, { value: 1.3, duration: durationIn, ease: "power2.out" }, 0)
+        .to(uLightFactor, { value: 1.0, duration: durationOut, ease: "power2.inOut" }, durationIn);
+    };
+
     window.addEventListener("yarsha:blob-pulse", handlePulse);
-    return () => window.removeEventListener("yarsha:blob-pulse", handlePulse);
+    window.addEventListener("yarsha:blob-jiggle", handleJiggle);
+    return () => {
+      window.removeEventListener("yarsha:blob-pulse", handlePulse);
+      window.removeEventListener("yarsha:blob-jiggle", handleJiggle);
+    };
   }, [reduceMotion]);
 
   useFrame(({ camera }, delta) => {

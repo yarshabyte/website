@@ -344,8 +344,16 @@ export function WorkPageClient() {
                     setActiveIndex(index);
                     setIsGridOpen(false);
                     setHoveredIndex(null);
+                    window.dispatchEvent(new CustomEvent("yarsha:blob-pulse", { 
+                      detail: { clockwise: true } 
+                    }));
                   }}
-                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseEnter={() => {
+                    if (hoveredIndex !== index) {
+                      setHoveredIndex(index);
+                      window.dispatchEvent(new CustomEvent("yarsha:blob-jiggle"));
+                    }
+                  }}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
                   <Image
