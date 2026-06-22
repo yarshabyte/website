@@ -91,18 +91,18 @@ export function AboutPageClient() {
           trigger: heroRef.current,
           scroller,
           start: "top top",
-          end: "+=250%", // Keep pinned longer so it completely exits before next section arrives
+          end: "+=100%", // Exact timing: just long enough for text to clear
           scrub: 1,
           pin: true, // Pin the ENTIRE section to fix flexbox pinSpacer overlapping
         }
       });
       
       // Animate the "About Yarsha Byte" text UP so it simulates normal scrolling
-      tlHero.to(".hero-sub", { y: -150, opacity: 0, ease: "none" }, 0);
+      tlHero.to(".hero-sub", { y: -80, opacity: 0, ease: "none" }, 0);
 
-      // Adjust these xPercent values to change the speed (e.g. -200 or 200 for faster)
-      tlHero.to(heroText1Ref.current, { xPercent: -150, ease: "none" }, 0);
-      tlHero.to(heroText2Ref.current, { xPercent: 150, ease: "none" }, 0);
+      // Adjust these xPercent values to change the speed
+      tlHero.to(heroText1Ref.current, { xPercent: -100, ease: "none" }, 0);
+      tlHero.to(heroText2Ref.current, { xPercent: 100, ease: "none" }, 0);
 
       // 3. Story Text Scrubbing (Words highlight as you scroll)
       if (storyTextRef.current) {
@@ -210,7 +210,7 @@ export function AboutPageClient() {
       </section>
 
       {/* --- STORY SCRUB SECTION --- */}
-      <section className="py-32 md:py-48 px-6 md:px-12 max-w-7xl mx-auto">
+      <section className="pt-16 pb-32 md:pt-24 md:pb-48 px-6 md:px-12 max-w-7xl mx-auto">
         <p ref={storyTextRef} className="font-display text-3xl md:text-5xl lg:text-7xl font-bold leading-[1.1] tracking-tight uppercase">
           {storyText.split(" ").map((word, i) => (
             <span key={i} className="story-word inline-block mr-[0.25em]">
