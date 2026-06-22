@@ -134,25 +134,16 @@ export function AboutPageClient() {
       const scroller = isLenisActive ? siteFrame! : window;
 
       // 1. Initial Hero Entry Animation
-      const tl = gsap.timeline({ delay: 0.5 }); // Delay to wait for page load
+      // Use gsap.set for initial hidden state to prevent FOUC without risking stuck CSS opacity
+      gsap.set(".hero-sub", { y: 30, opacity: 0 });
+      gsap.set(heroText1Ref.current, { x: "100vw", opacity: 0 });
+      gsap.set(heroText2Ref.current, { x: "-100vw", opacity: 0 });
+
+      const tl = gsap.timeline({ delay: 0.3 }); // Small delay for page load
       
-      tl.fromTo(
-        ".hero-sub",
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
-      )
-      .fromTo(
-        heroText1Ref.current,
-        { x: "100vw", opacity: 0 },
-        { x: "0vw", opacity: 1, duration: 1.8, ease: "power4.out" },
-        "-=0.4"
-      )
-      .fromTo(
-        heroText2Ref.current,
-        { x: "-100vw", opacity: 0 },
-        { x: "0vw", opacity: 1, duration: 1.8, ease: "power4.out" },
-        "<"
-      );
+      tl.to(".hero-sub", { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" })
+        .to(heroText1Ref.current, { x: 0, opacity: 1, duration: 1.5, ease: "power4.out" }, "-=0.4")
+        .to(heroText2Ref.current, { x: 0, opacity: 1, duration: 1.5, ease: "power4.out" }, "<");
 
       // 2. Hero Scroll Pin & Parallax (Unified for desktop and mobile)
       const tlHero = gsap.timeline({
@@ -166,9 +157,9 @@ export function AboutPageClient() {
           anticipatePin: 1,
         }
       });
-      // Adjust these xPercent values to change the speed
-      tlHero.to(heroText1Ref.current, { xPercent: -100, ease: "none" }, 0);
-      tlHero.to(heroText2Ref.current, { xPercent: 100, ease: "none" }, 0);
+      // Use xPercent instead of x to prevent conflicting with the entry animation's x values
+      tlHero.to(heroText1Ref.current, { xPercent: -250, ease: "none" }, 0);
+      tlHero.to(heroText2Ref.current, { xPercent: 250, ease: "none" }, 0);
 
       // 3. Story Text Scrubbing (Words highlight as you scroll)
       if (storyTextRef.current) {
@@ -224,20 +215,12 @@ export function AboutPageClient() {
       }
     };
 
-    if (siteFrame?.dataset.lenisReady === "true") {
+    const waitsForLenis = window.matchMedia("(min-width: 1024px)").matches && window.matchMedia("(pointer: fine)").matches;
+    
+    if (!waitsForLenis || siteFrame?.dataset.lenisReady === "true") {
       initAnimations();
     } else {
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.attributeName === "data-lenis-ready") {
-            if (siteFrame?.dataset.lenisReady === "true") {
-              initAnimations();
-              observer.disconnect();
-            }
-          }
-        });
-      });
-      if (siteFrame) observer.observe(siteFrame, { attributes: true });
+      window.addEventListener("lenis:ready", initAnimations, { once: true });
     }
   }, { scope: containerRef });
 
@@ -253,15 +236,15 @@ export function AboutPageClient() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('/noise.png')] mix-blend-overlay -z-10"></div>
         
         <div className="px-6 md:px-12 flex flex-col items-center justify-center text-center w-full">
-          <p className="hero-sub text-sm md:text-base font-bold uppercase tracking-[0.3em] text-accent mb-8">
+          <p className="hero-sub text-sm md:text-base font-bold uppercase tracking-[0.3em] text-accent mb-12 md:mb-16">
             About Yarsha Byte
           </p>
           
           <h1 ref={heroTitleRef} className="font-display text-[clamp(5.5rem,23vw,18rem)] font-black uppercase leading-[1] md:leading-[0.95] tracking-tight flex flex-col items-center whitespace-nowrap w-full">
-            <div ref={heroText1Ref} className="pb-2 md:pb-4 flex justify-center w-full opacity-0">
+            <div ref={heroText1Ref} className="pb-2 md:pb-4 flex justify-center w-full">
               SIX MINDS.
             </div>
-            <div ref={heroText2Ref} className="text-foreground/40 flex justify-center w-full opacity-0">
+            <div ref={heroText2Ref} className="text-foreground/40 flex justify-center w-full">
               ONE DIRECTION.
             </div>
           </h1>
@@ -269,7 +252,7 @@ export function AboutPageClient() {
       </section>
 
       {/* --- STORY SCRUB SECTION --- */}
-      <section className="relative z-20 mt-0 md:-mt-[70vh] pb-20 md:pt-5 md:pb-20 px-6 md:px-12 max-w-7xl mx-auto transform-gpu">
+      <section className="relative z-20 -mt-[70vh] pt-20 pb-20 md:pt-5 md:pb-20 px-6 md:px-12 max-w-7xl mx-auto transform-gpu">
         <p ref={storyTextRef} className="font-display text-3xl md:text-5xl lg:text-7xl font-bold leading-[1.1] tracking-tight uppercase">
           {storyText.split(" ").map((word, i) => (
             <span key={i} className="story-word inline-block mr-[0.25em]">
@@ -280,7 +263,7 @@ export function AboutPageClient() {
       </section>
 
       {/* --- FLOATING TEAM SECTION --- */}
-      <section id="team" className="py-24 relative z-10 border-t border-foreground/10 cursor-default">
+      <section id="team" className="py-14 relative z-10 border-t border-foreground/10 cursor-default">
         
         {/* The floating image that follows cursor (Hidden on mobile) */}
         <div 
@@ -314,12 +297,12 @@ export function AboutPageClient() {
         </div>
 
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
-          <div className="mb-12">
+          <div className="mb-8">
             <h2 className="text-2xl md:text-4xl font-display font-black uppercase tracking-[0.15em] text-accent">
               The Team
             </h2>
-            <p className="block md:hidden text-sm text-foreground/40 mt-2 font-medium">
-              (Tap to reveal)
+            <p className="block md:hidden text-m text-foreground/40 mt-2 font-display">
+              Tap to reveal
             </p>
           </div>
 
