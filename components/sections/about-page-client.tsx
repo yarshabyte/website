@@ -91,7 +91,7 @@ export function AboutPageClient() {
           trigger: heroRef.current,
           scroller,
           start: "top top",
-          end: "+=100%", // Exact timing: just long enough for text to clear
+          end: "+=120%", // Exact timing: just long enough for text to clear
           scrub: 1,
           pin: true, // Pin the ENTIRE section to fix flexbox pinSpacer overlapping
         }
@@ -190,8 +190,8 @@ export function AboutPageClient() {
     <main ref={containerRef} className="bg-background text-foreground selection:bg-accent selection:text-accent-foreground overflow-x-hidden">
       
       {/* --- HERO SECTION --- */}
-      <section ref={heroRef} className="relative min-h-[100svh] flex flex-col justify-center pt-24 md:pt-32">
-        <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('/noise.png')] mix-blend-overlay"></div>
+      <section ref={heroRef} className="relative isolate z-10 min-h-[100svh] flex flex-col justify-center ">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('/noise.png')] mix-blend-overlay -z-10"></div>
         
         <div className="px-6 md:px-12 flex flex-col items-center justify-center text-center w-full">
           <p className="hero-sub text-sm md:text-base font-bold uppercase tracking-[0.3em] text-accent mb-8">
@@ -202,7 +202,7 @@ export function AboutPageClient() {
             <div ref={heroText1Ref} className="pb-2 md:pb-4 flex justify-center w-full">
               {wrapChars("SIX MINDS.")}
             </div>
-            <div ref={heroText2Ref} className="pb-2 md:pb-4 text-foreground/40 pl-6 md:pl-32 flex justify-center w-full">
+            <div ref={heroText2Ref} className="text-foreground/40 flex justify-center w-full">
               {wrapChars("ONE DIRECTION.")}
             </div>
           </h1>
@@ -210,7 +210,7 @@ export function AboutPageClient() {
       </section>
 
       {/* --- STORY SCRUB SECTION --- */}
-      <section className="pt-16 pb-32 md:pt-24 md:pb-48 px-6 md:px-12 max-w-7xl mx-auto">
+      <section className="relative z-20 mt-0 md:-mt-[70vh] pb-20 md:pt-5 md:pb-20 px-6 md:px-12 max-w-7xl mx-auto transform-gpu">
         <p ref={storyTextRef} className="font-display text-3xl md:text-5xl lg:text-7xl font-bold leading-[1.1] tracking-tight uppercase">
           {storyText.split(" ").map((word, i) => (
             <span key={i} className="story-word inline-block mr-[0.25em]">

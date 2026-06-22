@@ -683,6 +683,10 @@ h6 {
   }
 }
 
+.marquee-track {
+  animation: serviceMarquee 20s linear infinite;
+}
+
 .testimonials-drag-cursor {
   pointer-events: none;
   position: fixed;

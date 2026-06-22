@@ -8,7 +8,25 @@
  * 3. Keep each slug unique because it becomes the portfolio URL:
  *    `/team/member-01`, `/team/member-02`, and so on.
  */
-export const teamMembers = [
+export type TeamMember = {
+  slug: string;
+  name: string;
+  initials: string;
+  role: string;
+  image: string;
+  location: string;
+  email: string;
+  intro: string;
+  bio: string;
+  skills: string[];
+  projects: Array<{
+    title: string;
+    type: string;
+    year: string;
+  }>;
+};
+
+export const teamMembers: TeamMember[] = [
   {
     slug: "aashish-chapagain",
     name: "Aashish Chapagain",
