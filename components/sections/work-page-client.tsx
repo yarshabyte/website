@@ -68,6 +68,7 @@ export function WorkPageClient() {
 
   const count = projects.length;
   const activeProject = projects[activeIndex] ?? projects[0];
+  const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
 
   useEffect(() => {
     suppressThreeClockWarning();
@@ -120,10 +121,34 @@ export function WorkPageClient() {
       ? displayProject.thumbnail
       : (displayProject.thumbnail as any)?.src || "";
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart || isGridOpen) return;
+    const touchEnd = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    const dx = touchStart.x - touchEnd.x;
+    const dy = touchStart.y - touchEnd.y;
+    
+    const threshold = 40;
+    
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > threshold) move(1);
+      else if (dx < -threshold) move(-1);
+    } else {
+      if (dy > threshold) move(1);
+      else if (dy < -threshold) move(-1);
+    }
+    setTouchStart(null);
+  };
+
   return (
     <main 
       className={`relative bg-background ${!isGridOpen ? "fixed inset-0 overflow-hidden touch-none z-50" : "fixed inset-0 overflow-hidden touch-none z-50"}`}
       data-lenis-prevent="true"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Slider stays permanently mounted so the 3D Canvas never reloads! */}
       <motion.div
@@ -161,12 +186,22 @@ export function WorkPageClient() {
           style={{ pointerEvents: isGridOpen ? "none" : "auto" }}
         >
 
+            {/* Mobile Top Navigation */}
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 flex md:hidden flex-col items-center gap-2 z-30 pointer-events-none">
+              <div className="flex items-center gap-4 text-[10px] font-mono font-black uppercase tracking-[0.2em] text-foreground/50">
+                <span className="text-foreground">{String(activeIndex + 1).padStart(3, "0")}</span>
+                <span>/</span>
+                <span>{String(count).padStart(3, "0")}</span>
+              </div>
+              <div className="text-[8px] font-mono font-bold tracking-[0.15em] uppercase text-foreground/30">Swipe to change</div>
+            </div>
+
             {/* Main Slider Content */}
             <div className="flex flex-1 items-center justify-center pt-10 pb-20">
               <div className="grid w-full max-w-[90rem] grid-cols-1 items-center gap-10 md:grid-cols-12 relative">
                 
                 {/* Left Side: Image */}
-                <div className="relative z-10 w-full md:col-span-5 lg:col-span-5 md:col-start-1 lg:col-start-2">
+                <div className="hidden md:block relative z-10 w-full md:col-span-5 lg:col-span-5 md:col-start-1 lg:col-start-2">
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl md:rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
                     <AnimatePresence initial={false} custom={direction}>
                       <motion.div
@@ -196,7 +231,7 @@ export function WorkPageClient() {
                 </div>
 
                 {/* Right Side: Info Side */}
-                <div className="relative z-30 flex w-full flex-col self-stretch py-2 md:py-4 md:col-span-5 lg:col-span-4 md:col-start-8 lg:col-start-9">
+                <div className="relative z-30 flex w-full flex-col self-stretch py-2 md:py-4 md:col-span-5 lg:col-span-4 md:col-start-8 lg:col-start-9 mt-[35vh] md:mt-0 items-center md:items-start text-center md:text-left">
                   <AnimatePresence mode="popLayout" custom={direction}>
                     <motion.div
                       key={activeIndex}
@@ -205,12 +240,12 @@ export function WorkPageClient() {
                       initial="enter"
                       animate="center"
                       exit="exit"
-                      className="flex flex-col w-full h-full"
+                      className="flex flex-col w-full h-full items-center md:items-start"
                     >
                       {/* Title & Arrow */}
-                      <div className="flex-1 flex flex-col justify-center">
-                        <div className="flex w-fit items-center gap-4 sm:gap-6">
-                          <h2 className="font-display text-[clamp(2rem,4vw,4.5rem)] font-black uppercase leading-[0.9] text-foreground tracking-tight flex flex-wrap gap-x-[0.25em] w-fit shrink">
+                      <div className="flex-1 flex flex-col justify-center items-center md:items-start">
+                        <div className="flex flex-col md:flex-row w-fit items-center gap-4 sm:gap-6">
+                          <h2 className="font-display text-[clamp(2.5rem,8vw,4.5rem)] font-black uppercase leading-[0.9] text-foreground tracking-tight flex flex-wrap justify-center md:justify-start gap-x-[0.25em] w-fit shrink">
                             {activeProject.title.split(" ").map((word, i) => (
                               <span key={i} className="overflow-hidden inline-block pb-2 -mb-2">
                                 <motion.span 
@@ -239,7 +274,7 @@ export function WorkPageClient() {
                       </div>
 
                       {/* Tags block */}
-                      <div className="flex-none flex flex-col gap-2 text-[10px] sm:text-xs font-mono sm:font-bold uppercase tracking-[0.15em] text-foreground/50">
+                      <div className="flex-none flex flex-col items-center md:items-start gap-2 mt-8 md:mt-0 text-[10px] sm:text-xs font-mono sm:font-bold uppercase tracking-[0.15em] text-foreground/50">
                         {activeProject.tags.slice(0, 4).map((tag, i) => (
                           <div key={i} className="overflow-hidden pb-1 -mb-1">
                             <motion.span 
@@ -259,7 +294,7 @@ export function WorkPageClient() {
             </div>
 
             {/* Footer Navigation */}
-            <div className="mt-10 flex items-center justify-between md:mt-0 relative z-30">
+            <div className="mt-10 hidden md:flex items-center justify-between md:mt-0 relative z-30">
               <div className="flex items-center gap-4 text-xs font-mono font-black uppercase tracking-widest text-foreground/50">
                 <span className="text-foreground">
                   {String(activeIndex + 1).padStart(3, "0")}

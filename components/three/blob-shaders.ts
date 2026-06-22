@@ -166,6 +166,7 @@ uniform vec3 uReflectionColor;
 uniform float uIor;
 uniform float uLightFactor;
 uniform float uImageScale;
+uniform vec2 uImageOffset;
 
 varying vec2 vMatcapUv;
 varying vec2 vBlobUv;
@@ -194,7 +195,7 @@ void main() {
   vec3 viewRefracted = (viewMatrix * vec4(refracted, 0.0)).xyz;
   
   // Add refraction to the UV. 2.5 is roughly the distance to the center.
-  vec2 textureUv = vBlobUv + (viewRefracted.xy * 2.5) / uImageScale;
+  vec2 textureUv = vBlobUv + uImageOffset + (viewRefracted.xy * 2.5) / uImageScale;
   
   vec4 imageColor1 = texture2D(uTexture, textureUv);
   vec4 imageColor2 = texture2D(uNextTexture, textureUv);

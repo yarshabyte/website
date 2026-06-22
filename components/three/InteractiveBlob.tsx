@@ -142,6 +142,7 @@ export function InteractiveBlob({
       uIor: { value: 1.03 },
       uLightFactor: { value: 1 },
       uImageScale: { value: mobile ? 2.5 : 4.5 },
+      uImageOffset: { value: new Vector2(mobile ? 0 : 0.08, 0) },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [size.height, size.width]
@@ -150,6 +151,7 @@ export function InteractiveBlob({
   useEffect(() => {
     uniforms.uResolution.value.set(size.width, size.height);
     uniforms.uImageScale.value = mobile ? 2.5 : 4.5;
+    uniforms.uImageOffset.value.set(mobile ? 0 : 0.08, 0);
   }, [size.height, size.width, uniforms, mobile]);
 
   useEffect(() => {
