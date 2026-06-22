@@ -33,23 +33,84 @@ export function AboutPageClient() {
   const floatingImageRef = useRef<HTMLDivElement>(null);
   
   // State for floating image hover
-  const [hoveredMemberIndex, setHoveredMemberIndex] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+
+  // GSAP quickTo refs
+  const xTo = useRef<gsap.QuickToFunc | null>(null);
+  const yTo = useRef<gsap.QuickToFunc | null>(null);
+  const rotateTo = useRef<gsap.QuickToFunc | null>(null);
 
   // Mouse move handler for the floating team image
   useEffect(() => {
+    let lastX = 0;
+    let lastY = 0;
+    let velocityX = 0;
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (floatingImageRef.current) {
-        gsap.to(floatingImageRef.current, {
-          x: e.clientX,
-          y: e.clientY,
-          duration: 0.8,
-          ease: "power3.out",
-        });
+      if (xTo.current && yTo.current) {
+        // Offset by half width/height so cursor is centered
+        xTo.current(e.clientX);
+        yTo.current(e.clientY);
+        
+        // Calculate velocity for rotation
+        velocityX = e.clientX - lastX;
+        
+        // Apply rotation based on speed, max 15 degrees
+        const rotation = Math.max(-15, Math.min(15, velocityX * 0.15));
+        if (rotateTo.current) rotateTo.current(rotation);
+      }
+      lastX = e.clientX;
+      lastY = e.clientY;
+    };
+
+    // Hide floating image if user scrolls it out from under the stationary cursor
+    const handleScroll = () => {
+      if (!teamListRef.current) return;
+      const rect = teamListRef.current.getBoundingClientRect();
+      
+      // If cursor is outside the bounds of the team list, hide the image
+      if (
+        lastX < rect.left ||
+        lastX > rect.right ||
+        lastY < rect.top ||
+        lastY > rect.bottom
+      ) {
+        setIsHovering(false);
       }
     };
+    
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll, { capture: true, passive: true });
+    
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll, { capture: true } as EventListenerOptions);
+    };
   }, []);
+
+  // Handle scale and opacity animations when hover state changes
+  useGSAP(() => {
+    if (!floatingImageRef.current) return;
+    
+    if (isHovering) {
+      gsap.to(floatingImageRef.current, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: "back.out(1.5)"
+      });
+    } else {
+      gsap.to(floatingImageRef.current, {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.4,
+        ease: "power2.inOut"
+      });
+      // Reset rotation smoothly when hiding
+      if (rotateTo.current) rotateTo.current(0);
+    }
+  }, [isHovering]);
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -61,28 +122,36 @@ export function AboutPageClient() {
       if (initialized) return;
       initialized = true;
 
+      // Initialize quickTo functions for the cursor image
+      if (floatingImageRef.current) {
+        gsap.set(floatingImageRef.current, { xPercent: -50, yPercent: -50 });
+        xTo.current = gsap.quickTo(floatingImageRef.current, "x", { duration: 0.6, ease: "power3.out" });
+        yTo.current = gsap.quickTo(floatingImageRef.current, "y", { duration: 0.6, ease: "power3.out" });
+        rotateTo.current = gsap.quickTo(floatingImageRef.current, "rotation", { duration: 0.5, ease: "power2.out" });
+      }
+
       const isLenisActive = siteFrame?.dataset.lenisReady === "true";
       const scroller = isLenisActive ? siteFrame! : window;
 
       // 1. Initial Hero Entry Animation
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({ delay: 0.5 }); // Delay to wait for page load
+      
       tl.fromTo(
-        ".hero-char",
-        { y: 150, rotateZ: 10, opacity: 0 },
-        { 
-          y: 0, 
-          rotateZ: 0, 
-          opacity: 1, 
-          duration: 1.2, 
-          stagger: 0.05, 
-          ease: "power4.out",
-          delay: 0.2
-        }
-      ).fromTo(
         ".hero-sub",
         { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: "power3.out" },
-        "-=0.8"
+        { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
+      )
+      .fromTo(
+        heroText1Ref.current,
+        { x: "100vw", opacity: 0 },
+        { x: "0vw", opacity: 1, duration: 1.8, ease: "power4.out" },
+        "-=0.4"
+      )
+      .fromTo(
+        heroText2Ref.current,
+        { x: "-100vw", opacity: 0 },
+        { x: "0vw", opacity: 1, duration: 1.8, ease: "power4.out" },
+        "<"
       );
 
       // 2. Hero Scroll Pin & Parallax (Unified for desktop and mobile)
@@ -92,14 +161,11 @@ export function AboutPageClient() {
           scroller,
           start: "top top",
           end: "+=120%", // Exact timing: just long enough for text to clear
-          scrub: 1,
+          scrub: true,
           pin: true, // Pin the ENTIRE section to fix flexbox pinSpacer overlapping
+          anticipatePin: 1,
         }
       });
-      
-      // Animate the "About Yarsha Byte" text UP so it simulates normal scrolling
-      tlHero.to(".hero-sub", { y: -80, opacity: 0, ease: "none" }, 0);
-
       // Adjust these xPercent values to change the speed
       tlHero.to(heroText1Ref.current, { xPercent: -100, ease: "none" }, 0);
       tlHero.to(heroText2Ref.current, { xPercent: 100, ease: "none" }, 0);
@@ -119,7 +185,7 @@ export function AboutPageClient() {
               scroller,
               start: "top 80%",
               end: "bottom 50%",
-              scrub: 1,
+              scrub: true,
             }
           }
         );
@@ -175,14 +241,7 @@ export function AboutPageClient() {
     }
   }, { scope: containerRef });
 
-  // Utility to wrap characters in spans for GSAP
-  const wrapChars = (text: string) => {
-    return text.split("").map((char, i) => (
-      <span key={i} className="hero-char inline-block whitespace-pre">
-        {char}
-      </span>
-    ));
-  };
+  // Removed wrapChars utility as we now animate entire lines
 
   const storyText = "We exist to make professional digital work practical. Instead of fragmenting disciplines, we operate as a single unit from concept to launch. The result? Zero handoff gaps, faster decisions, and an output that stays consistent across your website, identity, and campaigns.";
 
@@ -198,12 +257,12 @@ export function AboutPageClient() {
             About Yarsha Byte
           </p>
           
-          <h1 ref={heroTitleRef} className="font-display text-[clamp(5.5rem,25vw,18rem)] font-black uppercase leading-[1] md:leading-[0.8] tracking-tighter flex flex-col items-center whitespace-nowrap w-full">
-            <div ref={heroText1Ref} className="pb-2 md:pb-4 flex justify-center w-full">
-              {wrapChars("SIX MINDS.")}
+          <h1 ref={heroTitleRef} className="font-display text-[clamp(5.5rem,23vw,18rem)] font-black uppercase leading-[1] md:leading-[0.95] tracking-tight flex flex-col items-center whitespace-nowrap w-full">
+            <div ref={heroText1Ref} className="pb-2 md:pb-4 flex justify-center w-full opacity-0">
+              SIX MINDS.
             </div>
-            <div ref={heroText2Ref} className="text-foreground/40 flex justify-center w-full">
-              {wrapChars("ONE DIRECTION.")}
+            <div ref={heroText2Ref} className="text-foreground/40 flex justify-center w-full opacity-0">
+              ONE DIRECTION.
             </div>
           </h1>
         </div>
@@ -221,47 +280,73 @@ export function AboutPageClient() {
       </section>
 
       {/* --- FLOATING TEAM SECTION --- */}
-      <section className="py-24 relative z-10 border-t border-foreground/10 cursor-default">
+      <section id="team" className="py-24 relative z-10 border-t border-foreground/10 cursor-default">
         
         {/* The floating image that follows cursor (Hidden on mobile) */}
         <div 
           ref={floatingImageRef}
-          className="fixed top-0 left-0 w-64 h-80 pointer-events-none z-50 overflow-hidden rounded-2xl shadow-2xl transition-opacity duration-300 transform -translate-x-1/2 -translate-y-1/2 hidden md:block"
-          style={{ opacity: hoveredMemberIndex !== null ? 1 : 0 }}
+          className="fixed top-0 left-0 w-72 h-[22rem] pointer-events-none z-50 overflow-hidden rounded-2xl shadow-2xl hidden md:block"
+          style={{ 
+             opacity: 0, 
+             transformOrigin: "center center",
+             willChange: "transform, opacity"
+          }}
         >
-          {hoveredMemberIndex !== null && (
-            <Image
-              src={teamMembers[hoveredMemberIndex].image}
-              alt={teamMembers[hoveredMemberIndex].name}
-              fill
-              className="object-cover"
-            />
-          )}
+          {teamMembers.map((member, i) => (
+            <div 
+              key={member.slug}
+              className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                activeIndex === i 
+                  ? "opacity-100 scale-100 z-10" 
+                  : "opacity-0 scale-110 z-0"
+              }`}
+            >
+              <Image
+                src={member.image}
+                alt={member.name}
+                fill
+                className="object-cover grayscale"
+                sizes="(max-width: 768px) 0vw, 300px"
+              />
+              <div className="absolute inset-0 bg-accent/10 mix-blend-overlay"></div>
+            </div>
+          ))}
         </div>
 
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent mb-12">
-            The Team
-          </p>
+          <div className="mb-12">
+            <h2 className="text-2xl md:text-4xl font-display font-black uppercase tracking-[0.15em] text-accent">
+              The Team
+            </h2>
+            <p className="block md:hidden text-sm text-foreground/40 mt-2 font-medium">
+              (Tap to reveal)
+            </p>
+          </div>
 
-          <div ref={teamListRef} className="flex flex-col">
+          <div 
+            ref={teamListRef} 
+            className="flex flex-col"
+            onMouseLeave={() => setIsHovering(false)}
+          >
             {teamMembers.map((member, i) => (
               <Link 
                 key={member.slug} 
                 href={`/team/${member.slug}`}
                 className="team-list-item group flex flex-col md:flex-row md:items-center justify-between py-6 md:py-8 border-b border-foreground/10 hover:border-foreground/40 transition-colors"
-                onMouseEnter={() => setHoveredMemberIndex(i)}
-                onMouseLeave={() => setHoveredMemberIndex(null)}
+                onMouseEnter={() => {
+                  setActiveIndex(i);
+                  setIsHovering(true);
+                }}
                 onClick={(e) => {
                   // On mobile, first tap expands the accordion, second tap navigates
-                  if (window.innerWidth < 768 && hoveredMemberIndex !== i) {
+                  if (window.innerWidth < 768 && activeIndex !== i) {
                     e.preventDefault();
-                    setHoveredMemberIndex(i);
+                    setActiveIndex(i);
                   }
                 }}
               >
                 <div className="flex flex-col md:pointer-events-none">
-                  <h3 className="font-display text-3xl sm:text-4xl md:text-6xl font-black uppercase tracking-tight transition-transform duration-500 md:group-hover:translate-x-4">
+                  <h3 className="font-display text-3xl sm:text-4xl md:text-6xl font-black uppercase tracking-tight transition-transform duration-500 md:group-hover:translate-x-4 bg-[linear-gradient(to_right,var(--accent)_50%,var(--foreground)_50%)] bg-[length:200%_100%] bg-right bg-clip-text text-transparent md:group-hover:transition-all md:group-hover:bg-left">
                     {member.name}
                   </h3>
                   <span className="text-foreground/50 text-xs sm:text-sm md:text-lg font-medium mt-1 md:mt-2 transition-transform duration-500 md:group-hover:translate-x-4">
@@ -272,7 +357,7 @@ export function AboutPageClient() {
                 {/* Mobile Inline Image Reveal (Accordion) */}
                 <div 
                   className={`md:hidden w-full overflow-hidden transition-all duration-500 ease-out ${
-                    hoveredMemberIndex === i ? "max-h-96 mt-6 opacity-100" : "max-h-0 mt-0 opacity-0"
+                    activeIndex === i ? "max-h-96 mt-6 opacity-100" : "max-h-0 mt-0 opacity-0"
                   }`}
                 >
                   <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-xl overflow-hidden bg-foreground/5">
@@ -280,7 +365,7 @@ export function AboutPageClient() {
                       src={member.image}
                       alt={member.name}
                       fill
-                      className="object-cover"
+                      className="object-cover grayscale"
                     />
                   </div>
                   <div className="mt-4 flex items-center gap-2">

@@ -86,10 +86,23 @@ export function TeamMemberClient({ member }: { member: TeamMember }) {
           <Container className="relative z-10">
             <Link
               href="/about#team"
-              className="stagger-item inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-foreground/58 transition hover:text-accent mb-16"
+              className="stagger-item group relative inline-flex size-24 items-center justify-center text-foreground transition-all duration-300 hover:text-accent mb-12 mt-4"
+              aria-label="Back to the team"
             >
-              <ArrowLeft className="size-4" aria-hidden="true" />
-              Back to the team
+              <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-current">
+                {/* Circle */}
+                <circle cx="50" cy="50" r="40" strokeWidth="1" className="opacity-20 group-hover:opacity-40 transition-opacity duration-300" />
+                
+                {/* Custom Arrow Group */}
+                <g className="transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-x-2">
+                  {/* Arrowhead */}
+                  <polygon points="32,50 42,42 42,58" strokeWidth="2.5" strokeLinejoin="round" />
+                  {/* Shaft */}
+                  <line x1="42" y1="50" x2="58" y2="50" strokeWidth="2.5" />
+                  {/* Hexagon tail */}
+                  <polygon points="68,50 65.5,54.3 60.5,54.3 58,50 60.5,45.7 65.5,45.7" strokeWidth="2.5" strokeLinejoin="round" />
+                </g>
+              </svg>
             </Link>
 
             <div className="grid gap-16 lg:grid-cols-[1fr_0.8fr] lg:items-center">
@@ -99,7 +112,7 @@ export function TeamMemberClient({ member }: { member: TeamMember }) {
                 <p className="stagger-item text-xs font-black uppercase tracking-[0.3em] text-accent mb-6">
                   {member.role}
                 </p>
-                <h1 className="stagger-item font-display text-[clamp(4rem,10vw,9rem)] font-black uppercase leading-[0.85] tracking-tighter">
+                <h1 className="stagger-item font-display text-[clamp(4rem,10vw,9rem)] font-black uppercase leading-[0.95] tracking-tight">
                   <span className="block text-transparent" style={{ WebkitTextStroke: "2px var(--foreground)" }}>{firstName}</span>
                   <span className="block">{lastName}</span>
                 </h1>
@@ -162,12 +175,17 @@ export function TeamMemberClient({ member }: { member: TeamMember }) {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {member.skills.map((skill) => (
-                    <span
+                    <div
                       key={skill}
-                      className="inline-flex h-12 items-center rounded-full border border-foreground/20 px-6 text-sm font-bold uppercase tracking-widest transition-colors hover:bg-foreground hover:text-background cursor-default"
+                      className="group relative flex items-center overflow-hidden border border-foreground/10 bg-transparent px-5 py-3.5 transition-all duration-300 hover:border-foreground/20 hover:bg-foreground/[0.02] cursor-default"
                     >
-                      {skill}
-                    </span>
+                      {/* Animated accent bar */}
+                      <div className="absolute left-0 top-0 h-full w-[3px] bg-accent origin-bottom scale-y-0 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-y-100"></div>
+                      
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground/60 transition-colors duration-300 group-hover:text-foreground">
+                        {skill}
+                      </span>
+                    </div>
                   ))}
                 </div>
               </div>

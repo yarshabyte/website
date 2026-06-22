@@ -105,6 +105,4 @@ export const teamMembers: TeamMember[] = [
     skills: ["Advisory", "Marketing", "Strategy", "Consulting"],
     projects: [],
   },
-] as const;
-
-export type TeamMember = (typeof teamMembers)[number];
+];
