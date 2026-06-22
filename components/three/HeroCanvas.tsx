@@ -3,8 +3,13 @@
 import { useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 
-import { InteractiveBlob } from "@/components/three/InteractiveBlob";
+import dynamic from "next/dynamic";
 import { suppressThreeClockWarning } from "@/lib/suppress-three-clock-warning";
+
+const InteractiveBlob = dynamic(
+  () => import("@/components/three/InteractiveBlob").then((mod) => mod.InteractiveBlob),
+  { ssr: false, loading: () => null }
+);
 
 export function HeroCanvas() {
   useEffect(() => {

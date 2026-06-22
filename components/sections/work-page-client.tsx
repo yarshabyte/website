@@ -8,8 +8,13 @@ import { Canvas } from "@react-three/fiber";
 import Link from "next/link";
 
 import { projects } from "@/data/projects";
-import { InteractiveBlob } from "@/components/three/InteractiveBlob";
+import dynamic from "next/dynamic";
 import { suppressThreeClockWarning } from "@/lib/suppress-three-clock-warning";
+
+const InteractiveBlob = dynamic(
+  () => import("@/components/three/InteractiveBlob").then((mod) => mod.InteractiveBlob),
+  { ssr: false, loading: () => null }
+);
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
