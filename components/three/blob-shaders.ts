@@ -3,6 +3,7 @@ uniform float uTime;
 uniform float uSpeed;
 uniform float uFrequency;
 uniform float uAmplitude;
+uniform float uImageScale;
 
 varying vec2 vMatcapUv;
 varying vec2 vBlobUv;
@@ -139,13 +140,19 @@ void main() {
     (reflection.z + 1.0) * (reflection.z + 1.0)
   );
   vMatcapUv = reflection.xy / matcapScale + 0.5;
-  vBlobUv = displaced.xy / 6.0 + 0.5;
 
+  vec4 worldCenter = modelMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+  vec4 viewCenter = viewMatrix * worldCenter;
   vec4 worldPosition = modelMatrix * vec4(displaced, 1.0);
+  vec4 viewPos = viewMatrix * worldPosition;
+  
+  vec2 viewOffset = viewPos.xy - viewCenter.xy;
+  vBlobUv = viewOffset / uImageScale + 0.5;
+
   vEyeVector = normalize(worldPosition.xyz - cameraPosition);
   vWorldNormal = normalize(mat3(modelMatrix) * displacedNormal);
 
-  gl_Position = projectionMatrix * viewMatrix * worldPosition;
+  gl_Position = projectionMatrix * viewPos;
 }
 `;
 
@@ -158,6 +165,7 @@ uniform vec2 uTextureSize;
 uniform vec3 uReflectionColor;
 uniform float uIor;
 uniform float uLightFactor;
+uniform float uImageScale;
 
 varying vec2 vMatcapUv;
 varying vec2 vBlobUv;
@@ -179,25 +187,41 @@ float fresnel(vec3 eyeVector, vec3 worldNormal) {
 
 void main() {
   vec3 normal = normalize(vWorldNormal);
-  vec3 refracted = refract(normalize(vEyeVector), normal, 1.0 / uIor);
-  vec2 textureUv = clamp(vBlobUv + refracted.xy * 0.08, 0.0, 1.0);
+  vec3 eyeVector = normalize(vEyeVector);
+  vec3 refracted = refract(eyeVector, normal, 1.0 / uIor);
+  
+  // Calculate UV for the still image inside the blob
+  vec3 viewRefracted = (viewMatrix * vec4(refracted, 0.0)).xyz;
+  
+  // Add refraction to the UV. 2.5 is roughly the distance to the center.
+  vec2 textureUv = vBlobUv + (viewRefracted.xy * 2.5) / uImageScale;
+  
   vec4 imageColor1 = texture2D(uTexture, textureUv);
   vec4 imageColor2 = texture2D(uNextTexture, textureUv);
   vec4 imageColor = mix(imageColor1, imageColor2, uMixTexture);
-  float logoMask = smoothstep(
-    0.12,
-    0.34,
-    length(imageColor.rgb - vec3(0.96))
-  );
+  
+  // Mask out the whiteish background of the image
+  float logoMask = smoothstep(0.12, 0.34, length(imageColor.rgb - vec3(0.96)));
+  
+  // Fade out logo mask near the edges to prevent clamp artifacts
+  float distFromCenter = length(textureUv - 0.5);
+  logoMask *= smoothstep(0.48, 0.45, distFromCenter);
 
-  float edge = clamp(fresnel(normalize(vEyeVector), normal), 0.0, 1.0);
+  float edge = clamp(fresnel(eyeVector, normal), 0.0, 1.0);
   float matcapLight = smoothstep(0.05, 0.95, vMatcapUv.y) * 0.34 + 0.72;
-  vec3 refractedColor = imageColor.rgb * matcapLight;
-  vec3 glassColor = mix(refractedColor, uReflectionColor, edge * 0.62);
-  vec3 logoColor = imageColor.rgb * (0.9 + matcapLight * 0.1);
-  vec3 color = mix(glassColor, logoColor, logoMask * 0.94);
+  
+  vec3 glassBaseColor = uReflectionColor * matcapLight;
+  vec3 refractedLogoColor = imageColor.rgb * matcapLight;
+  
+  vec3 baseRefraction = mix(glassBaseColor, refractedLogoColor, logoMask);
+  
+  // Premium glass edge highlight
+  vec3 color = mix(baseRefraction, vec3(1.0), edge * 0.65);
   color *= uLightFactor;
 
-  gl_FragColor = vec4(color, 0.98);
+  // Transparent glass body with opaque logo and solid edges
+  float alpha = mix(0.2 + edge * 0.7, 1.0, logoMask);
+
+  gl_FragColor = vec4(color, alpha);
 }
 `;

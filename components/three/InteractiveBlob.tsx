@@ -141,6 +141,7 @@ export function InteractiveBlob({
       uReflectionColor: { value: new Color(reflectionColor) },
       uIor: { value: 1.03 },
       uLightFactor: { value: 1 },
+      uImageScale: { value: mobile ? 2.5 : 4.5 },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [size.height, size.width]
@@ -148,7 +149,8 @@ export function InteractiveBlob({
 
   useEffect(() => {
     uniforms.uResolution.value.set(size.width, size.height);
-  }, [size.height, size.width, uniforms]);
+    uniforms.uImageScale.value = mobile ? 2.5 : 4.5;
+  }, [size.height, size.width, uniforms, mobile]);
 
   useEffect(() => {
     const group = groupRef.current;
@@ -280,15 +282,17 @@ export function InteractiveBlob({
     group.position.x = damp(group.position.x, targetX, 4, delta);
     group.position.y = damp(group.position.y, targetY, 7, delta);
     group.rotation.z = damp(group.rotation.z, -0.08, 4, delta);
-    const pointerTiltX = reduceMotion ? 0 : -pointer.current.y * (mobile ? 0.35 : 0.08);
-    const pointerTiltY = reduceMotion ? 0 : pointer.current.x * (mobile ? 0.45 : 0.10);
+    const pointerTiltX = reduceMotion ? 0 : -pointer.current.y * (mobile ? 0.45 : 0.25);
+    const pointerTiltY = reduceMotion ? 0 : pointer.current.x * (mobile ? 0.55 : 0.35);
     const rotDamping = mobile ? 8 : 4;
     group.rotation.x = damp(group.rotation.x, 0.12 + pointerTiltX, rotDamping, delta);
     group.rotation.y = damp(group.rotation.y, (mobile ? 0 : 0.1) + pointerTiltY, rotDamping, delta);
 
     if (!reduceMotion) {
-      camera.position.x = damp(camera.position.x, pointer.current.x * 0.62, 4, delta);
-      camera.position.y = damp(camera.position.y, pointer.current.y * 0.42, 4, delta);
+      const targetCamX = mobile ? 0 : pointer.current.x * 0.62;
+      const targetCamY = mobile ? 0 : pointer.current.y * 0.42;
+      camera.position.x = damp(camera.position.x, targetCamX, 4, delta);
+      camera.position.y = damp(camera.position.y, targetCamY, 4, delta);
       camera.position.z = damp(camera.position.z, 15, 4, delta);
       camera.lookAt(0, 0, 0);
     }
