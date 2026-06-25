@@ -263,7 +263,7 @@ export function WorkPageClient() {
                               </span>
                             ))}
                           </h2>
-                          <span className="overflow-hidden inline-flex items-center shrink-0 pb-2 -mb-2">
+                          <span className="overflow-hidden inline-flex items-center shrink-0 p-2 -m-2">
                             <motion.span variants={childVariants} custom={direction} className="inline-block origin-bottom">
                               <Link 
                                 href={activeProject.href || "#"}
