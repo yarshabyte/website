@@ -520,7 +520,7 @@ export function ContactSection() {
 
         <div className="flex flex-col gap-4 border-t border-background/15 pt-6 text-xs font-medium text-background/42 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} Yarsha Byte. All rights reserved.</p>
-          <p>Designed and built in Nepal.</p>
+          <p>Designed and built by YarshaByte.</p>
         </div>
       </div>
     </footer>

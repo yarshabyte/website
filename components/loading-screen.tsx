@@ -32,7 +32,10 @@ export function LoadingScreen({ isExiting }: LoadingScreenProps) {
       <div className="flex flex-col items-center gap-10">
         <svg
           viewBox="0 0 320 240"
-          className="h-28 w-36 sm:h-32 sm:w-44"
+          className={cn(
+            "h-36 w-48 sm:h-48 sm:w-64 transition-transform duration-[2000ms] ease-out",
+            drawn ? "scale-100" : "scale-90"
+          )}
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
@@ -54,7 +57,7 @@ export function LoadingScreen({ isExiting }: LoadingScreenProps) {
                 style={{
                   strokeDasharray: 1,
                   strokeDashoffset: drawn ? 0 : 1,
-                  transition: `stroke-dashoffset 1.15s ease-in-out ${index * 0.07}s`,
+                  transition: `stroke-dashoffset 0.85s ease-in-out ${index * 0.05}s`,
                 }}
               />
             ))}
@@ -63,10 +66,10 @@ export function LoadingScreen({ isExiting }: LoadingScreenProps) {
 
         <p
           className={cn(
-            "text-center text-[0.65rem] uppercase tracking-[0.42em] text-black transition-all duration-700 sm:text-xs",
-            drawn ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
+            "text-center text-xs uppercase tracking-[0.42em] text-black transition-all duration-1000 sm:text-sm md:text-base",
+            drawn ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
           )}
-          style={{ transitionDelay: "0.6s" }}
+          style={{ transitionDelay: "0.4s" }}
         >
           <span className="font-light">Loading </span>
           <span className="font-helvetica-bold">Yarsha Byte</span>

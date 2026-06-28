@@ -305,18 +305,27 @@ export function ContactPageClient({}: ContactPageClientProps) {
     <main ref={mainRef} className="page-hero-spacing relative h-[calc(100dvh-4rem)] md:h-[calc(100dvh-7rem)] overflow-hidden">
       <div className="service-grid-surface absolute inset-0 opacity-20" aria-hidden="true" />
 
-      <Container className="relative z-10 flex flex-col h-full gap-4 lg:gap-8 pb-4">
-        <section className="shrink-0 w-full hidden sm:block">
-          <AnimatedTitle
-            text="LET'S TALK"
-            showDot={true}
-            waitForLenis={true}
-            className="font-display text-[clamp(6rem,15vw,30rem)] font-black uppercase leading-[0.75] tracking-[-0.02em] text-foreground break-words"
-          />
-        </section>
+      <Container className="relative z-10 flex flex-col h-full pb-4">
+        <AnimatePresence initial={false}>
+          {step === 0 && (
+            <motion.section 
+              initial={{ height: "auto", opacity: 1, filter: "blur(0px)" }}
+              exit={{ height: 0, opacity: 0, filter: "blur(8px)" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="shrink-0 w-full hidden sm:block overflow-hidden"
+            >
+              <AnimatedTitle
+                text="LET'S TALK"
+                showDot={true}
+                waitForLenis={true}
+                className="font-display text-[clamp(6rem,15vw,30rem)] font-black uppercase leading-[0.75] tracking-[-0.02em] text-foreground break-words"
+              />
+            </motion.section>
+          )}
+        </AnimatePresence>
 
         {/* Multi-step Contact Section */}
-        <section className="flex flex-1 w-full flex-col items-center justify-center relative pb-24 sm:pb-32">
+        <section className="flex flex-1 w-full flex-col items-center justify-center relative pb-24 sm:pb-32 pt-4 lg:pt-8">
           <AnimatePresence mode="wait">
             {sent ? (
               <motion.div
@@ -356,104 +365,114 @@ export function ContactPageClient({}: ContactPageClientProps) {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 className="flex w-full flex-col items-center"
               >
-                <div className="relative flex w-full max-w-4xl items-center justify-center">
-                  {/* Upper back button removed to prevent duplicates */}
-                  <h2 className="font-display text-center text-[clamp(2rem,5vw,4.5rem)] uppercase leading-none tracking-tight text-foreground">
-                    {currentStepData.title}
-                  </h2>
-                </div>
-                
                 {step < 4 ? (
-                  <div className="mt-12 flex flex-wrap items-center justify-center gap-5 sm:gap-8">
-                    {currentStepData.options.map((option) => (
-                      <OptionButton 
-                        key={option}
-                        active={form[currentStepData.field] === option}
-                        onClick={() => handleOptionSelect(currentStepData.field, option)}
-                      >
-                        {option}
-                      </OptionButton>
-                    ))}
-                  </div>
+                  <>
+                    <div className="relative flex w-full max-w-4xl items-center justify-center">
+                      <h2 className="font-display text-center text-[clamp(2rem,5vw,4.5rem)] uppercase leading-none tracking-tight text-foreground">
+                        {currentStepData.title}
+                      </h2>
+                    </div>
+                    <div className="mt-12 flex flex-wrap items-center justify-center gap-5 sm:gap-8">
+                      {currentStepData.options.map((option) => (
+                        <OptionButton 
+                          key={option}
+                          active={form[currentStepData.field] === option}
+                          onClick={() => handleOptionSelect(currentStepData.field, option)}
+                        >
+                          {option}
+                        </OptionButton>
+                      ))}
+                    </div>
+                  </>
                 ) : (
-                  <form 
-                    onSubmit={submitEmail}
-                    className="mt-12 w-full max-w-4xl grid gap-6"
-                  >
+                  <div className="w-full max-w-[1200px] flex flex-col items-center gap-6 lg:gap-10 mt-0 sm:-mt-8 lg:-mt-16">
                     {/* Selected Options Badges */}
-                    <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
-                      {form.projectType && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-foreground/70">{form.projectType}</span>}
-                      {form.budget && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-foreground/70">{form.budget}</span>}
-                      {form.source && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-foreground/70">{form.source}</span>}
+                    <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
+                      {form.projectType && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 sm:px-6 sm:py-3 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70">{form.projectType}</span>}
+                      {form.budget && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 sm:px-6 sm:py-3 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70">{form.budget}</span>}
+                      {form.source && <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 sm:px-6 sm:py-3 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70">{form.source}</span>}
                     </div>
 
-                    <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
-                      <input 
-                        type="text" 
-                        value={form.firstName} 
-                        onChange={e => setForm(c => ({...c, firstName: e.target.value}))} 
-                        placeholder="First Name *" 
-                        required
-                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
-                      />
-                      <input 
-                        type="text" 
-                        value={form.lastName} 
-                        onChange={e => setForm(c => ({...c, lastName: e.target.value}))} 
-                        placeholder="Last Name *" 
-                        required
-                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
-                      />
-                      <input 
-                        type="tel" 
-                        value={form.phone} 
-                        onChange={e => setForm(c => ({...c, phone: e.target.value}))} 
-                        placeholder="Phone [optional]" 
-                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
-                      />
-                      <input 
-                        type="email" 
-                        value={form.email} 
-                        onChange={e => setForm(c => ({...c, email: e.target.value}))} 
-                        placeholder="Email *" 
-                        required
-                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
-                      />
-                      <input 
-                        type="text" 
-                        value={form.company} 
-                        onChange={e => setForm(c => ({...c, company: e.target.value}))} 
-                        placeholder="Company *" 
-                        required
-                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
-                      />
-                      <input 
-                        type="text" 
-                        value={form.deadline} 
-                        onChange={e => setForm(c => ({...c, deadline: e.target.value}))} 
-                        placeholder="Deadline in weeks *" 
-                        required
-                        className="min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-6 text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
-                      />
-                    </div>
-                    
-                    <div className="grid gap-6 md:grid-cols-[1fr_auto] items-end">
-                      <textarea 
-                        value={form.message} 
-                        onChange={e => setForm(c => ({...c, message: e.target.value}))} 
-                        placeholder="Your message here..." 
-                        required
-                        className="min-h-40 w-full rounded-lg border border-foreground/10 bg-foreground/[0.02] p-6 text-sm text-foreground outline-none transition focus:border-accent resize-none placeholder:text-foreground/30" 
-                      />
-                      <button 
-                        type="submit" 
-                        disabled={isSubmitting}
-                        className="group flex size-32 sm:size-40 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-black uppercase tracking-[0.14em] text-background transition hover:scale-105 mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                    <div className="w-full grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-16 items-start">
+                      <div className="relative flex w-full flex-col lg:items-start items-center lg:pt-4">
+                        <h2 className="font-display text-center lg:text-left text-[clamp(2.5rem,5vw,5rem)] uppercase leading-[0.9] tracking-tight text-foreground lg:max-w-md">
+                          {currentStepData.title}
+                        </h2>
+                      </div>
+                      
+                      <form 
+                        onSubmit={submitEmail}
+                        className="w-full grid gap-3 sm:gap-6"
                       >
-                        {isSubmitting ? "Sending..." : "Submit"}
-                      </button>
+                        <div className="grid gap-3 sm:gap-6 grid-cols-2">
+                          <input 
+                            type="text" 
+                            value={form.firstName} 
+                            onChange={e => setForm(c => ({...c, firstName: e.target.value}))} 
+                            placeholder="First Name *" 
+                            required
+                            className="min-h-12 sm:min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-4 sm:px-6 text-xs sm:text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                          />
+                          <input 
+                            type="text" 
+                            value={form.lastName} 
+                            onChange={e => setForm(c => ({...c, lastName: e.target.value}))} 
+                            placeholder="Last Name *" 
+                            required
+                            className="min-h-12 sm:min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-4 sm:px-6 text-xs sm:text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                          />
+                          <input 
+                            type="tel" 
+                            value={form.phone} 
+                            onChange={e => setForm(c => ({...c, phone: e.target.value}))} 
+                            placeholder="Phone [optional]" 
+                            className="min-h-12 sm:min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-4 sm:px-6 text-xs sm:text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                          />
+                          <input 
+                            type="email" 
+                            value={form.email} 
+                            onChange={e => setForm(c => ({...c, email: e.target.value}))} 
+                            placeholder="Email *" 
+                            required
+                            className="min-h-12 sm:min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-4 sm:px-6 text-xs sm:text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                          />
+                          <input 
+                            type="text" 
+                            value={form.company} 
+                            onChange={e => setForm(c => ({...c, company: e.target.value}))} 
+                            placeholder="Company *" 
+                            required
+                            className="min-h-12 sm:min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-4 sm:px-6 text-xs sm:text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                          />
+                          <input 
+                            type="text" 
+                            value={form.deadline} 
+                            onChange={e => setForm(c => ({...c, deadline: e.target.value}))} 
+                            placeholder="Deadline in weeks *" 
+                            required
+                            className="min-h-12 sm:min-h-14 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-4 sm:px-6 text-xs sm:text-sm text-foreground outline-none transition focus:border-accent placeholder:text-foreground/30" 
+                          />
+                        </div>
+                        
+                        <div className="grid gap-3 sm:gap-6 md:grid-cols-[1fr_auto] items-end">
+                          <textarea 
+                            value={form.message} 
+                            onChange={e => setForm(c => ({...c, message: e.target.value}))} 
+                            placeholder="Your message here..." 
+                            required
+                            className="min-h-[100px] sm:min-h-40 w-full rounded-lg border border-foreground/10 bg-foreground/[0.02] p-4 sm:p-6 text-xs sm:text-sm text-foreground outline-none transition focus:border-accent resize-none placeholder:text-foreground/30" 
+                          />
+                          <button 
+                            type="submit" 
+                            disabled={isSubmitting}
+                            className="group flex h-12 w-[160px] sm:h-40 sm:w-40 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-black uppercase tracking-[0.14em] text-background transition hover:scale-105 mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isSubmitting ? "Sending..." : "Submit"}
+                          </button>
+                        </div>
+                      </form>
                     </div>
-                  </form>
+                  </div>
                 )}
               </motion.div>
             )}

@@ -29,19 +29,10 @@ export function PageLoader({ children }: PageLoaderProps) {
     let cancelled = false;
 
     const minDelay = new Promise<void>((resolve) => {
-      window.setTimeout(resolve, MIN_LOAD_MS);
+      window.setTimeout(resolve, 800);
     });
 
-    const pageReady = new Promise<void>((resolve) => {
-      if (document.readyState !== "loading") {
-        resolve();
-        return;
-      }
-
-      window.addEventListener("load", () => resolve(), { once: true });
-    });
-
-    void Promise.all([minDelay, pageReady]).then(() => {
+    void minDelay.then(() => {
       if (cancelled) {
         return;
       }
@@ -52,7 +43,7 @@ export function PageLoader({ children }: PageLoaderProps) {
         if (!cancelled) {
           setIsLoading(false);
         }
-      }, 420);
+      }, 700);
     });
 
     return () => {
