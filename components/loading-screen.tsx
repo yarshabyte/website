@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { cn } from "@/lib/utils";
 
 type LoadingScreenProps = {
@@ -9,13 +7,6 @@ type LoadingScreenProps = {
 };
 
 export function LoadingScreen({ isExiting }: LoadingScreenProps) {
-  const [drawn, setDrawn] = useState(false);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setDrawn(true), 120);
-    return () => window.clearTimeout(timer);
-  }, []);
-
   return (
     <div
       className={cn(
@@ -29,13 +20,37 @@ export function LoadingScreen({ isExiting }: LoadingScreenProps) {
       role="status"
       aria-label="Loading Yarsha Byte"
     >
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes drawPath {
+          0% { stroke-dashoffset: 1; }
+          100% { stroke-dashoffset: 0; }
+        }
+        @keyframes fadeUp {
+          0% { opacity: 0; transform: translateY(16px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleUp {
+          0% { transform: scale(0.9); }
+          100% { transform: scale(1); }
+        }
+        .animate-draw-path {
+          stroke-dasharray: 1;
+          stroke-dashoffset: 1;
+          animation: drawPath 0.85s ease-in-out forwards;
+        }
+        .animate-fade-up {
+          opacity: 0;
+          animation: fadeUp 1s ease-out 0.4s forwards;
+        }
+        .animate-scale-up {
+          transform: scale(0.9);
+          animation: scaleUp 2s ease-out forwards;
+        }
+      `}} />
       <div className="flex flex-col items-center gap-10">
         <svg
           viewBox="0 0 320 240"
-          className={cn(
-            "h-36 w-48 sm:h-48 sm:w-64 transition-transform duration-[2000ms] ease-out",
-            drawn ? "scale-100" : "scale-90"
-          )}
+          className="h-36 w-48 sm:h-48 sm:w-64 animate-scale-up"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
@@ -54,23 +69,16 @@ export function LoadingScreen({ isExiting }: LoadingScreenProps) {
                 key={path}
                 d={path}
                 pathLength={1}
+                className="animate-draw-path"
                 style={{
-                  strokeDasharray: 1,
-                  strokeDashoffset: drawn ? 0 : 1,
-                  transition: `stroke-dashoffset 0.85s ease-in-out ${index * 0.05}s`,
+                  animationDelay: `${index * 0.05 + 0.12}s`
                 }}
               />
             ))}
           </g>
         </svg>
 
-        <p
-          className={cn(
-            "text-center text-xs uppercase tracking-[0.42em] text-black transition-all duration-1000 sm:text-sm md:text-base",
-            drawn ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
-          )}
-          style={{ transitionDelay: "0.4s" }}
-        >
+        <p className="text-center text-xs uppercase tracking-[0.42em] text-black sm:text-sm md:text-base animate-fade-up">
           <span className="font-light">Loading </span>
           <span className="font-helvetica-bold">Yarsha Byte</span>
         </p>
