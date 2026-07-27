@@ -8,7 +8,7 @@ import { TestimonialsSection } from "@/components/sections/testimonials";
 import { WorkSection } from "@/components/sections/work-section";
 
 export const metadata: Metadata = {
-  title: "Yarsha Byte | Creative approach to your business",
+  title: "YarshaByte | Creative approach to your business",
   description:
     "YarshaByte helps Nepali businesses create websites, portfolios, and digital presences with web design, branding, and development services.",
   keywords: ["web design Nepal", "Business growth", "digital agency Nepal"],

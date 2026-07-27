@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://yarshabyte.vercel.app"),
   alternates: { canonical: "https://yarshabyte.vercel.app" },
   openGraph: {
-    title: "Yarsha Byte | Creative approach to your business",
+    title: "YarshaByte | Creative approach to your business",
     description:
       "YarshaByte helps Nepali businesses create websites, portfolios, posters, videos, reels, branding, and digital setups for a professional online presence.",
     siteName: "YarshaByte",
