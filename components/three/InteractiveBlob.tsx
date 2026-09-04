@@ -43,6 +43,7 @@ export function InteractiveBlob({
 }: InteractiveBlobProps) {
   const groupRef = useRef<Group>(null);
   const materialRef = useRef<ShaderMaterial>(null);
+  const spinOffset = useRef(0);
   const hasEnteredRef = useRef(startVisible);
   const pointer = usePagePointer();
   const reduceMotion = useReducedMotion();
@@ -79,7 +80,7 @@ export function InteractiveBlob({
         gsap.killTweensOf(material.uniforms.uMixTexture);
         gsap.to(material.uniforms.uMixTexture, {
           value: 1,
-          duration: 0.7,
+          duration: 0.6,
           ease: "power2.inOut",
           onComplete: () => {
             currentTextureRef.current = loadedTexture;
@@ -88,19 +89,6 @@ export function InteractiveBlob({
             material.uniforms.uMixTexture.value = 0;
           }
         });
-
-        // Visually pulse and squish the blob during the texture swap
-        if (!reduceMotion) {
-          const { uAmplitude, uFrequency, uLightFactor } = material.uniforms;
-          gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor]);
-          gsap.timeline()
-            .to(uAmplitude, { value: 7.2, duration: 0.35, ease: "power4.inOut" }, 0)
-            .to(uAmplitude, { value: 2.4, duration: 0.35, ease: "power4.inOut" }, 0.35)
-            .to(uFrequency, { value: 0.56, duration: 0.35, ease: "power4.inOut" }, 0)
-            .to(uFrequency, { value: 0.55, duration: 0.35, ease: "power4.inOut" }, 0.35)
-            .to(uLightFactor, { value: 1.8, duration: 0.35, ease: "power4.inOut" }, 0)
-            .to(uLightFactor, { value: 1.0, duration: 0.35, ease: "power4.inOut" }, 0.35);
-        }
       } else {
         currentTextureRef.current = loadedTexture;
         setTexture(loadedTexture);
@@ -249,19 +237,24 @@ export function InteractiveBlob({
         false;
       const { uAmplitude, uFrequency, uLightFactor } = material.uniforms;
 
-      gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor, group.rotation]);
+      gsap.killTweensOf([uAmplitude, uFrequency, uLightFactor, spinOffset]);
+      
+      const durationIn = 0.45;
+      const durationOut = 0.75;
+      
       gsap
         .timeline()
-        .to(uAmplitude, { value: 8.4, duration: 0.35, ease: "power4.inOut" }, 0)
-        .to(uAmplitude, { value: 2.4, duration: 0.35, ease: "power4.inOut" }, 0.35)
-        .to(uFrequency, { value: 0.56, duration: 0.35, ease: "power4.inOut" }, 0)
-        .to(uFrequency, { value: 0.55, duration: 0.35, ease: "power4.inOut" }, 0.35)
-        .to(uLightFactor, { value: 2.35, duration: 0.35, ease: "power4.inOut" }, 0)
-        .to(uLightFactor, { value: 1.0, duration: 0.35, ease: "power4.inOut" }, 0.35);
-      gsap.to(group.rotation, {
-        y: group.rotation.y + (clockwise ? -1.5 : 1.5),
-        duration: 0.6,
-        ease: "power4.out",
+        .to(uAmplitude, { value: 5.5, duration: durationIn, ease: "power2.out" }, 0)
+        .to(uAmplitude, { value: 2.4, duration: durationOut, ease: "power2.inOut" }, durationIn)
+        .to(uFrequency, { value: 0.7, duration: durationIn, ease: "power2.out" }, 0)
+        .to(uFrequency, { value: 0.55, duration: durationOut, ease: "power2.inOut" }, durationIn)
+        .to(uLightFactor, { value: 2.0, duration: durationIn, ease: "power2.out" }, 0)
+        .to(uLightFactor, { value: 1.0, duration: durationOut, ease: "power2.inOut" }, durationIn);
+        
+      gsap.to(spinOffset, {
+        current: spinOffset.current + (clockwise ? -1.5 : 1.5),
+        duration: durationIn + durationOut,
+        ease: "power3.inOut",
       });
     };
 
@@ -288,7 +281,7 @@ export function InteractiveBlob({
     const pointerTiltY = reduceMotion ? 0 : pointer.current.x * (mobile ? 0.55 : 0.35);
     const rotDamping = mobile ? 8 : 4;
     group.rotation.x = damp(group.rotation.x, 0.12 + pointerTiltX, rotDamping, delta);
-    group.rotation.y = damp(group.rotation.y, (mobile ? 0 : 0.1) + pointerTiltY, rotDamping, delta);
+    group.rotation.y = damp(group.rotation.y, (mobile ? 0 : 0.1) + pointerTiltY + spinOffset.current, rotDamping, delta);
 
     if (!reduceMotion) {
       const targetCamX = mobile ? 0 : pointer.current.x * 0.62;
