@@ -225,7 +225,7 @@ export function PageWaveTransition() {
       timelineRef.current?.kill();
       resetOverlay();
     };
-  // NOTE: `pathname` is intentionally excluded – the handler reads
+  // NOTE: `pathname` is intentionally excluded - the handler reads
   // pathnameRef.current (synced separately) so the listener must NOT
   // be torn down when the route changes mid-transition.
   // eslint-disable-next-line react-hooks/exhaustive-deps

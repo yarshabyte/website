@@ -36,7 +36,7 @@ export const teamMembers: TeamMember[] = [
     location: "Butwal, Nepal",
     email: "aashish@yarshabyte.com",
     intro: "Guides YarshaByte's overarching vision, executive strategy, and technological innovation to empower businesses with high-impact digital solutions.",
-    bio: "As Chief Executive Officer, Aashish steers YarshaByte's mission, corporate strategy, and technological innovation roadmap. Combining executive leadership with profound technical mastery in full-stack architecture and artificial intelligence, he aligns organizational goals with client transformation—building high-performing teams, fostering long-term strategic partnerships, and establishing YarshaByte as a premier creative tech agency.",
+    bio: "As Chief Executive Officer, Aashish steers YarshaByte's mission, corporate strategy, and technological innovation roadmap. Combining executive leadership with profound technical mastery in full-stack architecture and artificial intelligence, he aligns organizational goals with client transformation - building high-performing teams, fostering long-term strategic partnerships, and establishing YarshaByte as a premier creative tech agency.",
     skills: [
       "Executive Leadership",
       "Strategic Vision",
