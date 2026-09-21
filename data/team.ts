@@ -121,8 +121,8 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    slug: "amrit-bhhatarai",
-    name: "Amrit Bhhatarai",
+    slug: "amrit-bhattarai",
+    name: "Amrit Bhattarai",
     initials: "AB",
     role: "Lead Backend & Systems Architect",
     image: "/team/member4.webp",
