@@ -4,13 +4,13 @@ import { AboutPageClient } from "@/components/sections/about-page-client";
 export const metadata: Metadata = {
   title: "About Us | Yarsha Byte",
   description:
-    "A six-person digital team in Nepal unifying strategy, design, code, and motion.",
+    "A five-person digital team in Nepal unifying strategy, design, code, and motion.",
   keywords: ["Yarsha Byte team", "about Yarsha Byte", "creative team Nepal"],
   alternates: { canonical: "https://yarshabyte.vercel.app/about" },
   openGraph: {
     title: "About Yarsha Byte",
     description:
-      "A six-person digital team in Nepal unifying strategy, design, code, and motion.",
+      "A five-person digital team in Nepal unifying strategy, design, code, and motion.",
     url: "https://yarshabyte.vercel.app/about",
     images: ["https://yarshabyte.vercel.app/og-image.png"],
   },

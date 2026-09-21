@@ -242,7 +242,7 @@ export function AboutPageClient() {
           
           <h1 ref={heroTitleRef} className="font-display text-[clamp(5.5rem,23vw,18rem)] font-black uppercase leading-[1] md:leading-[0.95] tracking-tight flex flex-col items-center whitespace-nowrap w-full">
             <div ref={heroText1Ref} className="pb-2 md:pb-4 flex justify-center w-full">
-              SIX MINDS.
+              FIVE MINDS.
             </div>
             <div ref={heroText2Ref} className="text-foreground/40 flex justify-center w-full">
               ONE DIRECTION.
