@@ -121,37 +121,6 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    slug: "amrit-bhattarai",
-    name: "Amrit Bhattarai",
-    initials: "AB",
-    role: "Lead Backend & Systems Architect",
-    image: "/team/member4.webp",
-    location: "Butwal, Nepal",
-    email: "amrit@yarshabyte.com",
-    intro: "Architects scalable cloud infrastructure, secure backend systems, and high-throughput data pipelines powering robust digital products.",
-    bio: "As Lead Backend & Systems Architect, Amrit oversees core server architecture, database engineering, and API ecosystems at YarshaByte. Dedicated to clean code paradigms, low-latency computing, and rock-solid system reliability, he designs the resilient server backbones and data architectures that support seamless, high-traffic digital applications.",
-    skills: [
-      "Backend Architecture",
-      "Distributed Systems",
-      "Database Engineering",
-      "Cloud Infrastructure",
-      "API Design & Security",
-      "Performance Tuning",
-    ],
-    projects: [
-      {
-        title: "High-Throughput API Engine",
-        type: "Core Backend Infrastructure",
-        year: "2026",
-      },
-      {
-        title: "Consultancy Inquiries Pipeline",
-        type: "Secure Data Architecture",
-        year: "2026",
-      },
-    ],
-  },
-  {
     slug: "beeplap-gharti-magar",
     name: "Beeplap Gharti Magar",
     initials: "BG",
